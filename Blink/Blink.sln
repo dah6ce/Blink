@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Blink", "Blink.shproj", "{B77BD3C8-0DCA-48E6-96B7-9C6FD6BEEB86}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blink", "Blink\Blink.csproj", "{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}.Debug|x86.ActiveCfg = Debug|x86
+		{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}.Debug|x86.Build.0 = Debug|x86
+		{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}.Release|x86.ActiveCfg = Release|x86
+		{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal
