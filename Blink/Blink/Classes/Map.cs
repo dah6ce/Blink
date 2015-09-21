@@ -9,8 +9,8 @@ namespace Blink.Classes
 {
     class Map
     {
-        Color[] map = new Color[48*28];
-        int[,] collisionMap = new int[48,28];
+        Color[] map = new Color[50*30];
+        int[,] collisionMap = new int[50,30];
         Vector2 charSize = new Vector2(32, 32);
         int tileSize;
         Texture2D mapTexture;
