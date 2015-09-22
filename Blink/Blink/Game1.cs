@@ -2,12 +2,16 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Blink.Classes;
+using System;
 
 namespace Blink
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
+    
+    enum PlayerKeys {Player1, Player2, Player3, Player4}
+
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
@@ -16,6 +20,12 @@ namespace Blink
         PlayerClass player2;
         PlayerClass player3;
         PlayerClass player4;
+        PlayerKeys currPlayer;
+        KeyboardState oldState;
+        KeyboardState player1State;
+        KeyboardState player2State;
+        KeyboardState player3State;
+        KeyboardState player4State;
         Map map1;
         float GRAVITY = 0.1f;
 
@@ -41,6 +51,7 @@ namespace Blink
             player3 = new PlayerClass();
             player4 = new PlayerClass();
             map1 = new Map();
+            currPlayer = PlayerKeys.Player1;
 
             base.Initialize();
         }
@@ -87,15 +98,57 @@ namespace Blink
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState currState = Keyboard.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            // Press TAB to change player if using keyboard. *** For Testing Purposes Only *** 
+            if (currState.IsKeyDown(Keys.Tab) && oldState != currState)
+            {
+                switch ((int)currPlayer)
+                {
+                    case 0:
+                        currPlayer = PlayerKeys.Player2;
+                        break;
 
-            // TODO: Add your update logic here
-            player1.Update(Keyboard.GetState(), GamePad.GetState(PlayerIndex.One));
-            player2.Update(Keyboard.GetState(), GamePad.GetState(PlayerIndex.Two));
-            player3.Update(Keyboard.GetState(), GamePad.GetState(PlayerIndex.Three));
-            player4.Update(Keyboard.GetState(), GamePad.GetState(PlayerIndex.Four));
+                    case 1:
+                        currPlayer = PlayerKeys.Player3;
+                        break;
 
+                    case 2:
+                        currPlayer = PlayerKeys.Player4;
+                        break;
+
+                    case 3:
+                        currPlayer = PlayerKeys.Player1;
+                        break;
+                }
+                //Switches to the next player
+            }
+            if (currPlayer == PlayerKeys.Player1)
+            {
+                player1State = Keyboard.GetState();
+            }
+
+            if (currPlayer == PlayerKeys.Player2)
+            {
+                player2State = Keyboard.GetState();
+            }
+
+            if (currPlayer == PlayerKeys.Player3)
+            {
+                player3State = Keyboard.GetState();
+            }
+            if (currPlayer == PlayerKeys.Player4)
+            {
+                player4State = Keyboard.GetState();
+            }
+            //End of TAB code. Can now only control one player at a time using keyboard.
+
+            player1.Update(player1State, GamePad.GetState(PlayerIndex.One));
+            player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
+            player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
+            player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
+            oldState = currState;
             base.Update(gameTime);
         }
 
