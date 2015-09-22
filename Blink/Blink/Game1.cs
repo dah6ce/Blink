@@ -12,7 +12,10 @@ namespace Blink
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        PlayerClass player;
+        PlayerClass player1;
+        PlayerClass player2;
+        PlayerClass player3;
+        PlayerClass player4;
         Map map1;
         float GRAVITY = 0.1f;
 
@@ -33,7 +36,10 @@ namespace Blink
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            player = new PlayerClass();
+            player1 = new PlayerClass();
+            player2 = new PlayerClass();
+            player3 = new PlayerClass();
+            player4 = new PlayerClass();
             map1 = new Map();
 
             base.Initialize();
@@ -51,9 +57,16 @@ namespace Blink
 
 
             // TODO: use this.Content to load your game content here
-            Vector2 playerPos = new Vector2(48, 48);
+            Vector2 player1Pos = new Vector2(48, 48);
+            Vector2 player2Pos = new Vector2(700, 48);
+            Vector2 player3Pos = new Vector2(200, 48);
+            Vector2 player4Pos = new Vector2(560, 48);
+
             Vector2 screenSize = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.Right,GraphicsDevice.Viewport.TitleSafeArea.Bottom);
-            player.Initialize(Content.Load<Texture2D>("sprite"), playerPos, screenSize, map1);
+            player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1);
+            player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1);
+            player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1);
+            player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1);
 
             map1.Initialize(Content.Load<Texture2D>("map1Color"), Content.Load<Texture2D>("map1"), 16);
         }
@@ -78,8 +91,10 @@ namespace Blink
                 Exit();
 
             // TODO: Add your update logic here
-            player.Update(Keyboard.GetState());
-
+            player1.Update(Keyboard.GetState(), GamePad.GetState(PlayerIndex.One));
+            player2.Update(Keyboard.GetState(), GamePad.GetState(PlayerIndex.Two));
+            player3.Update(Keyboard.GetState(), GamePad.GetState(PlayerIndex.Three));
+            player4.Update(Keyboard.GetState(), GamePad.GetState(PlayerIndex.Four));
 
             base.Update(gameTime);
         }
@@ -96,7 +111,10 @@ namespace Blink
 
             spriteBatch.Begin();
             map1.Draw(spriteBatch);
-            player.Draw(spriteBatch);
+            player1.Draw(spriteBatch);
+            player2.Draw(spriteBatch);
+            player3.Draw(spriteBatch);
+            player4.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

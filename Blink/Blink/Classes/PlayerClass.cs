@@ -33,18 +33,18 @@ namespace Blink.Classes
             arena = m;
         }
 
-        public void Update(KeyboardState input)
+        public void Update(KeyboardState input, GamePadState padState)
         {
             
 
             //Horizontal movement
-            if (input.IsKeyDown(Keys.Right) && velocity.X < ACC_CAP)
+            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.DPadRight)) && velocity.X < ACC_CAP)
             {
                 velocity.X += SPEED;
                 if (velocity.X < -SPEED)
                     velocity.X += SPEED / 2;
             }
-            else if (input.IsKeyDown(Keys.Left) && velocity.X > -ACC_CAP)
+            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.DPadLeft)) && velocity.X > -ACC_CAP)
             {
                 velocity.X -= SPEED;
                 if (velocity.X > SPEED)
@@ -73,7 +73,7 @@ namespace Blink.Classes
             }
 
             //Jump
-            if (input.IsKeyDown(Keys.Up) && atRest)
+            if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.DPadUp)) && atRest)
             {
                 velocity.Y -= JUMP;
                 atRest = false;
