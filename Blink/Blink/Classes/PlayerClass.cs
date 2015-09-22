@@ -194,13 +194,13 @@ namespace Blink.Classes
 
 
             //Looping stuff
-            testY %= SCREENSIZE.Y - Height;
-            testX %= SCREENSIZE.X - Width;
+            testY %= SCREENSIZE.Y;
+            testX %= SCREENSIZE.X;
 
             if(testY < 0)
-                testY += SCREENSIZE.Y - Height;
+                testY += SCREENSIZE.Y;
             if (testX < 0)
-                testX += SCREENSIZE.X - Width;
+                testX += SCREENSIZE.X;
 
             pos.Y = testY;
             pos.X = testX;
@@ -212,14 +212,14 @@ namespace Blink.Classes
 
             //Drawing when the player is looping over
             if (pos.X < Width)
-                sB.Draw(playerText, new Vector2(pos.X + SCREENSIZE.X - Width,pos.Y + MARGIN), Color.White);
-            else if(pos.X + Width > SCREENSIZE.X - Width)
-                sB.Draw(playerText, new Vector2(pos.X - (SCREENSIZE.X - Width), pos.Y + MARGIN), Color.White);
+                sB.Draw(playerText, new Vector2(pos.X + SCREENSIZE.X,pos.Y + MARGIN), Color.White);
+            else if(pos.X + Width > SCREENSIZE.X)
+                sB.Draw(playerText, new Vector2(pos.X - (SCREENSIZE.X), pos.Y + MARGIN), Color.White);
 
             if (pos.Y < Height)
-                sB.Draw(playerText, new Vector2(pos.X,pos.Y + SCREENSIZE.Y - Height + MARGIN), Color.White);
-            else if (pos.Y + Height > SCREENSIZE.Y - Height)
-                sB.Draw(playerText, new Vector2(pos.X, pos.Y - (SCREENSIZE.Y - Height) + MARGIN), Color.White);
+                sB.Draw(playerText, new Vector2(pos.X,pos.Y + SCREENSIZE.Y + MARGIN), Color.White);
+            else if (pos.Y + Height > SCREENSIZE.Y)
+                sB.Draw(playerText, new Vector2(pos.X, pos.Y - (SCREENSIZE.Y) + MARGIN), Color.White);
         }
     }
 }
