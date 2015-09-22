@@ -10,7 +10,7 @@ namespace Blink
     /// This is the main type for your game.
     /// </summary>
     
-    enum PlayerKeys {Player1, Player2, Player3, Player4}
+    enum PlayerKeys {Player1, Player2, Player3, Player4, allPlayers}
 
     public class Game1 : Game
     {
@@ -101,7 +101,10 @@ namespace Blink
             KeyboardState currState = Keyboard.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            // Press TAB to change player if using keyboard. *** For Testing Purposes Only *** 
+            /* Press TAB to change player if using keyboard. *** For Testing Purposes Only ***
+                If you hold down a key while pressing TAB, the previous player will continue to do that same action
+                over and over again until you tab to that player again. 
+                (It is kinda amusing, but could be useful for collison testing) */
             if (currState.IsKeyDown(Keys.Tab) && oldState != currState)
             {
                 switch ((int)currPlayer)
@@ -119,6 +122,10 @@ namespace Blink
                         break;
 
                     case 3:
+                        currPlayer = PlayerKeys.allPlayers;
+                        break;
+
+                    case 4:
                         currPlayer = PlayerKeys.Player1;
                         break;
                 }
@@ -140,6 +147,14 @@ namespace Blink
             }
             if (currPlayer == PlayerKeys.Player4)
             {
+                player4State = Keyboard.GetState();
+            }
+
+            if (currPlayer == PlayerKeys.allPlayers)
+            {
+                player1State = Keyboard.GetState();
+                player2State = Keyboard.GetState();
+                player3State = Keyboard.GetState();
                 player4State = Keyboard.GetState();
             }
             //End of TAB code. Can now only control one player at a time using keyboard.
