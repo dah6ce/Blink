@@ -8,8 +8,10 @@ namespace Blink.Classes
 {
     class PlayerClass
     {
-        private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
-        private int curFriction = 12, airFriction = 1;
+        //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
+        //private int curFriction = 12, airFriction = 1;
+        private int GRAVITY = 16, SPEED = 12, TERMINAL_V = 300, ACC_CAP = 160, JUMP = 300, TILEWIDTH = 32, MARGIN = 0;
+        private int curFriction = 24, airFriction = 2;
 
 
 

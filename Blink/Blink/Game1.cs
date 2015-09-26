@@ -32,8 +32,8 @@ namespace Blink
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            //graphics.PreferredBackBufferWidth = 1280;
-            //graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferWidth = 1600;
+            graphics.PreferredBackBufferHeight = 960;
             Content.RootDirectory = "Content";
         }
 
@@ -68,10 +68,10 @@ namespace Blink
 
 
             // TODO: use this.Content to load your game content here
-            Vector2 player1Pos = new Vector2(48, 48);
-            Vector2 player2Pos = new Vector2(700, 48);
-            Vector2 player3Pos = new Vector2(200, 48);
-            Vector2 player4Pos = new Vector2(560, 48);
+            Vector2 player1Pos = new Vector2(96, 96);
+            Vector2 player2Pos = new Vector2(1400, 96);
+            Vector2 player3Pos = new Vector2(400, 96);
+            Vector2 player4Pos = new Vector2(1120, 96);
 
             Vector2 screenSize = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.Right,GraphicsDevice.Viewport.TitleSafeArea.Bottom);
             player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1);
@@ -79,7 +79,7 @@ namespace Blink
             player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1);
             player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1);
 
-            map1.Initialize(Content.Load<Texture2D>("map1Color"), Content.Load<Texture2D>("map1"), 16);
+            map1.Initialize(Content.Load<Texture2D>("map1Color"), Content.Load<Texture2D>("map1"), 32);
         }
 
         /// <summary>
