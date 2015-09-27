@@ -11,24 +11,21 @@ namespace Blink
 	/// This is the main type for your game.
 	/// </summary>
     
-	enum PlayerKeys
-	{
-Player1,
-		Player2,
-		Player3,
-		Player4,
-		allPlayers
 
-	}
 
 	public class Game1 : Game
 	{
+		public static bool running;
+
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
-		GameState state;
+		GameState currState;
+		GameState mainMenu;
+		GameState game;
 
 		public Game1()
 		{
+			running = true;
 			graphics = new GraphicsDeviceManager(this);
 			graphics.PreferredBackBufferWidth = 1600;
 			graphics.PreferredBackBufferHeight = 960;
@@ -58,12 +55,14 @@ Player1,
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// Should probably be in Initialize, but screen size is updated after Initialize causing weird collision issues
-			state = new StateGame(new Vector2(GraphicsDevice.Viewport.TitleSafeArea.Right, GraphicsDevice.Viewport.TitleSafeArea.Bottom));
-			state.Initialize();
+			Vector2 screenSize = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.Right, GraphicsDevice.Viewport.TitleSafeArea.Bottom);
+			game = new StateGame(screenSize);
+			mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[]{ "Start", "Quit" }, new GameState[]{ game, new StateQuit() });
 
+			currState = mainMenu;
+			currState.Initialize();
+			currState.LoadContent(Content);
 
-			// TODO: use this.Content to load your game content here
-			state.LoadContent(Content);
 		}
 
 		/// <summary>
@@ -72,7 +71,7 @@ Player1,
 		/// </summary>
 		protected override void UnloadContent()
 		{
-			state.UnloadContent();
+			currState.UnloadContent();
 		}
 
 		/// <summary>
@@ -82,19 +81,19 @@ Player1,
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape) || !running)
 				Exit();
 			
-			state.Update(gameTime);
+			currState.Update(gameTime);
 
 			// Handle GameState transitions
-			GameState newState = state.GetTransition();
+			GameState newState = currState.GetTransition();
 			if (newState != null)
 			{
-				state.UnloadContent();
-				state = newState;
-				state.Initialize();
-				state.LoadContent(Content);
+				currState.UnloadContent();
+				currState = newState;
+				currState.Initialize();
+				currState.LoadContent(Content);
 
 			}
 
@@ -108,12 +107,12 @@ Player1,
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			//GraphicsDevice.Clear(Color.CornflowerBlue);
+			GraphicsDevice.Clear(Color.Black);
 
 			// TODO: Add your drawing code here
 
 			spriteBatch.Begin();
-			state.Draw(spriteBatch);
+			currState.Draw(spriteBatch);
 			spriteBatch.End();
 
 			base.Draw(gameTime);
