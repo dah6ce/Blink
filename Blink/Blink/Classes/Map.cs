@@ -18,38 +18,38 @@ namespace Blink.Classes
 
         int MARGIN = 0;
 
-        public void Initialize(Texture2D mText, Texture2D cMap, int tS)
+        public void Initialize(Texture2D mText, String cMap, int tS, int mX, int mY)
         {
             mapTexture = mText;
-            mapSize = new Vector2(cMap.Width, cMap.Height);
+            mapSize = new Vector2(mX, mY);
             tileSize = tS;
             mapCollisions(cMap);
         }
 
         //Read in collision map data
-        public void mapCollisions(Texture2D cMap)
+        public void mapCollisions(String cMap)
         {
-            cMap.GetData<Color>(map);
+            String[] blocks = cMap.Split(',');
             int p = 0,x = 0,y = 0;
-            while(y < mapSize.Y)
+
+            while (x < mapSize.X)
             {
-                x = 0;
-                while(x < mapSize.X)
+                y = 0;
+                while (y < mapSize.Y)
                 {
                     
-                    
-                    if(map[p] == Color.White)
+                    if(blocks[p] == "0")
                     {
                         collisionMap[x,y] = 0;
                     }
-                    else if(map[p] == Color.Black)
+                    else if(blocks[p] == "10")
                     {
                         collisionMap[x,y] = 1;
                     }
-                    x += 1;
+                    y += 1;
                     p += 1;
                 }
-                y += 1;
+                x += 1;
             }
         }
 

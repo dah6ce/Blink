@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Blink.Classes;
 using System;
+using System.IO;
 
 namespace Blink
 {
@@ -79,7 +80,9 @@ namespace Blink
             player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1);
             player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1);
 
-            map1.Initialize(Content.Load<Texture2D>("map1Color"), Content.Load<Texture2D>("map1"), 32);
+            StreamReader mapData;
+            mapData = File.OpenText("Content/map1.map");
+            map1.Initialize(Content.Load<Texture2D>("map1Color"), mapData.ReadToEnd(), 32, 50, 30);
         }
 
         /// <summary>
