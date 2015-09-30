@@ -6,7 +6,7 @@ using Blink.Classes;
 
 namespace Blink.Classes
 {
-    class PlayerClass : Collidable
+    class PlayerClass
     {
         //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
         //private int curFriction = 12, airFriction = 1;
@@ -38,7 +38,6 @@ namespace Blink.Classes
             SCREENSIZE = ScreenSize;
             arena = m;
 
-            verts = new Vector2[4] { new Vector2(0, 0), new Vector2(63, 0), new Vector2(63, 63), new Vector2(0, 63) };
         }
 
         public void Update(KeyboardState input, GamePadState padState)
