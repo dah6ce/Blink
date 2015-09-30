@@ -36,7 +36,6 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Classes\Collidable.cs" />
     <Compile Include="Classes\Map.cs" />
     <Compile Include="Classes\PlayerClass.cs" />
     <Compile Include="Game1.cs" />
@@ -59,9 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\map1Color.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\map2Color.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\sprite.png">
@@ -96,9 +92,6 @@
   </Target>
   -->
   <ItemGroup>
-    <None Include="Content\map2.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Content\Miramo.ttf" />
   </ItemGroup>
 </Project>
