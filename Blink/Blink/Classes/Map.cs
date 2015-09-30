@@ -39,6 +39,8 @@ namespace Blink.Classes
                 y = 0;
                 while (y < mapSize.Y)
                 {
+                    //This should eventually change to only cover stuff that causes replacements (e.g. a 1 might denote player 1, and should actually be a 0 in
+                    //the map.) Everything else will simply be parsed as an int.
                     //Air
                     if (blocks[p] == "0")
                     {
@@ -53,6 +55,11 @@ namespace Blink.Classes
                     else if (blocks[p] == "10")
                     {
                         collisionMap[x, y] = 10;
+                    }
+                    //Ice block
+                    else if (blocks[p] == "11")
+                    {
+                        collisionMap[x, y] = 11;
                     }
                     y += 1;
                     p += 1;
@@ -122,7 +129,11 @@ namespace Blink.Classes
         //Returns block data at a certain point on the map, using pixel coordinates
         public int blockInfo(Vector2 pos)
         {
-            return (collisionMap[(int)(Math.Floor(pos.X/tileSize) % mapSize.X), (int)(Math.Floor(pos.Y/tileSize) % mapSize.Y)]);
+            float xTile = (float)(Math.Floor(pos.X / tileSize) % mapSize.X);
+            xTile = loopCorrection(xTile, mapSize.X);
+            float yTile = (float)(Math.Floor(pos.Y / tileSize) % mapSize.Y);
+            yTile = loopCorrection(yTile, mapSize.Y);
+            return (collisionMap[(int)xTile, (int) yTile]);
         }
 
         //When points start to go off the screen, this will correct them by looping the point back using the scale
@@ -136,7 +147,7 @@ namespace Blink.Classes
             return input;
         }
 
-        public Boolean checkFooting(Vector2 pos)
+        public int checkFooting(Vector2 pos)
         {
             Vector2 newPos = new Vector2();
             newPos.X = (float)Math.Floor(pos.X / tileSize); 
@@ -151,11 +162,13 @@ namespace Blink.Classes
             float newHMid = (float)Math.Floor((pos.X + (charSize.X / 2)) / tileSize);
             newHMid = loopCorrection(newHMid, mapSize.X);
 
-            if (collisionMap[(int)newPos.X, (int)newPos.Y] != 0 || collisionMap[(int)newRight, (int)newPos.Y] != 0 || collisionMap[(int)newHMid, (int)newPos.Y] != 0)
-            {
-                return true;
-            }
-            return false;
+            int left = collisionMap[(int)newPos.X, (int)newPos.Y];
+            int right = collisionMap[(int)newRight, (int)newPos.Y];
+            int middle = collisionMap[(int)newHMid, (int)newPos.Y];
+            int footing = left < right ? right : left;
+            footing = footing < middle ? middle : footing;
+
+            return footing;
         }
     }
 }

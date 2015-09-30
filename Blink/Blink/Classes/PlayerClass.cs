@@ -10,8 +10,9 @@ namespace Blink.Classes
     {
         //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
         //private int curFriction = 12, airFriction = 1;
-        private int GRAVITY = 16, SPEED = 12, TERMINAL_V = 300, ACC_CAP = 160, JUMP = 300, TILEWIDTH = 32, MARGIN = 0;
-        private int curFriction = 24, airFriction = 2;
+        private int JUMP = 300, TILEWIDTH = 32, MARGIN = 0;
+        private int GRAVITY = 16, TERMINAL_V = 300, SPEED = 12, GROUNDSPEED = 12, ICESPEED = 4, ACC_CAP = 160;
+        private int curFriction = 24, airFriction = 2, groundFriction = 24, iceFriction = 2;
 
 
 
@@ -87,10 +88,21 @@ namespace Blink.Classes
             }
 
             //Velocity applications
-            if (velocity.X != 0 && atRest && !arena.checkFooting(pos))
+            int footing = arena.checkFooting(pos);
+
+            if (velocity.X != 0 && atRest && footing < 10)
                 atRest = false;
 
-            
+            if (footing == 11)
+            {
+                curFriction = iceFriction;
+                SPEED = ICESPEED;
+            }
+            else
+            {
+                curFriction = groundFriction;
+                SPEED = GROUNDSPEED;
+            }
 
 
             applyMove(velocity.X < 0, velocity.Y < 0);
