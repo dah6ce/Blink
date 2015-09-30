@@ -15,15 +15,17 @@ namespace Blink.Classes
         int tileSize;
         Texture2D mapTexture;
         Vector2 mapSize;
+        PlayerClass[] players = new PlayerClass[4];
 
         int MARGIN = 0;
 
-        public void Initialize(Texture2D mText, String cMap, int tS, int mX, int mY)
+        public void Initialize(Texture2D mText, String cMap, int tS, int mX, int mY, PlayerClass[] p)
         {
             mapTexture = mText;
             mapSize = new Vector2(mX, mY);
             tileSize = tS;
             mapCollisions(cMap);
+            players = p;
         }
 
         //Read in collision map data
@@ -37,14 +39,20 @@ namespace Blink.Classes
                 y = 0;
                 while (y < mapSize.Y)
                 {
-                    
-                    if(blocks[p] == "0")
+                    //Air
+                    if (blocks[p] == "0")
                     {
-                        collisionMap[x,y] = 0;
+                        collisionMap[x, y] = 0;
                     }
-                    else if(blocks[p] == "10")
+                    //Kill zone
+                    else if (blocks[p] == "5")
                     {
-                        collisionMap[x,y] = 1;
+                        collisionMap[x, y] = 5;
+                    }
+                    //Solid block
+                    else if (blocks[p] == "10")
+                    {
+                        collisionMap[x, y] = 10;
                     }
                     y += 1;
                     p += 1;
@@ -99,16 +107,23 @@ namespace Blink.Classes
             collisions[0] = false;
             collisions[1] = false;
             collisions[2] = false;
-            if (collisionMap[(int)newPos.X, (int)oldPos.Y] != 0 || collisionMap[(int)newPos.X, (int)oldBot] != 0 || collisionMap[(int)newPos.X, (int)oldVMid] != 0)
+
+            //All values under 10 are blocks that can be passed through
+            if (collisionMap[(int)newPos.X, (int)oldPos.Y] >= 10 || collisionMap[(int)newPos.X, (int)oldBot] >= 10 || collisionMap[(int)newPos.X, (int)oldVMid] >= 10)
                 collisions[0] = true;
-            if (collisionMap[(int)oldPos.X, (int)newPos.Y] != 0 || collisionMap[(int)oldRight, (int)newPos.Y] != 0 || collisionMap[(int)oldHMid, (int)newPos.Y] != 0)
+            if (collisionMap[(int)oldPos.X, (int)newPos.Y] >= 10 || collisionMap[(int)oldRight, (int)newPos.Y] >= 10 || collisionMap[(int)oldHMid, (int)newPos.Y] >= 10)
                 collisions[1] = true;
-            if (!collisions[0] && !collisions[1] && collisionMap[(int)newPos.X, (int)newPos.Y] != 0)
+            if (!collisions[0] && !collisions[1] && collisionMap[(int)newPos.X, (int)newPos.Y] >= 10)
                 collisions[2] = true;
             return (collisions);
 
         }
 
+        //Returns block data at a certain point on the map, using pixel coordinates
+        public int blockInfo(Vector2 pos)
+        {
+            return (collisionMap[(int)(Math.Floor(pos.X/tileSize) % mapSize.X), (int)(Math.Floor(pos.Y/tileSize) % mapSize.Y)]);
+        }
 
         //When points start to go off the screen, this will correct them by looping the point back using the scale
         public float loopCorrection(float input, float scale)

@@ -26,6 +26,7 @@ namespace Blink
 		PlayerClass player2;
 		PlayerClass player3;
 		PlayerClass player4;
+        PlayerClass[] players = new PlayerClass[4];
 		PlayerKeys currPlayer;
 		KeyboardState oldState;
 		KeyboardState player1State;
@@ -55,16 +56,20 @@ namespace Blink
 			Vector2 player2Pos = new Vector2(1400, 96);
 			Vector2 player3Pos = new Vector2(400, 96);
 			Vector2 player4Pos = new Vector2(1120, 96);
+            
+            players[0] = player1;
+            players[1] = player2;
+            players[2] = player3;
+            players[3] = player4;
 
-
-			player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1);
-			player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1);
-			player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1);
-			player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1);
+            player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1, players);
+            player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1, players);
+            player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
+            player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1, players);
 
             StreamReader mapData;
             mapData = File.OpenText("Content/map1.map");
-            map1.Initialize(Content.Load<Texture2D>("map1Color"), mapData.ReadToEnd(), 32, 50, 30);
+            map1.Initialize(Content.Load<Texture2D>("map1Color"), mapData.ReadToEnd(), 32, 50, 30, players);
         }
 
 		public void UnloadContent()
