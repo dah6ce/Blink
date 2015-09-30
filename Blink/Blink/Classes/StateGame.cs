@@ -62,10 +62,10 @@ namespace Blink
             players[2] = player3;
             players[3] = player4;
 
-            player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1, players);
-            player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1, players);
-            player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
-            player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1, players);
+            player1.Initialize(Content.Load<Texture2D>("sprite"), Content.Load<Texture2D>("spear_sprite"), player1Pos, screenSize, map1, players);
+            player2.Initialize(Content.Load<Texture2D>("sprite"), Content.Load<Texture2D>("spear_sprite"), player2Pos, screenSize, map1, players);
+            player3.Initialize(Content.Load<Texture2D>("sprite"), Content.Load<Texture2D>("spear_sprite"), player3Pos, screenSize, map1, players);
+            player4.Initialize(Content.Load<Texture2D>("sprite"), Content.Load<Texture2D>("spear_sprite"), player4Pos, screenSize, map1, players);
 
             StreamReader mapData;
             mapData = File.OpenText("Content/map1.map");

@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="Classes\Map.cs" />
     <Compile Include="Classes\PlayerClass.cs" />
+    <Compile Include="Classes\SpearClass.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

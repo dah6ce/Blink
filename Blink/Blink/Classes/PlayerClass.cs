@@ -20,16 +20,18 @@ namespace Blink.Classes
         
         Map arena;
         public Texture2D playerText;
+        public Texture2D spearText;
         public int Width, Height;
         public Vector2 pos,velocity, SCREENSIZE;
         Boolean atRest = false, dead = false;
         private PlayerClass[] players;
         
 
-        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
+        public void Initialize(Texture2D text, Texture2D spearText, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
         {
             players = p;
             playerText = text;
+            this.spearText = spearText;
             pos = playerPos;
             Width = playerText.Width;
             Height = playerText.Height;
@@ -37,7 +39,6 @@ namespace Blink.Classes
             velocity.Y = 0;
             SCREENSIZE = ScreenSize;
             arena = m;
-
         }
 
         public void Update(KeyboardState input, GamePadState padState)
