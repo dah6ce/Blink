@@ -3,10 +3,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Blink.Classes;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Blink.Classes
 {
-    class PlayerClass
+    public class PlayerClass
     {
         //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
         //private int curFriction = 12, airFriction = 1;
@@ -22,6 +24,10 @@ namespace Blink.Classes
         public int Width, Height;
         public Vector2 pos,velocity, SCREENSIZE;
         Boolean atRest = false;
+        Rectangle myRect;
+        List<Rectangle> collideWith;
+        List<Rectangle> playersList;
+
 
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m)
         {
@@ -33,6 +39,22 @@ namespace Blink.Classes
             velocity.Y = 0;
             SCREENSIZE = ScreenSize;
             arena = m;
+            myRect = new Rectangle((int)playerPos.X, (int)playerPos.Y, playerText.Width, playerText.Height);
+            playersList = new List<Rectangle>();
+        }
+
+        public void updatePlayersList(List<PlayerClass> allPlayers)
+        {
+            // Go through the list of AllPlayers and add the players rectangles that aren't this into collideWidth
+            // We need them in the collideWith so we are able to check collisions with them
+            playersList.Clear();
+            foreach (PlayerClass p in allPlayers)
+            {
+                if(p != this)
+                {
+                    playersList.Add(p.myRect);
+                }
+            }
         }
 
         public void Update(KeyboardState input, GamePadState padState)
@@ -82,130 +104,87 @@ namespace Blink.Classes
             }
 
             //Velocity applications
-            if (velocity.X != 0 && atRest && !arena.checkFooting(pos))
+            //Removed checkFooting function all together, not sure what it was doing?
+            if (velocity.X != 0 && atRest)
                 atRest = false;
+            
+            newMove();
 
-            applyMove(velocity.X < 0, velocity.Y < 0);
-            
-            
             //Gravity
             if (!atRest && velocity.Y < TERMINAL_V)
                 velocity.Y += GRAVITY;
 
         }
-        
-        public void applyMove(Boolean left, Boolean right)
+
+        public void newMove()
         {
-            float testX = pos.X + velocity.X / 10f;
-            float testY = pos.Y + velocity.Y / 10f;
-            
-            int d = 0, r = 0;
-            if (velocity.X > 0)
-                r = 1;
-            else if (velocity.X < 0)
-                r = -1;
-            if (velocity.Y > 0)
-                d = 1;
-            else if (velocity.Y < 0)
-                d = -1;
+            myRect.X = (int)pos.X;
+            myRect.Y = (int)pos.Y;
 
-            Boolean[] collisions = arena.collides(new Vector2(testX, testY), pos, d, r);
-
-            //This is kinda messy, I should eventually clean it up
-
-            //Diagonal collisions
-            if (collisions[2] && !collisions[0] && !collisions[1])
+            //if player's position needs to updated
+            //update it one direction (x-axis and/or y-axis) at a time
+            //No idea why diving by 10f is needed, but I got it from the old collision code
+            if (velocity.X != 0)
             {
-                float horiDist, vertDist;
-                if (velocity.X > 0)
-                {
-                    horiDist = testX % TILEWIDTH;
-                }
-                else
-                    horiDist = TILEWIDTH - (testX % TILEWIDTH);
-
-                if (velocity.Y > 0)
-                {
-                    vertDist = testY % TILEWIDTH;
-                }
-                else
-                    vertDist = TILEWIDTH - (testY % TILEWIDTH);
-
-                if(horiDist > vertDist)
-                {
-                    //If player is traveling left
-                    if (velocity.X < 0)
-                    {
-                        testX = TILEWIDTH * (float)Math.Floor(pos.X / TILEWIDTH);
-                        velocity.X = 0;
-                    }
-                    else if (velocity.X > 0)
-                    {
-                        testX = TILEWIDTH * (float)Math.Floor(pos.X / TILEWIDTH);
-                        velocity.X = 0;
-                    }
-                }
-                else
-                {
-                    //If player is traveling upwards
-                    if (velocity.Y < 0)
-                    {
-                        testY = TILEWIDTH * (float)Math.Floor(pos.Y / TILEWIDTH);
-                        velocity.Y = 0;
-                    }
-                    else if (velocity.Y > 0)
-                    {
-                        testY = TILEWIDTH * (float)Math.Ceiling(pos.Y / TILEWIDTH);
-                        velocity.Y = 0;
-                        atRest = true;
-                    }
-                }
+                newMoveOneAxis(new Vector2(velocity.X / 10f, 0));
             }
-            else
+            if (velocity.Y != 0)
             {
-                if (collisions[0])
-                {
-                    //If player is traveling left
-                    if (velocity.X < 0)
-                    {
-                        testX = TILEWIDTH * (float)Math.Floor(pos.X / TILEWIDTH);
-                        velocity.X = 0;
-                    }
-                    else if (velocity.X > 0)
-                    {
-                        testX = TILEWIDTH * (float)Math.Ceiling(pos.X / TILEWIDTH);
-                        velocity.X = 0;
-                    }
-                }
-                if (collisions[1])
-                {
-                    //If player is traveling upwards
-                    if (velocity.Y < 0)
-                    {
-                        testY = TILEWIDTH * (float)Math.Floor(pos.Y / TILEWIDTH);
-                        velocity.Y = 0;
-                    }
-                    else if (velocity.Y > 0)
-                    {
-                        testY = TILEWIDTH * (float)Math.Ceiling(pos.Y / TILEWIDTH);
-                        velocity.Y = 0;
-                        atRest = true;
-                    }
-                }
+                newMoveOneAxis(new Vector2(0, velocity.Y / 10f));
             }
 
-
-            //Looping stuff
-            testY %= SCREENSIZE.Y;
-            testX %= SCREENSIZE.X;
-
-            if(testY < 0)
-                testY += SCREENSIZE.Y;
-            if (testX < 0)
-                testX += SCREENSIZE.X;
-
-            pos.Y = testY;
-            pos.X = testX;
+            //After moving
+            //We moved the myRect, but haven't update the Vector2D pos yet
+            pos.X = myRect.X;
+            pos.Y = myRect.Y;
+        }
+        public void newMoveOneAxis(Vector2 movement)
+        {
+            int collide = -1;
+            //move, then check if collision occured
+            myRect.Offset(movement);
+            //Loop position, because myRect may have moved off screen
+            myRect.X = (int)(arena.loopCorrection(myRect.X, arena.mapSize.X * arena.tileSize));
+            myRect.Y = (int)(arena.loopCorrection(myRect.Y, arena.mapSize.Y * arena.tileSize));
+            //Merge the map rectangles and other players rectangles so we can check collisions against both
+            collideWith = arena.rectangles.Concat(playersList).ToList();
+            //if a collision occured, find which rectangle it collided with
+            for (int i = 0; i < collideWith.Count; i++)
+            {
+                if (myRect.Intersects(collideWith[i]))
+                {
+                    collide = i;
+                }
+            }
+            //if a collision occured
+            if (collide != -1)
+            {
+                if (movement.X > 0)
+                {
+                    //moving right, hit left side of wall
+                    myRect.X = collideWith[collide].Left - myRect.Width;
+                    velocity.X = 0;
+                }
+                if (movement.X < 0)
+                {
+                    //moving left, hit right side of wall
+                    myRect.X = collideWith[collide].Right;
+                    velocity.X = 0;
+                }
+                if (movement.Y > 0)
+                {
+                    //moving down, hit top of wall
+                    myRect.Y = collideWith[collide].Top - myRect.Height;
+                    velocity.Y = 0;
+                    atRest = true;
+                }
+                if (movement.Y < 0)
+                {
+                    //moving up, hit bottom of wall
+                    myRect.Y = collideWith[collide].Bottom;
+                    velocity.Y = 0;
+                }
+            }
         }
 
         public void Draw(SpriteBatch sB)

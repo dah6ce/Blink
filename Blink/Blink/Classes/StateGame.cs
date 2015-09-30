@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace Blink
 {
@@ -33,22 +34,29 @@ namespace Blink
 		KeyboardState player3State;
 		KeyboardState player4State;
 		Map map1;
+        public List<PlayerClass> players;
 
 		public StateGame(Vector2 screenSize)
 		{
 			this.screenSize = screenSize;
 		}
+   
 
 		public void Initialize()
 		{
+            map1 = new Map();
+            players = new List<PlayerClass>();
 			player1 = new PlayerClass();
 			player2 = new PlayerClass();
 			player3 = new PlayerClass();
 			player4 = new PlayerClass();
-			map1 = new Map();
+            players.Add(player1);
+            players.Add(player2);
+            players.Add(player3);
+            players.Add(player4);
 			currPlayer = PlayerKeys.Player1;
 		}
-
+        
 		public void LoadContent(ContentManager Content)
 		{
 			Vector2 player1Pos = new Vector2(96, 96);
@@ -56,15 +64,14 @@ namespace Blink
 			Vector2 player3Pos = new Vector2(400, 96);
 			Vector2 player4Pos = new Vector2(1120, 96);
 
-
-			player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1);
-			player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1);
-			player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1);
-			player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1);
-
             StreamReader mapData;
             mapData = File.OpenText("Content/map1.map");
             map1.Initialize(Content.Load<Texture2D>("map1Color"), mapData.ReadToEnd(), 32, 50, 30);
+
+            player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1);
+			player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1);
+			player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1);
+			player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1);
         }
 
 		public void UnloadContent()
@@ -132,22 +139,28 @@ namespace Blink
 				player3State = Keyboard.GetState();
 				player4State = Keyboard.GetState();
 			}
-			//End of TAB code. Can now only control one player at a time using keyboard.
+            //End of TAB code. Can now only control one player at a time using keyboard.
 
-			player1.Update(player1State, GamePad.GetState(PlayerIndex.One));
+            foreach (PlayerClass p in players)
+            {
+                p.updatePlayersList(players);
+            }
+
+            player1.Update(player1State, GamePad.GetState(PlayerIndex.One));
 			player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
 			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
 			player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
-			oldState = currState;
+
+            oldState = currState;
 		}
 
 		public void Draw(SpriteBatch sb)
 		{
 			map1.Draw(sb);
-			player1.Draw(sb);
-			player2.Draw(sb);
-			player3.Draw(sb);
-			player4.Draw(sb);
+            foreach (PlayerClass p in players)
+            {
+                p.Draw(sb);
+            }
 		}
 
 		public GameState GetTransition() 
