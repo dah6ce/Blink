@@ -43,13 +43,13 @@ namespace Blink.Classes
 
 
             //Horizontal movement
-            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.DPadRight)) && velocity.X < ACC_CAP && !dead)
+            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP && !dead)
             {
                 velocity.X += SPEED;
                 if (velocity.X < -SPEED)
                     velocity.X += SPEED / 2;
             }
-            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.DPadLeft)) && velocity.X > -ACC_CAP && !dead)
+            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP && !dead)
             {
                 velocity.X -= SPEED;
                 if (velocity.X > SPEED)
@@ -78,7 +78,7 @@ namespace Blink.Classes
             }
 
             //Jump
-            if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.DPadUp)) && atRest)
+            if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.A)) && atRest)
             {
                 velocity.Y -= JUMP;
                 atRest = false;
