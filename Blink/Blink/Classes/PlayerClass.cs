@@ -10,11 +10,12 @@ namespace Blink.Classes
     {
         //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
         //private int curFriction = 12, airFriction = 1;
-        private int JUMP = 300, TILEWIDTH = 32, MARGIN = 0;
-        private int GRAVITY = 16, TERMINAL_V = 300, SPEED = 12, GROUNDSPEED = 12, ICESPEED = 4, ACC_CAP = 160;
-        private int curFriction = 24, airFriction = 2, groundFriction = 24, iceFriction = 2;
+        private int JUMP = 30, TILEWIDTH = 32, MARGIN = 0;
+        private float GRAVITY = 1.6f, TERMINAL_V = 30, SPEED = 1.2f, GROUNDSPEED = 1.2f, ICESPEED = 0.4f, ACC_CAP = 16;
+        private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
 
-
+        //debug variables
+        private Boolean bounce = false;
 
         public Boolean active = true;
         
@@ -40,7 +41,9 @@ namespace Blink.Classes
 
         public void Update(KeyboardState input, GamePadState padState)
         {
-
+            //debug stuff goes here
+            if ((input.IsKeyDown(Keys.LeftShift)))
+                this.bounce = !this.bounce;
 
             //Horizontal movement
             if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP && !dead)
@@ -58,7 +61,7 @@ namespace Blink.Classes
             //Friction
             else if (velocity.X != 0)
             {
-                int fric = curFriction;
+                float fric = curFriction;
                 if (!atRest)
                     fric = airFriction;
                 if (velocity.X < 0)
@@ -78,7 +81,7 @@ namespace Blink.Classes
             }
 
             //Jump
-            if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.A)) && atRest)
+            if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.A) || bounce) && atRest)
             {
                 velocity.Y -= JUMP;
                 atRest = false;
@@ -137,8 +140,8 @@ namespace Blink.Classes
         
         public void applyMove(Boolean left, Boolean right)
         {
-            float testX = playerRect.X + velocity.X / 10f;
-            float testY = playerRect.Y + velocity.Y / 10f;
+            float testX = playerRect.X + velocity.X;
+            float testY = playerRect.Y + velocity.Y;
             
             int d = 0, r = 0;
             if (velocity.X > 0)
@@ -245,8 +248,128 @@ namespace Blink.Classes
 
             playerRect.Y = (int)testY;
             playerRect.X = (int)testX;
+
+
+            if(!dead)
+                playerCollision();
         }
 
+
+        /*
+        //Loops through the other players to check for collisions. There are Four major cases:
+        //      (Horizontal) Players are moving in opposite directions  -> both players have their horizontal movement ceased.
+        //      (Horizontal) Players are moving in the same direction   -> The faster player has their horizontal velocity matched to the other
+        //      (Vertical) Players are moving in opposite directions  -> One player gets a boost, the other dies
+        //      (Vertical) Players are moving in the same direction   -> Slight difference in the positioning
+        */
+        public void playerCollision()
+        {
+            foreach (PlayerClass p in players)
+            {
+                //Make sure we're not check self collision
+                if(p != this && !p.dead)
+                {
+                    Rectangle inter = Rectangle.Intersect(p.playerRect, this.playerRect);
+                    if(inter.Width > 0 && inter.Height > 0) { 
+                        Boolean xCollision = true, yCollision = true;
+                        //Keeps track of the total relative distance traveled
+                        Vector2 distTraveled = new Vector2(Math.Abs(p.velocity.X - this.velocity.X), Math.Abs(p.velocity.Y - this.velocity.Y));
+
+                        //This deals with face collisions, where the objects already 'collided' on the X or Y plane
+                        /*if (inter.Height > distTraveled.Y || (inter.Height + distTraveled.Y < p.playerRect.Height && (inter.Height > inter.Width)))
+                            yCollision = false;
+                        else if (inter.Width > distTraveled.X || (inter.Width + distTraveled.X < p.playerRect.Width && (inter.Height < inter.Width)) || (p.velocity.X == 0 && this.velocity.X == 0))
+                            xCollision = false;
+                        */
+                        //If it's not a face collision, it's a dreaded diagonal...
+                        if(xCollision && yCollision)
+                        {
+                            //Whichever direction the collision occurs at a higher velocity is assumed to be the 'first' collision.
+                            //If they are even we go with a horizontal collision
+                            //This might have to be refined if the collisions feel sloppy
+                            if (inter.Width < inter.Height)
+                                yCollision = false;
+                            else
+                                xCollision = false;
+                        }
+
+                        if (xCollision)
+                        {
+                            //Case 1, the directions are different. 
+                            if(((this.velocity.X < 0 )?(p.velocity.X >= 0):(p.velocity.X <= 0)))
+                            {
+                                int thisDist, otherDist;
+                                if (this.velocity.X == 0)
+                                {
+                                    otherDist = Math.Abs((int)Math.Floor(inter.Width * (p.velocity.X / distTraveled.X)));
+                                    thisDist = inter.Width - otherDist;
+                                }
+                                else
+                                {
+                                    thisDist = Math.Abs((int)Math.Floor(inter.Width * (this.velocity.X / distTraveled.X)));
+                                    otherDist = inter.Width - thisDist;
+                                }
+                                
+
+                                if(this.velocity.X < 0)
+                                {
+                                    this.playerRect.X += thisDist;
+                                    p.playerRect.X -= otherDist;
+                                    this.velocity.X = 0;
+                                    p.velocity.X = 0;
+                                }
+                                else
+                                {
+                                    this.playerRect.X -= thisDist;
+                                    p.playerRect.X += otherDist;
+                                    this.velocity.X = 0;
+                                    p.velocity.X = 0;
+                                }
+                            }
+                            //Case 2, the directions are the same.
+                            else if((this.velocity.X < 0)?(p.velocity.X < 0):(p.velocity.X > 0))
+                            {
+                                if(Math.Abs(this.velocity.X) > Math.Abs(p.velocity.X))
+                                {
+                                    if (this.velocity.X > 0)
+                                    {
+                                        this.playerRect.X = p.playerRect.X - this.playerRect.Width;
+                                    }
+                                    else if (this.velocity.X < 0)
+                                        this.playerRect.X = p.playerRect.X + p.playerRect.Width;
+                                }
+                            }
+                        }
+                        else if (yCollision)
+                        {
+                            //Case 3, collision is vertical and opposite directions.
+                            if (((this.velocity.Y < 0) ? (p.velocity.Y >= 0) : (p.velocity.Y <= 0)))
+                            {
+                                int thisDist = Math.Abs((int)Math.Floor(inter.Height * (this.velocity.Y / distTraveled.Y)));
+                                int otherDist = inter.Height - thisDist;
+
+                                if (this.velocity.Y < 0)
+                                {
+                                    this.playerRect.Y += thisDist;
+                                    p.playerRect.Y -= otherDist;
+                                    this.velocity.Y = 20;
+                                    p.velocity.Y = -20;
+                                    this.dead = true;
+                                }
+                                else
+                                {
+                                    this.playerRect.Y -= thisDist;
+                                    p.playerRect.Y += otherDist;
+                                    this.velocity.Y = -20;
+                                    p.velocity.Y = 20;
+                                    p.dead = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         public void Draw(SpriteBatch sB)
         {
