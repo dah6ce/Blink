@@ -20,15 +20,17 @@ namespace Blink.Classes
         public Boolean active = true;
         
         Map arena;
-        public Texture2D playerText;
-        public Vector2 velocity, SCREENSIZE;
+        public Texture2D playerText, deadText;
+        public Vector2 velocity, SCREENSIZE, oldPos;
         Boolean atRest = false, dead = false;
         private PlayerClass[] players;
         Rectangle playerRect = new Rectangle(0,0,64,64);
+        public String title;
         
 
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
         {
+            oldPos = playerPos;
             playerRect.X = (int)playerPos.X;
             playerRect.Y = (int)playerPos.Y;
             players = p;
@@ -37,6 +39,7 @@ namespace Blink.Classes
             velocity.Y = 0;
             SCREENSIZE = ScreenSize;
             arena = m;
+
         }
 
         public void Update(KeyboardState input, GamePadState padState)
@@ -81,7 +84,7 @@ namespace Blink.Classes
             }
 
             //Jump
-            if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.A) || bounce) && atRest)
+            if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.A) || bounce) && atRest && !dead)
             {
                 velocity.Y -= JUMP;
                 atRest = false;
@@ -246,11 +249,14 @@ namespace Blink.Classes
             if (testX < 0)
                 testX += SCREENSIZE.X;
 
+            oldPos.X = playerRect.X;
+            oldPos.Y = playerRect.Y;
+
             playerRect.Y = (int)testY;
             playerRect.X = (int)testX;
 
 
-            if(!dead)
+            if(!dead && (velocity.X != 0 || velocity.Y != 0))
                 playerCollision();
         }
 
@@ -264,10 +270,21 @@ namespace Blink.Classes
         */
         public void playerCollision()
         {
+            PlayerClass[] checkedPlayers = new PlayerClass[4];
+            int counter = 0;
             foreach (PlayerClass p in players)
             {
-                //Make sure we're not check self collision
-                if(p != this && !p.dead)
+                //Make sure we're not checking a collision that wasn't already checked
+                Boolean alreadyChecked = false;
+                foreach (PlayerClass checkedPlayer in checkedPlayers)
+                {
+                    if (checkedPlayer == p)
+                        alreadyChecked = true;
+                }
+                checkedPlayers[counter] = this;
+                counter += 1;
+                //Make sure we're not checking self collision, or dead players
+                if (p != this && !p.dead && !alreadyChecked)
                 {
                     Rectangle inter = Rectangle.Intersect(p.playerRect, this.playerRect);
                     if(inter.Width > 0 && inter.Height > 0) { 
@@ -276,18 +293,22 @@ namespace Blink.Classes
                         Vector2 distTraveled = new Vector2(Math.Abs(p.velocity.X - this.velocity.X), Math.Abs(p.velocity.Y - this.velocity.Y));
 
                         //This deals with face collisions, where the objects already 'collided' on the X or Y plane
-                        /*if (inter.Height > distTraveled.Y || (inter.Height + distTraveled.Y < p.playerRect.Height && (inter.Height > inter.Width)))
-                            yCollision = false;
-                        else if (inter.Width > distTraveled.X || (inter.Width + distTraveled.X < p.playerRect.Width && (inter.Height < inter.Width)) || (p.velocity.X == 0 && this.velocity.X == 0))
+                        if((oldPos.X >= p.oldPos.X && oldPos.X <= p.oldPos.X + p.playerRect.Width - 1) || (oldPos.X + playerRect.Width - 1 >= p.oldPos.X && oldPos.X + playerRect.Width - 1 <= p.oldPos.X + p.playerRect.Width - 1))
+                        {
                             xCollision = false;
-                        */
+                        }
+                        else if ((oldPos.Y >= p.oldPos.Y && oldPos.Y <= p.oldPos.Y + p.playerRect.Height - 1) || (oldPos.Y + playerRect.Height - 1 >= p.oldPos.Y && oldPos.Y + playerRect.Height - 1 <= p.oldPos.Y + p.playerRect.Height - 1))
+                        {
+                            yCollision = false;
+                        }
+
                         //If it's not a face collision, it's a dreaded diagonal...
                         if(xCollision && yCollision)
                         {
                             //Whichever direction the collision occurs at a higher velocity is assumed to be the 'first' collision.
                             //If they are even we go with a horizontal collision
                             //This might have to be refined if the collisions feel sloppy
-                            if (inter.Width < inter.Height)
+                            if (distTraveled.X < distTraveled.Y)
                                 yCollision = false;
                             else
                                 xCollision = false;
@@ -327,8 +348,9 @@ namespace Blink.Classes
                                 }
                             }
                             //Case 2, the directions are the same.
-                            else if((this.velocity.X < 0)?(p.velocity.X < 0):(p.velocity.X > 0))
+                            else
                             {
+                                
                                 if(Math.Abs(this.velocity.X) > Math.Abs(p.velocity.X))
                                 {
                                     if (this.velocity.X > 0)
@@ -355,6 +377,8 @@ namespace Blink.Classes
                                     this.velocity.Y = 20;
                                     p.velocity.Y = -20;
                                     this.dead = true;
+                                    //this.playerRect.Height = playerRect.Height / 2;
+                                    //this.playerRect.Y += playerRect.Height;
                                 }
                                 else
                                 {
@@ -363,7 +387,14 @@ namespace Blink.Classes
                                     this.velocity.Y = -20;
                                     p.velocity.Y = 20;
                                     p.dead = true;
+                                    //p.playerRect.Height = p.playerRect.Height / 2;
+                                    //p.playerRect.Y += p.playerRect.Height;
                                 }
+                            }
+                            //Case 4, the collision is vertical and in the same direction
+                            else
+                            {
+
                             }
                         }
                     }
@@ -373,18 +404,21 @@ namespace Blink.Classes
 
         public void Draw(SpriteBatch sB)
         {
-            sB.Draw(playerText, new Vector2(playerRect.X,playerRect.Y + MARGIN), Color.White);
+            Texture2D drawnText = playerText;
+            if (dead)
+                drawnText = deadText;
+            sB.Draw(drawnText, new Vector2(playerRect.X,playerRect.Y + MARGIN), Color.White);
 
             //Drawing when the player is looping over
             if (playerRect.X < playerRect.Width)
-                sB.Draw(playerText, new Vector2(playerRect.X + SCREENSIZE.X,playerRect.Y + MARGIN), Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X, playerRect.Y + MARGIN), Color.White);
             else if(playerRect.X + playerRect.Width > SCREENSIZE.X)
-                sB.Draw(playerText, new Vector2(playerRect.X - (SCREENSIZE.X), playerRect.Y + MARGIN), Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X), playerRect.Y + MARGIN), Color.White);
 
             if (playerRect.Y < playerRect.Height)
-                sB.Draw(playerText, new Vector2(playerRect.X,playerRect.Y + SCREENSIZE.Y + MARGIN), Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X,playerRect.Y + SCREENSIZE.Y + MARGIN), Color.White);
             else if (playerRect.Y + playerRect.Height > SCREENSIZE.Y)
-                sB.Draw(playerText, new Vector2(playerRect.X, playerRect.Y - (SCREENSIZE.Y) + MARGIN), Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y - (SCREENSIZE.Y) + MARGIN), Color.White);
         }
     }
 }
