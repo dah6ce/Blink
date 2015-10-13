@@ -29,7 +29,7 @@ namespace Blink.Classes
 
         //Constructor for new spear
         //Takes inputs (Player, ScreenSize, Map)
-        public SpearClass(PlayerClass spearOwner, Vector2 ScreenSize, /*necesary?*/ Map m)
+        public SpearClass(PlayerClass spearOwner,Texture2D spear, Vector2 ScreenSize, /*necesary?*/ Map m)
         {
             this.spearText = spearOwner.spearText;
             Height = spearOwner.Height;
@@ -57,7 +57,7 @@ namespace Blink.Classes
 
         public void Draw(SpriteBatch sB)
         {
-
+            sB.Draw(spearText, pos, Color.White);
         }
     }
 }

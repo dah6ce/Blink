@@ -27,11 +27,11 @@ namespace Blink.Classes
         private PlayerClass[] players;
         
 
-        public void Initialize(Texture2D text, Texture2D spearText, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
+        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
         {
             players = p;
             playerText = text;
-            this.spearText = spearText;
+            //this.spearText = spearText;
             pos = playerPos;
             Width = playerText.Width;
             Height = playerText.Height;

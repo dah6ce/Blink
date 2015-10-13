@@ -22,6 +22,10 @@ namespace Blink
 	public class StateGame : GameState
 	{
 		Vector2 screenSize;
+        SpearClass spear1;
+        SpearClass spear2;
+        SpearClass spear3;
+        SpearClass spear4;
 		PlayerClass player1;
 		PlayerClass player2;
 		PlayerClass player3;
@@ -61,11 +65,14 @@ namespace Blink
             players[1] = player2;
             players[2] = player3;
             players[3] = player4;
-
-            player1.Initialize(Content.Load<Texture2D>("sprite"), Content.Load<Texture2D>("spear_sprite"), player1Pos, screenSize, map1, players);
-            player2.Initialize(Content.Load<Texture2D>("sprite"), Content.Load<Texture2D>("spear_sprite"), player2Pos, screenSize, map1, players);
-            player3.Initialize(Content.Load<Texture2D>("sprite"), Content.Load<Texture2D>("spear_sprite"), player3Pos, screenSize, map1, players);
-            player4.Initialize(Content.Load<Texture2D>("sprite"), Content.Load<Texture2D>("spear_sprite"), player4Pos, screenSize, map1, players);
+            spear1 = new SpearClass(player1,Content.Load<Texture2D>("smlspear"), screenSize, map1);
+            spear2 = new SpearClass(player1, Content.Load<Texture2D>("smlspear"), screenSize, map1);
+            spear3 = new SpearClass(player1, Content.Load<Texture2D>("smlspear"), screenSize, map1);
+            spear4 = new SpearClass(player1, Content.Load<Texture2D>("smlspear"), screenSize, map1);
+            player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1, players);
+            player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1, players);
+            player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
+            player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1, players);
 
             StreamReader mapData;
             mapData = File.OpenText("Content/map1.map");
