@@ -20,7 +20,6 @@ namespace Blink.Classes
         
         Map arena;
         public Texture2D playerText;
-        public Texture2D spearText;
         public int Width, Height;
         public Vector2 pos,velocity, SCREENSIZE;
         Boolean atRest = false, dead = false;

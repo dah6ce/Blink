@@ -65,10 +65,10 @@ namespace Blink
             players[1] = player2;
             players[2] = player3;
             players[3] = player4;
-            spear1 = new SpearClass(player1,Content.Load<Texture2D>("smlspear"), screenSize, map1);
-            spear2 = new SpearClass(player1, Content.Load<Texture2D>("smlspear"), screenSize, map1);
-            spear3 = new SpearClass(player1, Content.Load<Texture2D>("smlspear"), screenSize, map1);
-            spear4 = new SpearClass(player1, Content.Load<Texture2D>("smlspear"), screenSize, map1);
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("smlspear"), screenSize, map1);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("smlspear"), screenSize, map1);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("smlspear"), screenSize, map1);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("smlspear"), screenSize, map1);
             player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1, players);
             player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1, players);
             player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
@@ -150,6 +150,10 @@ namespace Blink
 			player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
 			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
 			player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
+            spear1.Update(player1State, GamePad.GetState(PlayerIndex.One));
+            spear2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
+            spear3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
+            spear4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
 			oldState = currState;
 		}
 
@@ -160,6 +164,10 @@ namespace Blink
 			player2.Draw(sb);
 			player3.Draw(sb);
 			player4.Draw(sb);
+            spear1.Draw(sb);
+            spear2.Draw(sb);
+            spear3.Draw(sb);
+            spear4.Draw(sb);
 		}
 
 		public GameState GetTransition() 

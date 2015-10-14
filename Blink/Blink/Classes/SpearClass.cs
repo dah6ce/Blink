@@ -24,14 +24,16 @@ namespace Blink.Classes
         public Map m;
         public readonly Keys THROW_KEY = Keys.Q;
         public readonly Buttons THROW_BUTTON = Buttons.RightShoulder;
-
+        public readonly Keys STAB_KEY = Keys.Space;
+        public readonly Buttons STAB_BUTTON = Buttons.X;
+        public Boolean attached = true;
         public Boolean isInUse = false;
 
         //Constructor for new spear
         //Takes inputs (Player, ScreenSize, Map)
         public SpearClass(PlayerClass spearOwner,Texture2D spear, Vector2 ScreenSize, /*necesary?*/ Map m)
         {
-            this.spearText = spearOwner.spearText;
+            this.spearText = spear;
             Height = spearOwner.Height;
             Width = spearOwner.Width / 16;
             this.spearOwner = spearOwner;
@@ -43,21 +45,31 @@ namespace Blink.Classes
         //Manage inputs, check for a spear throw.
         public void Update(KeyboardState input, GamePadState padState)
         {
+            isInUse = false;
             if (input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON))
             {
                 throwSpear();
+                isInUse = true;
+            }
+
+            else if ((input.IsKeyDown(STAB_KEY) || padState.IsButtonDown(STAB_BUTTON)) && !isInUse && attached)
+            {
+                isInUse = true;
             }
         }
 
         //Handle throw physics
         private void throwSpear()
         {
-
+            attached = false;
         }
 
         public void Draw(SpriteBatch sB)
         {
-            sB.Draw(spearText, pos, Color.White);
+            if (isInUse && attached)
+            {
+                sB.Draw(spearText, spearOwner.pos, Color.White);
+            }
         }
     }
 }
