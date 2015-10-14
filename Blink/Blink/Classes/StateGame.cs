@@ -50,6 +50,10 @@ namespace Blink
 			player2 = new PlayerClass();
 			player3 = new PlayerClass();
 			player4 = new PlayerClass();
+            player1.title = "p1";
+            player2.title = "p2";
+            player3.title = "p3";
+            player4.title = "p4";
 			map1 = new Map();
 			currPlayer = PlayerKeys.Player1;
 		}
@@ -73,6 +77,11 @@ namespace Blink
             player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1, players);
             player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
             player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1, players);
+
+            player1.deadText = Content.Load<Texture2D>("spriteDead");
+            player2.deadText = Content.Load<Texture2D>("spriteDead");
+            player3.deadText = Content.Load<Texture2D>("spriteDead");
+            player4.deadText = Content.Load<Texture2D>("spriteDead");
 
             StreamReader mapData;
             mapData = File.OpenText("Content/map1.map");
