@@ -17,7 +17,7 @@ namespace Blink.Classes
     {
 
         public Texture2D spearText;
-        public int Width, Height;
+        public float Width, Height;
         public Vector2 pos, velocity, SCREENSIZE;
         public int spearOrientation;
         public PlayerClass spearOwner;
@@ -34,8 +34,8 @@ namespace Blink.Classes
         public SpearClass(PlayerClass spearOwner,Texture2D spear, Vector2 ScreenSize, /*necesary?*/ Map m)
         {
             this.spearText = spear;
-            Height = spearOwner.Height;
-            Width = spearOwner.Width / 16;
+            Height = spearOwner.oldPos.Y;
+            Width = spearOwner.oldPos.X / 16;
             this.spearOwner = spearOwner;
             spearOrientation = 0;
             this.SCREENSIZE = ScreenSize;
@@ -68,7 +68,7 @@ namespace Blink.Classes
         {
             if (isInUse && attached)
             {
-                sB.Draw(spearText, spearOwner.pos, Color.White);
+                sB.Draw(spearText, spearOwner.oldPos, Color.White);
             }
         }
     }
