@@ -22,7 +22,7 @@ namespace Blink.Classes
         Map arena;
         public Texture2D playerText, deadText;
         public Vector2 velocity, SCREENSIZE, oldPos;
-        Boolean atRest = false, dead = false;
+        public Boolean atRest = false, dead = false;
         private PlayerClass[] players;
         Rectangle playerRect = new Rectangle(0,0,64,64);
         public String title;

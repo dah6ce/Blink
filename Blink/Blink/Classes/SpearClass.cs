@@ -26,6 +26,7 @@ namespace Blink.Classes
         public readonly Buttons THROW_BUTTON = Buttons.RightShoulder;
         public readonly Keys STAB_KEY = Keys.Space;
         public readonly Buttons STAB_BUTTON = Buttons.X;
+        KeyboardState oldState;
         public Boolean attached = true;
         public Boolean isInUse = false;
 
@@ -45,6 +46,7 @@ namespace Blink.Classes
         //Manage inputs, check for a spear throw.
         public void Update(KeyboardState input, GamePadState padState)
         {
+            KeyboardState newState = input;
             isInUse = false;
             if (input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON))
             {
@@ -52,10 +54,13 @@ namespace Blink.Classes
                 isInUse = true;
             }
 
-            else if ((input.IsKeyDown(STAB_KEY) || padState.IsButtonDown(STAB_BUTTON)) && !isInUse && attached)
+            else if ((input.IsKeyDown(STAB_KEY) || padState.IsButtonDown(STAB_BUTTON)) && oldState != newState 
+                && !isInUse && attached && !spearOwner.dead)
             {
                 isInUse = true;
             }
+
+            oldState = newState;
         }
 
         //Handle throw physics
@@ -63,10 +68,14 @@ namespace Blink.Classes
         {
             attached = false;
         }
-
+        private void spearCollision()
+        {
+            PlayerClass[] checkedPlayers = new PlayerClass[4];
+            SpearClass[] checkedSpears = new SpearClass[4];
+        }
         public void Draw(SpriteBatch sB)
         {
-            if (isInUse && attached)
+            if (isInUse && attached && !spearOwner.dead)
             {
                 sB.Draw(spearText, spearOwner.oldPos, Color.White);
             }
