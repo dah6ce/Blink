@@ -34,8 +34,8 @@ namespace Blink
 		KeyboardState player3State;
 		KeyboardState player4State;
 		Map map1;
-        bool paused;
-        int playerPaused;
+		bool paused;
+		int playerPaused;
 
 		public StateGame(Vector2 screenSize)
 		{
@@ -54,8 +54,8 @@ namespace Blink
             player4.title = "p4";
 			map1 = new Map();
 			currPlayer = PlayerKeys.Player1;
-            paused = false;
-            playerPaused = 0;
+			paused = false;
+			playerPaused = 0;
 		}
 
 		public void LoadContent(ContentManager Content)
@@ -94,59 +94,56 @@ namespace Blink
 		{
 			KeyboardState currState = Keyboard.GetState();
 
-            
-            if(paused && currState != oldState )
-            {
-                if (currState.IsKeyDown(Keys.P) && playerPaused == (int)currPlayer)
-                {
-                    paused = false;
-                    oldState = currState;
-                    Console.WriteLine("Not paused keyboard");
-                }
-                foreach (PlayerIndex x in Enum.GetValues(typeof(PlayerIndex)))
-                {
-                    if (playerPaused == (int)x && GamePad.GetState(x).Buttons.Start == ButtonState.Pressed)
-                    {
-                        paused = false;
+			if(paused && currState != oldState )
+			{
+				if (currState.IsKeyDown(Keys.P) && playerPaused == (int)currPlayer)
+				{
+					paused = false;
+					oldState = currState;
+					Console.WriteLine("Not paused keyboard");
+				}
+				foreach (PlayerIndex x in Enum.GetValues(typeof(PlayerIndex)))
+				{
+					if (playerPaused == (int)x && GamePad.GetState(x).Buttons.Start == ButtonState.Pressed)
+					{
+						paused = false;
+						Console.WriteLine("Not paused controller");
+					}
+				}
+			}
 
-                        Console.WriteLine("Not paused controller");
-                    }
-                }
-            }
+			if (!paused && currState != oldState)
+			{
+				if (currState.IsKeyDown(Keys.P))
+				{
+					Console.WriteLine("Paused from keyboard");
+					paused = true;
+					oldState = currState;
+					playerPaused = (int)currPlayer;
+				}
+				foreach (PlayerIndex x in Enum.GetValues(typeof(PlayerIndex)))
+				{
+					if (GamePad.GetState(x).Buttons.Start == ButtonState.Pressed)
+					{
+						paused = true;
+						Console.WriteLine("Paused from controller");
+						playerPaused = (int)x;
+					}
+				}
+			}
 
-            if (!paused && currState != oldState)
-            {
-                if (currState.IsKeyDown(Keys.P))
-                {
-                    Console.WriteLine("Paused from keyboard");
-                    paused = true;
-                    oldState = currState;
-                    playerPaused = (int)currPlayer;
-                }
-                foreach (PlayerIndex x in Enum.GetValues(typeof(PlayerIndex)))
-                {
-                    if (GamePad.GetState(x).Buttons.Start == ButtonState.Pressed)
-                    {
-                        paused = true;
-                        Console.WriteLine("Paused from controller");
-                        playerPaused = (int)x;
-                    }
-                }
-            }
-
-            if (paused)
-            {
-
-                Console.WriteLine("Paused" + (int)currPlayer);
-                oldState = currState;
-                return;
-            }
+			if (paused)
+			{
+				Console.WriteLine("Paused" + (int)currPlayer);
+				oldState = currState;
+				return;
+			}
 
             /* Press TAB to change player if using keyboard. *** For Testing Purposes Only ***
                 If you hold down a key while pressing TAB, the previous player will continue to do that same action
                 over and over again until you tab to that player again. 
                 (It is kinda amusing, but could be useful for collison testing) */
-            if (currState.IsKeyDown(Keys.Tab) && oldState != currState)
+			if (currState.IsKeyDown(Keys.Tab) && oldState != currState)
 			{
 				switch ((int)currPlayer)
 				{
@@ -199,11 +196,11 @@ namespace Blink
 				player4State = Keyboard.GetState();
 			}
             //End of TAB code. Can now only control one player at a time using keyboard.
-            player1.Update(player1State, GamePad.GetState(PlayerIndex.One));
-            player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
-            player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
-            player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
-            oldState = currState;
+			player1.Update(player1State, GamePad.GetState(PlayerIndex.One));
+			player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
+			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
+			player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
+			oldState = currState;
         }
 
 		public void Draw(SpriteBatch sb)
