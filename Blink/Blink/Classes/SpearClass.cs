@@ -11,7 +11,7 @@ using Blink.Classes;
 
 namespace Blink.Classes
 {
-    public class SpearClass
+    class SpearClass
     {
 	    
         public Texture2D spearText;
@@ -29,9 +29,8 @@ namespace Blink.Classes
         //Takes inputs (Player, ScreenSize, Map)
         public SpearClass(PlayerClass spearOwner, Vector2 ScreenSize, /*necesary?*/ Map m)
         {
-            this.spearText = spearOwner.spearText;
-            Height = spearOwner.Height;
-            Width = spearOwner.Width / 16;
+            Height = spearOwner.getPlayerRect().Height;
+            Width = spearOwner.getPlayerRect().Width / 16;
             this.spearOwner = spearOwner;
             spearOrientation = 0;
             this.SCREENSIZE = ScreenSize;

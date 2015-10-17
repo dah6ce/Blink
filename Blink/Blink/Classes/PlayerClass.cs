@@ -20,7 +20,7 @@ namespace Blink.Classes
         public Boolean active = true;
 
         Map arena;
-        public Texture2D playerText, deadText;
+        public Texture2D playerText, deadText, spearText;
         public Vector2 velocity, SCREENSIZE, oldPos;
         Boolean atRest = false, dead = false;
         private PlayerClass[] players;
@@ -40,6 +40,11 @@ namespace Blink.Classes
             SCREENSIZE = ScreenSize;
             arena = m;
 
+        }
+
+        public void setSpearText(Texture2D text)
+        {
+            spearText = text;
         }
 
         public void Update(KeyboardState input, GamePadState padState)
@@ -443,6 +448,12 @@ namespace Blink.Classes
                 return true;
             }
             return false;
+        }
+
+        //Getter for player dimensions for spear class
+        public Rectangle getPlayerRect()
+        {
+            return playerRect;
         }
 
         public void Draw(SpriteBatch sB)
