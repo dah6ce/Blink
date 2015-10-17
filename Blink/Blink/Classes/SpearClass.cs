@@ -1,6 +1,5 @@
 ﻿using System;
-<<<<<<< HEAD
-=======
+
 using System.IO;
 using Blink.GUI;
 using Blink;
@@ -9,24 +8,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Blink.Classes;
->>>>>>> origin/spear-branch
 
-/// <summary>
-/// Spear object class
-/// </summary>
-<<<<<<< HEAD
-public class SpearClass
-{
-	public SpearClass()
-	{
-	    
-	}
-=======
 namespace Blink.Classes
 {
-    class SpearClass
+    public class SpearClass
     {
-
+	    
         public Texture2D spearText;
         public int Width, Height;
         public Vector2 pos, velocity, SCREENSIZE;
@@ -71,5 +58,4 @@ namespace Blink.Classes
 
         }
     }
->>>>>>> origin/spear-branch
 }
