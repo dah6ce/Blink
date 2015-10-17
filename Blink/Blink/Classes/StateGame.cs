@@ -94,29 +94,26 @@ namespace Blink
 		{
 			KeyboardState currState = Keyboard.GetState();
 
-			if(paused && currState != oldState )
+			if(paused)
 			{
-				if (currState.IsKeyDown(Keys.P) && playerPaused == (int)currPlayer)
+				if (currState.IsKeyDown(Keys.P) && currState != oldState && playerPaused == (int)currPlayer)
 				{
 					paused = false;
 					oldState = currState;
-					Console.WriteLine("Not paused keyboard");
 				}
 				foreach (PlayerIndex x in Enum.GetValues(typeof(PlayerIndex)))
 				{
 					if (playerPaused == (int)x && GamePad.GetState(x).Buttons.Start == ButtonState.Pressed)
 					{
 						paused = false;
-						Console.WriteLine("Not paused controller");
 					}
 				}
 			}
 
-			if (!paused && currState != oldState)
+			if (!paused)
 			{
-				if (currState.IsKeyDown(Keys.P))
+				if (currState.IsKeyDown(Keys.P) && currState != oldState)
 				{
-					Console.WriteLine("Paused from keyboard");
 					paused = true;
 					oldState = currState;
 					playerPaused = (int)currPlayer;
@@ -126,7 +123,6 @@ namespace Blink
 					if (GamePad.GetState(x).Buttons.Start == ButtonState.Pressed)
 					{
 						paused = true;
-						Console.WriteLine("Paused from controller");
 						playerPaused = (int)x;
 					}
 				}
@@ -134,7 +130,6 @@ namespace Blink
 
 			if (paused)
 			{
-				Console.WriteLine("Paused" + (int)currPlayer);
 				oldState = currState;
 				return;
 			}
