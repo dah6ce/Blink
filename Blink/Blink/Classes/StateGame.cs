@@ -26,6 +26,10 @@ namespace Blink
 		PlayerClass player2;
 		PlayerClass player3;
 		PlayerClass player4;
+        SpearClass spear1;
+        SpearClass spear2;
+        SpearClass spear3;
+        SpearClass spear4;
         PlayerClass[] players = new PlayerClass[4];
 		PlayerKeys currPlayer;
 		KeyboardState oldState;
@@ -71,15 +75,15 @@ namespace Blink
             player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
             player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1, players);
 
-            player1.setSpearText(Content.Load<Texture2D>("spearsprite"));
-            player2.setSpearText(Content.Load<Texture2D>("spearsprite"));
-            player3.setSpearText(Content.Load<Texture2D>("spearsprite"));
-            player4.setSpearText(Content.Load<Texture2D>("spearsprite"));
-
             player1.deadText = Content.Load<Texture2D>("spriteDead");
             player2.deadText = Content.Load<Texture2D>("spriteDead");
             player3.deadText = Content.Load<Texture2D>("spriteDead");
             player4.deadText = Content.Load<Texture2D>("spriteDead");
+
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1);
 
             StreamReader mapData;
             mapData = File.OpenText("Content/map1.map");
@@ -167,6 +171,10 @@ namespace Blink
 			player2.Draw(sb);
 			player3.Draw(sb);
 			player4.Draw(sb);
+            spear1.Draw(sb);
+            spear2.Draw(sb);
+            spear3.Draw(sb);
+            spear4.Draw(sb);
 		}
 
 		public GameState GetTransition() 
