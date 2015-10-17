@@ -1,50 +1,4 @@
-<<<<<<< HEAD
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Blink.Classes;
-
-namespace Blink.Classes
-{
-    class PlayerClass
-    {
-        //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
-        //private int curFriction = 12, airFriction = 1;
-        private int JUMP = 300, TILEWIDTH = 32, MARGIN = 0;
-        private int GRAVITY = 16, TERMINAL_V = 300, SPEED = 12, GROUNDSPEED = 12, ICESPEED = 4, ACC_CAP = 160;
-        private int curFriction = 24, airFriction = 2, groundFriction = 24, iceFriction = 2;
-
-
-
-        public Boolean active = true;
-        
-        Map arena;
-        public Texture2D playerText;
-        public Texture2D spearText;
-        public int Width, Height;
-        public Vector2 pos,velocity, SCREENSIZE;
-        Boolean atRest = false, dead = false;
-        private PlayerClass[] players;
-        
-
-        public void Initialize(Texture2D text, Texture2D spearText, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
-        {
-            players = p;
-            playerText = text;
-            this.spearText = spearText;
-            pos = playerPos;
-            Width = playerText.Width;
-            Height = playerText.Height;
-            velocity.X = 0;
-            velocity.Y = 0;
-            SCREENSIZE = ScreenSize;
-            arena = m;
-        }
-
-        public void Update(KeyboardState input, GamePadState padState)
-=======
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -64,15 +18,15 @@ namespace Blink.Classes
         private Boolean bounce = false;
 
         public Boolean active = true;
-        
+
         Map arena;
         public Texture2D playerText, deadText;
         public Vector2 velocity, SCREENSIZE, oldPos;
         Boolean atRest = false, dead = false;
         private PlayerClass[] players;
-        Rectangle playerRect = new Rectangle(0,0,64,64);
+        Rectangle playerRect = new Rectangle(0, 0, 64, 64);
         public String title;
-        
+
 
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
         {
@@ -89,62 +43,11 @@ namespace Blink.Classes
         }
 
         public void Update(KeyboardState input, GamePadState padState)
->>>>>>> master
         {
             //debug stuff goes here
             if ((input.IsKeyDown(Keys.LeftShift)))
                 this.bounce = !this.bounce;
 
-<<<<<<< HEAD
-            //Horizontal movement
-            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.DPadRight)) && velocity.X < ACC_CAP && !dead)
-            {
-                velocity.X += SPEED;
-                if (velocity.X < -SPEED)
-                    velocity.X += SPEED / 2;
-            }
-            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.DPadLeft)) && velocity.X > -ACC_CAP && !dead)
-            {
-                velocity.X -= SPEED;
-                if (velocity.X > SPEED)
-                    velocity.X -= SPEED / 2;
-            }
-            //Friction
-            else if (velocity.X != 0)
-            {
-                int fric = curFriction;
-                if (!atRest)
-                    fric = airFriction;
-                if (velocity.X < 0)
-                {
-                    if (velocity.X > -fric)
-                        velocity.X = 0;
-                    else
-                        velocity.X += fric;
-                }
-                else
-                {
-                    if (velocity.X < fric)
-                        velocity.X = 0;
-                    else
-                        velocity.X -= fric;
-                }
-            }
-
-            //Jump
-            if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.DPadUp)) && atRest)
-            {
-                velocity.Y -= JUMP;
-                atRest = false;
-            }
-
-            //Velocity applications
-            int footing = arena.checkFooting(pos);
-
-            if (velocity.X != 0 && atRest && footing < 10)
-                atRest = false;
-
-=======
             //Horizontal movement
             if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP && !dead)
             {
@@ -188,12 +91,11 @@ namespace Blink.Classes
             }
 
             //Velocity applications
-            int footing = arena.checkFooting(new Vector2(playerRect.X,playerRect.Y));
+            int footing = arena.checkFooting(new Vector2(playerRect.X, playerRect.Y));
 
             if (atRest && footing < 10)
                 atRest = false;
 
->>>>>>> master
             if (footing == 11)
             {
                 curFriction = iceFriction;
@@ -209,8 +111,8 @@ namespace Blink.Classes
             applyMove(velocity.X < 0, velocity.Y < 0);
 
             blockDataUpdate();
-            
-            
+
+
             //Gravity
             if (!atRest && velocity.Y < TERMINAL_V)
                 velocity.Y += GRAVITY;
@@ -220,164 +122,30 @@ namespace Blink.Classes
         public void blockDataUpdate()
         {
             int[] blocks = new int[9];
-            int x,y;
+            int x, y;
 
-            for(x = 0; x < 3; x++)
+            for (x = 0; x < 3; x++)
             {
-                for(y = 0; y < 3; y++)
+                for (y = 0; y < 3; y++)
                 {
                     blocks[x * 3 + y] = arena.blockInfo(new Vector2(playerRect.X + x * 16 - 1, playerRect.Y + y * 16 - 1));
                 }
             }
 
-            foreach(int block in blocks)
+            foreach (int block in blocks)
             {
-                if(block == 5)
+                if (block == 5)
                 {
                     dead = true;
                 }
             }
-<<<<<<< HEAD
-        }
-        
-        public void applyMove(Boolean left, Boolean right)
-        {
-            float testX = pos.X + velocity.X / 10f;
-            float testY = pos.Y + velocity.Y / 10f;
-            
-            int d = 0, r = 0;
-            if (velocity.X > 0)
-                r = 1;
-            else if (velocity.X < 0)
-                r = -1;
-            if (velocity.Y > 0)
-                d = 1;
-            else if (velocity.Y < 0)
-                d = -1;
-
-            Boolean[] collisions = arena.collides(new Vector2(testX, testY), pos, d, r);
-
-            //This is kinda messy, I should eventually clean it up
-
-            //Diagonal collisions
-            if (collisions[2] && !collisions[0] && !collisions[1])
-            {
-                float horiDist, vertDist;
-                if (velocity.X > 0)
-                {
-                    horiDist = testX % TILEWIDTH;
-                }
-                else
-                    horiDist = TILEWIDTH - (testX % TILEWIDTH);
-
-                if (velocity.Y > 0)
-                {
-                    vertDist = testY % TILEWIDTH;
-                }
-                else
-                    vertDist = TILEWIDTH - (testY % TILEWIDTH);
-
-                if(horiDist > vertDist)
-                {
-                    //If player is traveling left
-                    if (velocity.X < 0)
-                    {
-                        testX = TILEWIDTH * (float)Math.Floor(pos.X / TILEWIDTH);
-                        velocity.X = 0;
-                    }
-                    else if (velocity.X > 0)
-                    {
-                        testX = TILEWIDTH * (float)Math.Floor(pos.X / TILEWIDTH);
-                        velocity.X = 0;
-                    }
-                }
-                else
-                {
-                    //If player is traveling upwards
-                    if (velocity.Y < 0)
-                    {
-                        testY = TILEWIDTH * (float)Math.Floor(pos.Y / TILEWIDTH);
-                        velocity.Y = 0;
-                    }
-                    else if (velocity.Y > 0)
-                    {
-                        testY = TILEWIDTH * (float)Math.Ceiling(pos.Y / TILEWIDTH);
-                        velocity.Y = 0;
-                        atRest = true;
-                    }
-                }
-            }
-            else
-            {
-                if (collisions[0])
-                {
-                    //If player is traveling left
-                    if (velocity.X < 0)
-                    {
-                        testX = TILEWIDTH * (float)Math.Floor(pos.X / TILEWIDTH);
-                        velocity.X = 0;
-                    }
-                    else if (velocity.X > 0)
-                    {
-                        testX = TILEWIDTH * (float)Math.Ceiling(pos.X / TILEWIDTH);
-                        velocity.X = 0;
-                    }
-                }
-                if (collisions[1])
-                {
-                    //If player is traveling upwards
-                    if (velocity.Y < 0)
-                    {
-                        testY = TILEWIDTH * (float)Math.Floor(pos.Y / TILEWIDTH);
-                        velocity.Y = 0;
-                    }
-                    else if (velocity.Y > 0)
-                    {
-                        testY = TILEWIDTH * (float)Math.Ceiling(pos.Y / TILEWIDTH);
-                        velocity.Y = 0;
-                        atRest = true;
-                    }
-                }
-            }
-            //Looping stuff
-            testY %= SCREENSIZE.Y;
-            testX %= SCREENSIZE.X;
-
-            if(testY < 0)
-                testY += SCREENSIZE.Y;
-            if (testX < 0)
-                testX += SCREENSIZE.X;
-
-            pos.Y = testY;
-            pos.X = testX;
         }
 
-
-        public void Draw(SpriteBatch sB)
-        {
-            sB.Draw(playerText, new Vector2(pos.X,pos.Y + MARGIN), Color.White);
-
-            //Drawing when the player is looping over
-            if (pos.X < Width)
-                sB.Draw(playerText, new Vector2(pos.X + SCREENSIZE.X,pos.Y + MARGIN), Color.White);
-            else if(pos.X + Width > SCREENSIZE.X)
-                sB.Draw(playerText, new Vector2(pos.X - (SCREENSIZE.X), pos.Y + MARGIN), Color.White);
-
-            if (pos.Y < Height)
-                sB.Draw(playerText, new Vector2(pos.X,pos.Y + SCREENSIZE.Y + MARGIN), Color.White);
-            else if (pos.Y + Height > SCREENSIZE.Y)
-                sB.Draw(playerText, new Vector2(pos.X, pos.Y - (SCREENSIZE.Y) + MARGIN), Color.White);
-        }
-    }
-}
-=======
-        }
-        
         public void applyMove(Boolean left, Boolean right)
         {
             float testX = playerRect.X + velocity.X;
             float testY = playerRect.Y + velocity.Y;
-            
+
             int d = 0, r = 0;
             if (velocity.X > 0)
                 r = 1;
@@ -388,7 +156,7 @@ namespace Blink.Classes
             else if (velocity.Y < 0)
                 d = -1;
 
-            Boolean[] collisions = arena.collides(new Vector2(testX, testY), new Vector2(playerRect.X,playerRect.Y), d, r);
+            Boolean[] collisions = arena.collides(new Vector2(testX, testY), new Vector2(playerRect.X, playerRect.Y), d, r);
 
             //This is kinda messy, I should eventually clean it up
 
@@ -410,7 +178,7 @@ namespace Blink.Classes
                 else
                     vertDist = TILEWIDTH - (testY % TILEWIDTH);
 
-                if(horiDist > vertDist)
+                if (horiDist > vertDist)
                 {
                     //If player is traveling left
                     if (velocity.X < 0)
@@ -476,7 +244,7 @@ namespace Blink.Classes
             testY %= SCREENSIZE.Y;
             testX %= SCREENSIZE.X;
 
-            if(testY < 0)
+            if (testY < 0)
                 testY += SCREENSIZE.Y;
             if (testX < 0)
                 testX += SCREENSIZE.X;
@@ -488,7 +256,7 @@ namespace Blink.Classes
             playerRect.X = (int)testX;
 
 
-            if(!dead && (velocity.X != 0 || velocity.Y != 0))
+            if (!dead && (velocity.X != 0 || velocity.Y != 0))
                 playerCollision();
         }
 
@@ -521,7 +289,8 @@ namespace Blink.Classes
                 {
                     collided = doCollisions(playerRect, oldPos, p.playerRect, p.oldPos, p);
 
-                    if (!collided) { 
+                    if (!collided)
+                    {
                         Rectangle loopRectA = new Rectangle(playerRect.X, playerRect.Y, playerRect.Width, playerRect.Height);
                         loopRectA = loopRectangle(loopRectA);
                         Vector2 loopOldRectA = new Vector2(oldPos.X, oldPos.Y);
@@ -681,19 +450,18 @@ namespace Blink.Classes
             Texture2D drawnText = playerText;
             if (dead)
                 drawnText = deadText;
-            sB.Draw(drawnText, new Vector2(playerRect.X,playerRect.Y + MARGIN), Color.White);
+            sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y + MARGIN), Color.White);
 
             //Drawing when the player is looping over
             if (playerRect.X < playerRect.Width)
                 sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X, playerRect.Y + MARGIN), Color.White);
-            else if(playerRect.X + playerRect.Width > SCREENSIZE.X)
+            else if (playerRect.X + playerRect.Width > SCREENSIZE.X)
                 sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X), playerRect.Y + MARGIN), Color.White);
 
             if (playerRect.Y < playerRect.Height)
-                sB.Draw(drawnText, new Vector2(playerRect.X,playerRect.Y + SCREENSIZE.Y + MARGIN), Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y + SCREENSIZE.Y + MARGIN), Color.White);
             else if (playerRect.Y + playerRect.Height > SCREENSIZE.Y)
                 sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y - (SCREENSIZE.Y) + MARGIN), Color.White);
         }
     }
 }
->>>>>>> master
