@@ -36,6 +36,7 @@ namespace Blink
 		Map map1;
 		bool paused;
 		int playerPaused;
+		SpriteFont font;
 
 		public StateGame(Vector2 screenSize)
 		{
@@ -83,6 +84,7 @@ namespace Blink
             StreamReader mapData;
             mapData = File.OpenText("Content/map1.map");
             map1.Initialize(Content.Load<Texture2D>("map1Color"), mapData.ReadToEnd(), 32, 50, 30, players);
+			font = Content.Load<SpriteFont>("miramo");
         }
 
 		public void UnloadContent()
@@ -205,6 +207,11 @@ namespace Blink
 			player2.Draw(sb);
 			player3.Draw(sb);
 			player4.Draw(sb);
+
+			if (paused)
+			{
+				sb.DrawString(font, "P" + (playerPaused + 1) + " paused", new Vector2(screenSize.X / 2, screenSize.Y / 2), Color.Black);
+			}
 		}
 
 		public GameState GetTransition() 
