@@ -32,7 +32,7 @@ namespace Blink.Classes
         {
             this.spearText = spearText;
             Height = spearOwner.getPlayerRect().Height;
-            Width = spearOwner.getPlayerRect().Width / 16;
+            Width = spearOwner.getPlayerRect().Width / 10;
             this.spearOwner = spearOwner;
             spearOrientation = 0;
             this.SCREENSIZE = ScreenSize;
@@ -56,10 +56,27 @@ namespace Blink.Classes
 
         public void Draw(SpriteBatch sB)
         {
+            Vector2 origin = new Vector2(0, 0);
+            Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y);
+            float RotationAngle = 0;
             Texture2D drawnText = spearText;
             if (!isInUse && spearOwner!=null)
             {
-                sB.Draw(drawnText, new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y), Color.White);
+                RotationAngle = (float)(MathHelper.Pi * 1.5);
+                screenPos.Y += spearOwner.getPlayerRect().Height;
+                if(spearOwner.getDirectionFacing() == 0)
+                    screenPos.X += spearOwner.getPlayerRect().Width;
+                else if (spearOwner.getDirectionFacing() == 1)
+                    screenPos.X -= 3*Width;
+                //Drawing when the player is looping over
+                if (spearOwner.getDirectionFacing() == 0 && spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width > SCREENSIZE.X)
+                {
+                    screenPos.X = (spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width) - SCREENSIZE.X;
+                    System.Diagnostics.Debug.WriteLine(screenPos.X);
+                    sB.Draw(drawnText, screenPos, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
+                }
+                else
+                    sB.Draw(drawnText, screenPos, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
             }
         }
 
