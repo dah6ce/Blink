@@ -8,8 +8,11 @@ namespace Blink.Classes
 {
     class PlayerClass
     {
-        private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
-        private int curFriction = 12, airFriction = 1;
+        //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
+        //private int curFriction = 12, airFriction = 1;
+        private int JUMP = 300, TILEWIDTH = 32, MARGIN = 0;
+        private int GRAVITY = 16, TERMINAL_V = 300, SPEED = 12, GROUNDSPEED = 12, ICESPEED = 4, ACC_CAP = 160;
+        private int curFriction = 24, airFriction = 2, groundFriction = 24, iceFriction = 2;
 
 
 
@@ -17,13 +20,18 @@ namespace Blink.Classes
         
         Map arena;
         public Texture2D playerText;
+        public Texture2D spearText;
         public int Width, Height;
         public Vector2 pos,velocity, SCREENSIZE;
-        Boolean atRest = false;
+        Boolean atRest = false, dead = false;
+        private PlayerClass[] players;
+        
 
-        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m)
+        public void Initialize(Texture2D text, Texture2D spearText, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
         {
+            players = p;
             playerText = text;
+            this.spearText = spearText;
             pos = playerPos;
             Width = playerText.Width;
             Height = playerText.Height;
@@ -35,16 +43,16 @@ namespace Blink.Classes
 
         public void Update(KeyboardState input, GamePadState padState)
         {
-            
+
 
             //Horizontal movement
-            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.DPadRight)) && velocity.X < ACC_CAP)
+            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.DPadRight)) && velocity.X < ACC_CAP && !dead)
             {
                 velocity.X += SPEED;
                 if (velocity.X < -SPEED)
                     velocity.X += SPEED / 2;
             }
-            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.DPadLeft)) && velocity.X > -ACC_CAP)
+            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.DPadLeft)) && velocity.X > -ACC_CAP && !dead)
             {
                 velocity.X -= SPEED;
                 if (velocity.X > SPEED)
@@ -80,16 +88,54 @@ namespace Blink.Classes
             }
 
             //Velocity applications
-            if (velocity.X != 0 && atRest && !arena.checkFooting(pos))
+            int footing = arena.checkFooting(pos);
+
+            if (velocity.X != 0 && atRest && footing < 10)
                 atRest = false;
 
+            if (footing == 11)
+            {
+                curFriction = iceFriction;
+                SPEED = ICESPEED;
+            }
+            else
+            {
+                curFriction = groundFriction;
+                SPEED = GROUNDSPEED;
+            }
+
+
             applyMove(velocity.X < 0, velocity.Y < 0);
+
+            blockDataUpdate();
             
             
             //Gravity
             if (!atRest && velocity.Y < TERMINAL_V)
                 velocity.Y += GRAVITY;
 
+        }
+
+        public void blockDataUpdate()
+        {
+            int[] blocks = new int[9];
+            int x,y;
+
+            for(x = 0; x < 3; x++)
+            {
+                for(y = 0; y < 3; y++)
+                {
+                    blocks[x * 3 + y] = arena.blockInfo(new Vector2(pos.X + x * 16 - 1, pos.Y + y * 16 - 1));
+                }
+            }
+
+            foreach(int block in blocks)
+            {
+                if(block == 5)
+                {
+                    dead = true;
+                }
+            }
         }
         
         public void applyMove(Boolean left, Boolean right)
@@ -191,8 +237,6 @@ namespace Blink.Classes
                     }
                 }
             }
-
-
             //Looping stuff
             testY %= SCREENSIZE.Y;
             testX %= SCREENSIZE.X;
@@ -205,6 +249,7 @@ namespace Blink.Classes
             pos.Y = testY;
             pos.X = testX;
         }
+
 
         public void Draw(SpriteBatch sB)
         {
