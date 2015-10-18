@@ -462,5 +462,15 @@ namespace Blink.Classes
             else if (playerRect.Y + playerRect.Height > SCREENSIZE.Y)
                 sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y - (SCREENSIZE.Y) + MARGIN), Color.White);
         }
+
+
+
+        //Getters/setters for stuff
+
+        public void setPos(Vector2 pos)
+        {
+            playerRect.X = (int)pos.X;
+            playerRect.Y = (int)pos.Y;
+        }
     }
 }

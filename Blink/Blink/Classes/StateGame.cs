@@ -33,7 +33,13 @@ namespace Blink
 		KeyboardState player2State;
 		KeyboardState player3State;
 		KeyboardState player4State;
+        string mapName = "map1";
 		Map map1;
+
+        public void setMap(string map)
+        {
+            mapName = map;
+        }
 
 		public StateGame(Vector2 screenSize)
 		{
@@ -77,8 +83,8 @@ namespace Blink
             player4.deadText = Content.Load<Texture2D>("spriteDead");
 
             StreamReader mapData;
-            mapData = File.OpenText("Content/map1.map");
-            map1.Initialize(Content.Load<Texture2D>("map1Color"), mapData.ReadToEnd(), 32, 50, 30, players);
+            mapData = File.OpenText("Content/MapData/"+mapName+".map");
+            map1.Initialize(Content.Load<Texture2D>("MapData/"+mapName+"Color"), mapData.ReadToEnd(), 32, 50, 30, players);
         }
 
 		public void UnloadContent()

@@ -16,6 +16,7 @@ namespace Blink.Classes
         Texture2D mapTexture;
         Vector2 mapSize;
         PlayerClass[] players = new PlayerClass[4];
+        Vector2[] playerStarts = new Vector2[4];
 
         int MARGIN = 0;
 
@@ -26,6 +27,12 @@ namespace Blink.Classes
             tileSize = tS;
             mapCollisions(cMap);
             players = p;
+            
+            for(int player = 0; player < 4; player++)
+            {
+                if(playerStarts[player] != null)
+                    players[player].setPos(playerStarts[player]);
+            }
         }
 
         //Read in collision map data
@@ -42,7 +49,7 @@ namespace Blink.Classes
                     //This should eventually change to only cover stuff that causes replacements (e.g. a 1 might denote player 1, and should actually be a 0 in
                     //the map.) Everything else will simply be parsed as an int.
                     //Air
-                    if (blocks[p] == "0")
+                    /*if (blocks[p] == "0")
                     {
                         collisionMap[x, y] = 0;
                     }
@@ -60,7 +67,13 @@ namespace Blink.Classes
                     else if (blocks[p] == "11")
                     {
                         collisionMap[x, y] = 11;
+                    }*/
+                    if (blocks[p] == "1" || blocks[p] == "2" || blocks[p] == "3" || blocks[p] == "4")
+                    {
+                        playerStarts[int.Parse(blocks[p]) - 1] = new Vector2(x * 32, y * 32);
                     }
+                    else
+                        collisionMap[x, y] = int.Parse(blocks[p]);
                     y += 1;
                     p += 1;
                 }

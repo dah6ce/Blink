@@ -91,7 +91,11 @@ namespace Blink
 			GameState newState = currState.GetTransition();
 			if (newState != null)
             {
-				currState.UnloadContent();
+                //Set map
+                ((StateGame)game).setMap(((StateSimpleMenu)mainMenu).getSelectedMap());
+
+                //State unload/load
+                currState.UnloadContent();
 				currState = newState;
 				currState.Initialize();
 				currState.LoadContent(Content);
