@@ -96,9 +96,7 @@ namespace Blink.Classes
                     }
                     if (!attached && !alreadyChecked)
                     {
-                       // Console.WriteLine("Not Attached and Not Checked");
                         Rectangle inter = Rectangle.Intersect(p.playerRect, this.spearRect);
-                        Console.WriteLine(p.hasSpear);
                         if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear)
                         {
                             attached = true;
