@@ -27,7 +27,7 @@ namespace Blink.Classes
         Rectangle playerRect = new Rectangle(0, 0, 64, 64);
         public String title;
         private SpearClass spear;
-        private int directionFacing = 0; //0 for right, 1 left
+        private int directionFacing = 0; //0 for left, 1 for right
 
 
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
@@ -126,9 +126,9 @@ namespace Blink.Classes
 
             //Check whether player is moving left/right
             if (velocity.X > 0)
-                directionFacing = 0;
-            else if (velocity.X < 0)
                 directionFacing = 1;
+            else if (velocity.X < 0)
+                directionFacing = 0;
 
         }
 
@@ -463,7 +463,22 @@ namespace Blink.Classes
         {
             return playerRect;
         }
+        
+        internal int getDirectionFacing()
+        {
+            return directionFacing;
+        }
 
+        public PlayerClass[] getPlayers()
+        {
+            return players;
+        }
+
+        internal void setDead(Boolean deathState)
+        {
+            dead = deathState;
+        }
+        
         public void Draw(SpriteBatch sB)
         {
             Texture2D drawnText = playerText;
@@ -483,9 +498,5 @@ namespace Blink.Classes
                 sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y - (SCREENSIZE.Y) + MARGIN), Color.White);
         }
 
-        internal int getDirectionFacing()
-        {
-            return directionFacing;
-        }
     }
 }

@@ -156,7 +156,10 @@ namespace Blink
 				player4State = Keyboard.GetState();
 			}
 			//End of TAB code. Can now only control one player at a time using keyboard.
-
+            spear1.Update(player1State, GamePad.GetState(PlayerIndex.One));
+            spear2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
+            spear3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
+            spear4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
 			player1.Update(player1State, GamePad.GetState(PlayerIndex.One));
 			player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
 			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
