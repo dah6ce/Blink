@@ -34,6 +34,7 @@ namespace Blink
 		KeyboardState player3State;
 		KeyboardState player4State;
 		Map map1;
+		bool[] oldStartState = new bool[4];
 		bool paused;
 		int playerPaused;
 		SpriteFont font;
@@ -95,7 +96,7 @@ namespace Blink
 		public void Update(GameTime gameTime)
 		{
 			KeyboardState currState = Keyboard.GetState();
-
+			
 			if(paused)
 			{
 				if (currState.IsKeyDown(Keys.P) && currState != oldState && playerPaused == (int)currPlayer)
@@ -105,10 +106,11 @@ namespace Blink
 				}
 				foreach (PlayerIndex x in Enum.GetValues(typeof(PlayerIndex)))
 				{
-					if (playerPaused == (int)x && GamePad.GetState(x).Buttons.Start == ButtonState.Pressed)
+					if (playerPaused == (int)x && GamePad.GetState(x).IsButtonDown(Buttons.Start) && !oldStartState[(int)x])
 					{
 						paused = false;
-					}
+						oldStartState[(int)x] = GamePad.GetState(x).IsButtonDown(Buttons.Start);
+                    }
 				}
 			}
 
@@ -122,7 +124,7 @@ namespace Blink
 				}
 				foreach (PlayerIndex x in Enum.GetValues(typeof(PlayerIndex)))
 				{
-					if (GamePad.GetState(x).Buttons.Start == ButtonState.Pressed)
+					if (GamePad.GetState(x).IsButtonDown(Buttons.Start) && !oldStartState[(int)x])
 					{
 						paused = true;
 						playerPaused = (int)x;
@@ -133,6 +135,10 @@ namespace Blink
 			if (paused)
 			{
 				oldState = currState;
+				oldStartState[0] = GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start);
+				oldStartState[1] = GamePad.GetState(PlayerIndex.Two).IsButtonDown(Buttons.Start);
+				oldStartState[2] = GamePad.GetState(PlayerIndex.Three).IsButtonDown(Buttons.Start);
+				oldStartState[3] = GamePad.GetState(PlayerIndex.Four).IsButtonDown(Buttons.Start);
 				return;
 			}
 
@@ -197,7 +203,13 @@ namespace Blink
 			player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
 			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
 			player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
+
 			oldState = currState;
+			oldStartState[0] = GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start);
+			oldStartState[1] = GamePad.GetState(PlayerIndex.Two).IsButtonDown(Buttons.Start);
+			oldStartState[2] = GamePad.GetState(PlayerIndex.Three).IsButtonDown(Buttons.Start);
+			oldStartState[3] = GamePad.GetState(PlayerIndex.Four).IsButtonDown(Buttons.Start);
+			
         }
 
 		public void Draw(SpriteBatch sb)
