@@ -24,9 +24,9 @@ namespace Blink.Classes
         public Vector2 velocity, SCREENSIZE, oldPos;
         public Boolean atRest = false, dead = false;
         private PlayerClass[] players;
-        Rectangle playerRect = new Rectangle(0,0,64,64);
+        public Rectangle playerRect = new Rectangle(0,0,64,64);
         public String title;
-        
+        public Boolean hasSpear = true;
 
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
         {

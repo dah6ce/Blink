@@ -69,10 +69,10 @@ namespace Blink
             players[1] = player2;
             players[2] = player3;
             players[3] = player4;
-            spear1 = new SpearClass(player1, Content.Load<Texture2D>("smlspear"), screenSize, map1);
-            spear2 = new SpearClass(player2, Content.Load<Texture2D>("smlspear"), screenSize, map1);
-            spear3 = new SpearClass(player3, Content.Load<Texture2D>("smlspear"), screenSize, map1);
-            spear4 = new SpearClass(player4, Content.Load<Texture2D>("smlspear"), screenSize, map1);
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("smlspear"), screenSize, map1, players);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("smlspear"), screenSize, map1, players);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("smlspear"), screenSize, map1, players);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("smlspear"), screenSize, map1, players);
             player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1, players);
             player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1, players);
             player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
