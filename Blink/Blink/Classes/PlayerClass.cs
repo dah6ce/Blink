@@ -443,8 +443,8 @@ namespace Blink.Classes
                         this.velocity.Y = -20;
                         p.velocity.Y = 20;
                         p.dead = true;
-                        //rectB.Height = rectB.Height / 2;
-                        //rectB.Y += rectB.Height;
+                       // rectB.Height = rectB.Height / 2;
+                       // rectB.Y += rectB.Height;
                     }
                     //}
                     //Case 4, the collision is vertical and in the same direction

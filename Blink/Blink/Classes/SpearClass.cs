@@ -17,7 +17,7 @@ namespace Blink.Classes
         public Texture2D spearText;
         public Rectangle spear;
         public Vector2 pos, velocity, SCREENSIZE;
-        public int spearOrientation;
+        public int spearOrientation, Width , Height;
         //  Spear orientation values
         //      1       2        3
         //      0     Player     4
@@ -37,6 +37,8 @@ namespace Blink.Classes
             this.spearText = spearText;
             spear.Width = spearOwner.getPlayerRect().Width/16;
             spear.Height = spearOwner.getPlayerRect().Height;
+            Width = spear.Width;
+            Height = spear.Height;
             this.spearOwner = spearOwner;
             spearOrientation = 0;
             this.SCREENSIZE = ScreenSize;
@@ -51,6 +53,10 @@ namespace Blink.Classes
         //Manage inputs, check for a spear throw.
         public void Update(KeyboardState input, GamePadState padState)
         {
+            //Reset variables to defualt state
+            spear.Width = Width;
+            spear.Height = Height;
+            isInUse = false; 
             //REMOVE LATER - Refresh mehtod (ctrl-r): restore all players to life for testing (dont do this while you're ontop of a dead character or things will break)
             if (input.IsKeyDown(Keys.LeftControl) && input.IsKeyDown(Keys.R))
             {
@@ -60,56 +66,69 @@ namespace Blink.Classes
                     player.setDead(false);
                 }
             }
+
+            //Spear throw
             if (input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON))
             {
                 throwSpear();
             }
+
+            //Holding spear attacks
             if (input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON))
             {
-                if (spearOwner.getDirectionFacing()==0)
+                isInUse = true;
+                if (spearOwner.getDirectionFacing() == 0)
                 {
                     spearOrientation = 0;
-                    isInUse = true;
                 }
                 else if (spearOwner.getDirectionFacing() == 1)
                 {
                     spearOrientation = 4;
-                    isInUse = true;
+                }
+                if (input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.DPadUp))
+                {
+                    spearOrientation = 2;
+                }
+                else if (input.IsKeyDown(Keys.Down) || padState.IsButtonDown(Buttons.DPadDown))
+                {
+                    spearOrientation = 6;
                 }
             }
-            else
+
+            //Set the spear rectangle to fit the current orientation if the spear;
+            if (isInUse)
             {
-                isInUse = false;
+                int temp;
+                switch (spearOrientation)
+                {
+                    case 0:
+                        spear.X = spearOwner.getPlayerRect().X - spearOwner.getPlayerRect().Width;
+                        spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
+                        break;
+                    case 2:
+                        spear.X = spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width / 2;
+                        spear.Y = spearOwner.getPlayerRect().Y - 3*spearOwner.getPlayerRect().Height / 4;
+                        temp = spear.Width;
+                        spear.Width = spear.Height;
+                        spear.Height = temp;
+                        break;
+                    case 4:
+                        spear.X = spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width;
+                        spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
+                        break;
+                    case 6:
+                        spear.X = spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width / 2;
+                        spear.Y = spearOwner.getPlayerRect().Y + 3*spearOwner.getPlayerRect().Height / 4;
+                        temp = spear.Width;
+                        spear.Width = spear.Height;
+                        spear.Height = temp;
+                        break;
+                }
+                collisionCheck();
             }
-            int temp;
-            switch (spearOrientation)
-            {
-                case 0:
-                    spear.X = spearOwner.getPlayerRect().X - spearOwner.getPlayerRect().Width;
-                    spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
-                    break;
-                case 2:
-                    spear.X = spearOwner.getPlayerRect().X - spearOwner.getPlayerRect().Width / 2;
-                    spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 4;
-                    temp = spear.Width;
-                    spear.Width = spear.Height;
-                    spear.Height = temp;
-                    break;
-                case 4:
-                    spear.X = spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width;
-                    spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
-                    break;
-                case 6:
-                    spear.X = spearOwner.getPlayerRect().X - spearOwner.getPlayerRect().Width / 2;
-                    spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 4;
-                    temp = spear.Width;
-                    spear.Width = spear.Height;
-                    spear.Height = temp;
-                    break;
-            }
-            collisionCheck();
         }
 
+        //Check to see if the spear is colliding with a player
         private void collisionCheck()
         {
             if (isInUse)
@@ -166,10 +185,20 @@ namespace Blink.Classes
                         screenPos.X -= spearOwner.getPlayerRect().Width;
                         screenPos.Y += spearOwner.getPlayerRect().Height/2;
                         break;
-                    default:
+                    case 2:
+                        RotationAngle = (float)(MathHelper.Pi/2);
+                        screenPos.X += spearOwner.getPlayerRect().Width / 2;
+                        screenPos.Y -= 3*spearOwner.getPlayerRect().Height / 4;
+                        break;
+                    case 4:
                         RotationAngle = (float)(MathHelper.Pi);
                         screenPos.X += spearOwner.getPlayerRect().Width*2;
                         screenPos.Y += spearOwner.getPlayerRect().Height/2;
+                        break;
+                    case 6:
+                        RotationAngle = (float)(3*MathHelper.Pi/2);
+                        screenPos.X += spearOwner.getPlayerRect().Width/2;
+                        screenPos.Y += 7*spearOwner.getPlayerRect().Height/4;
                         break;
                 }
                 sB.Draw(drawnText, screenPos, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
