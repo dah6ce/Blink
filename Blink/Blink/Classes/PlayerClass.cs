@@ -22,11 +22,13 @@ namespace Blink.Classes
         Map arena;
         public Texture2D playerText, deadText;
         public Vector2 velocity, SCREENSIZE, oldPos;
-        Boolean atRest = false, dead = false;
+        Boolean atRest = false, dead = false, victory = false;
         private PlayerClass[] players;
         Rectangle playerRect = new Rectangle(0,0,64,64);
         public String title;
-        
+
+        public delegate void PlayerKilledHandler(object sender, DeathEventArgs e);
+        public event PlayerKilledHandler onPlayerKilled;
 
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
         {
@@ -49,13 +51,13 @@ namespace Blink.Classes
                 this.bounce = !this.bounce;
 
             //Horizontal movement
-            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP && !dead)
+            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP && !dead && !victory)
             {
                 velocity.X += SPEED;
                 if (velocity.X < -SPEED)
                     velocity.X += SPEED / 2;
             }
-            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP && !dead)
+            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP && !dead && !victory)
             {
                 velocity.X -= SPEED;
                 if (velocity.X > SPEED)
@@ -83,11 +85,22 @@ namespace Blink.Classes
                 }
             }
 
-            //Jump
-            if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.A) || bounce) && atRest && !dead)
+            if (victory)
             {
-                velocity.Y -= JUMP;
-                atRest = false;
+                if (atRest && !dead)
+                {
+                    velocity.Y -= (JUMP / 2);
+                    atRest = false;
+                }
+            }
+            else
+            {
+                //Jump
+                if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.A) || bounce) && atRest && !dead)
+                {
+                    velocity.Y -= JUMP;
+                    atRest = false;
+                }
             }
 
             //Velocity applications
@@ -419,6 +432,7 @@ namespace Blink.Classes
                         this.velocity.Y = 20;
                         p.velocity.Y = -20;
                         this.dead = true;
+                        throwKilled(this, p, "STOMP");
                         //this.rectA.Height = rectA.Height / 2;
                         //this.rectA.Y += rectA.Height;
                     }
@@ -429,15 +443,10 @@ namespace Blink.Classes
                         this.velocity.Y = -20;
                         p.velocity.Y = 20;
                         p.dead = true;
+                        throwKilled(p, this, "STOMP");
                         //rectB.Height = rectB.Height / 2;
                         //rectB.Y += rectB.Height;
                     }
-                    //}
-                    //Case 4, the collision is vertical and in the same direction
-                    //else
-                    //{
-
-                    //}
                 }
                 return true;
             }
@@ -465,12 +474,38 @@ namespace Blink.Classes
 
 
 
+        private void throwKilled(PlayerClass killed, PlayerClass killer, string method)
+        {
+            if (onPlayerKilled == null) return;
+
+            DeathEventArgs args = new DeathEventArgs(killed, killer, method);
+            onPlayerKilled(this, args);
+        }
+
+        public void winner()
+        {
+            victory = true;
+        }
+
+        public Boolean isDead()
+        {
+            return dead;
+        }
+
         //Getters/setters for stuff
 
         public void setPos(Vector2 pos)
         {
             playerRect.X = (int)pos.X;
             playerRect.Y = (int)pos.Y;
+        }
+
+        public void reset()
+        {
+            dead = false;
+            victory = false;
+            velocity.X = 0;
+            velocity.Y = 0;
         }
     }
 }

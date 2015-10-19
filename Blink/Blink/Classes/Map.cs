@@ -35,6 +35,15 @@ namespace Blink.Classes
             }
         }
 
+        public void reset()
+        {
+            for (int player = 0; player < 4; player++)
+            {
+                if (playerStarts[player] != null)
+                    players[player].setPos(playerStarts[player]);
+            }
+        }
+
         //Read in collision map data
         public void mapCollisions(String cMap)
         {

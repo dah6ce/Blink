@@ -34,6 +34,9 @@ namespace Blink
 		KeyboardState player3State;
 		KeyboardState player4State;
         string mapName = "map1";
+        float roundReset = -1;
+        float timeElapsed;
+        GameTime gameTime = new GameTime();
 		Map map1;
 
         public void setMap(string map)
@@ -52,11 +55,18 @@ namespace Blink
 			player2 = new PlayerClass();
 			player3 = new PlayerClass();
 			player4 = new PlayerClass();
+
             player1.title = "p1";
             player2.title = "p2";
             player3.title = "p3";
             player4.title = "p4";
-			map1 = new Map();
+
+            player1.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
+            player2.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
+            player3.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
+            player4.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
+
+            map1 = new Map();
 			currPlayer = PlayerKeys.Player1;
 		}
 
@@ -159,7 +169,20 @@ namespace Blink
 			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
 			player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
 			oldState = currState;
-		}
+
+
+            //If a timer is running, decrement here
+
+            timeElapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if(roundReset > 0)
+            {
+                roundReset -= timeElapsed;
+                if(roundReset < 0)
+                {
+                    resetMap();
+                }
+            }
+        }
 
 		public void Draw(SpriteBatch sb)
 		{
@@ -174,6 +197,52 @@ namespace Blink
 		{
 			return null;
 		}
-	}
+
+        private void playerKilled(Object sender, DeathEventArgs args)
+        {
+            //Do things like announce death/method of death
+
+            detectWinner();
+        }
+
+        public void detectWinner()
+        {
+            Boolean survivor = false;
+            PlayerClass victor = null;
+            foreach (PlayerClass p in players)
+            {
+                if (victor == null && !p.isDead())
+                {
+                    victor = p;
+                    survivor = true;
+                }
+                else if (victor != null && !p.isDead())
+                {
+                    victor = null;
+                    break;
+                }
+            }
+
+            if (victor != null || (victor == null && !survivor))
+            {
+                declareVictor(victor);
+            }
+        }
+
+        private void declareVictor(PlayerClass victor)
+        {
+            victor.winner();
+            roundReset = 3;
+        }
+
+        private void resetMap()
+        {
+            map1.reset();
+            foreach(PlayerClass p in players)
+            {
+                p.reset();
+            }
+        }
+    }
 }
 

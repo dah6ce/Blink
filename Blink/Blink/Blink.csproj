@@ -36,6 +36,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Classes\DeathEventArgs.cs" />
     <Compile Include="Classes\Map.cs" />
     <Compile Include="Classes\PlayerClass.cs" />
     <Compile Include="Game1.cs" />
