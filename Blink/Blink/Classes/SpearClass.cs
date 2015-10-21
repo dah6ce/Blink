@@ -73,13 +73,13 @@ namespace Blink.Classes
             }
 
             //Spear throw
-            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && oldState != newState && attached)
+            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && oldState != newState && attached && !spearOwner.dead)
             {
                 throwSpear();
             }
 
             //Holding spear attacks
-            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && oldState != newState && attached)
+            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && oldState != newState && attached && !spearOwner.dead)
             {
                 isInUse = true;
                 if (spearOwner.getDirectionFacing() == 0)
