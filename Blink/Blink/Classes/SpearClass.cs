@@ -18,6 +18,9 @@ namespace Blink.Classes
         public Rectangle spear;
         public Vector2 pos, velocity, SCREENSIZE;
         public int spearOrientation, Width , Height;
+        PlayerClass[] players;
+        KeyboardState oldState;
+        Vector2 staticPos = new Vector2(0, 0);
         //  Spear orientation values
         //      1       2        3
         //      0     Player     4
@@ -29,16 +32,17 @@ namespace Blink.Classes
 
         //Attacking or being thrown sets this to true
         public Boolean isInUse = false;
-
+        public Boolean attached = true;
         //Constructor for new spear
         //Takes inputs (Player, ScreenSize, Map)
-        public SpearClass(PlayerClass spearOwner, Texture2D spearText, Vector2 ScreenSize, /*necesary?*/ Map m)
+        public SpearClass(PlayerClass spearOwner, Texture2D spearText, Vector2 ScreenSize, /*necesary?*/ Map m, PlayerClass[] players)
         {
             this.spearText = spearText;
+            this.players = players;
             spear.Width = spearOwner.getPlayerRect().Width/16;
             spear.Height = spearOwner.getPlayerRect().Height;
             Width = spear.Width;
-            Height = spear.Height;
+            Height = spear.Height; 
             this.spearOwner = spearOwner;
             spearOrientation = 0;
             this.SCREENSIZE = ScreenSize;
@@ -54,6 +58,7 @@ namespace Blink.Classes
         public void Update(KeyboardState input, GamePadState padState)
         {
             //Reset variables to defualt state
+            KeyboardState newState = input;
             spear.Width = Width;
             spear.Height = Height;
             isInUse = false; 
@@ -68,13 +73,13 @@ namespace Blink.Classes
             }
 
             //Spear throw
-            if (input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON))
+            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && oldState != newState && attached)
             {
                 throwSpear();
             }
 
             //Holding spear attacks
-            if (input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON))
+            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && oldState != newState && attached)
             {
                 isInUse = true;
                 if (spearOwner.getDirectionFacing() == 0)
@@ -124,14 +129,15 @@ namespace Blink.Classes
                         spear.Height = temp;
                         break;
                 }
-                playerCollision();
             }
+            playerCollision();
+            oldState = newState;
         }
 
         //Check to see if the spear is colliding with a player
         private void playerCollision()
         {
-            if (isInUse)
+            if (isInUse && attached)
             {
                 PlayerClass[] players = spearOwner.getPlayers();
                 foreach (PlayerClass player in players)
@@ -146,22 +152,59 @@ namespace Blink.Classes
                     }
                 }
             }
+            if (!attached)
+            {
+                PlayerClass[] checkedPlayers = new PlayerClass[4];
+                //PlayerClass[] players = spearOwner.getPlayers();
+                //Make sure we're not checking a collision that wasn't already checked
+                foreach (PlayerClass p in players)
+                {
+                    Boolean alreadyChecked = false;
+                  /**  foreach (PlayerClass checkedPlayer in checkedPlayers)
+                    {
+                        if (checkedPlayer == p)
+                            alreadyChecked = true;
+                    } **/
+                    if (!attached && !alreadyChecked)
+                    {
+                        Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle(spear.X,spear.Y, spear.Width, spear.Height));
+                        if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear)
+                        {
+                            attached = true;
+                            spearOwner = p;
+                            spearOwner.setSpear(this);
+                            p.hasSpear = true;
+                        }
+                    }
+                }
+            }
+
         }
 
         //Handle throw physics
         private void throwSpear()
         {
-
+            attached = false;
+            isInUse = false;
+            spearOwner.hasSpear = false;
+            spearOwner.setSpear(null);
+            this.setOwner(null);
+            staticPos = new Vector2(96, 650);
         }
 
         public void Draw(SpriteBatch sB)
         {
             Vector2 origin = new Vector2(0, 0);
-            Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y);
             float RotationAngle = 0;
             Texture2D drawnText = spearText;
-            if (!isInUse && spearOwner!=null)
+            if (spearOwner == null)
             {
+                sB.Draw(spearText, staticPos, null, Color.White);
+            }
+
+            else if (!isInUse && spearOwner!=null)
+            {
+                Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y);
                 RotationAngle = (float)(MathHelper.Pi * .5);
                 //screenPos.Y += spearOwner.getPlayerRect().Height;
                 if(spearOwner.getDirectionFacing() == 1)
@@ -179,6 +222,7 @@ namespace Blink.Classes
             }
             else if (isInUse && spearOwner != null)
             {
+                Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y);
                 switch (spearOrientation) { 
                     case 0:
                         RotationAngle = 0;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -46,7 +46,10 @@ namespace Blink.Classes
         public void setSpear(SpearClass spr)
         {
             spear = spr;
-            spear.setOwner(this);
+            if (spear != null)
+            {
+                spear.setOwner(this); 
+            }
         }
 
         public void Update(KeyboardState input, GamePadState padState)
