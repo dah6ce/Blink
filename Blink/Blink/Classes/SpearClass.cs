@@ -18,7 +18,10 @@ namespace Blink.Classes
         public Rectangle spear;
         public Rectangle spearRect;
         public Vector2 pos, velocity, SCREENSIZE;
+        private int JUMP = 30, TILEWIDTH = 32, MARGIN = 0;
         public int spearOrientation, Width , Height;
+        private float GRAVITY = 1.6f, TERMINAL_V = 30, SPEED = 1.2f, GROUNDSPEED = 1.2f, ICESPEED = 0.4f, ACC_CAP = 16;
+        private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
         PlayerClass[] players;
         SpearClass[] spears;
         KeyboardState oldState;
@@ -33,7 +36,7 @@ namespace Blink.Classes
         public readonly Buttons THROW_BUTTON = Buttons.RightShoulder, ATTACK_BUTTON = Buttons.A;
 
         //Attacking or being thrown sets this to true
-        public Boolean isInUse = false;
+        public Boolean isInUse = false, atRest = true;
         public Boolean attached = true;
         //Constructor for new spear
         //Takes inputs (Player, ScreenSize, Map)
@@ -46,7 +49,9 @@ namespace Blink.Classes
             spear.Height = spearOwner.getPlayerRect().Height;
             Rectangle spearRect = new Rectangle(0, 0, 83, 19);
             Width = spear.Width;
-            Height = spear.Height; 
+            Height = spear.Height;
+            velocity.X = 0;
+            velocity.Y = 0;
             this.spearOwner = spearOwner;
             spearOrientation = 0;
             this.SCREENSIZE = ScreenSize;
@@ -134,6 +139,8 @@ namespace Blink.Classes
                         break;
                 }
             }
+            if(!attached)
+            mapCollision();
             playerCollision();
             oldState = newState;
         }
