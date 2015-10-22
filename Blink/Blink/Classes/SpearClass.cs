@@ -139,9 +139,7 @@ namespace Blink.Classes
                         break;
                 }
             }
-            if(!attached)
-            mapCollision();
-            //playerCollision();
+            playerCollision();
             oldState = newState;
         }
 
