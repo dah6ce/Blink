@@ -40,7 +40,7 @@ namespace Blink
         string mapName = "map1";
         float roundReset = -1;
         float timeElapsed;
-        GameTime gameTime = new GameTime();
+        public static GameTime gameTime = new GameTime();
 		Map map1;
 		bool[] oldStartState = new bool[4];
 		bool paused;
