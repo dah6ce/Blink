@@ -31,6 +31,7 @@ namespace Blink
 		PlayerClass player3;
 		PlayerClass player4;
         PlayerClass[] players = new PlayerClass[4];
+        SpearClass[] spears = new SpearClass[4];
 		PlayerKeys currPlayer;
 		KeyboardState oldState;
 		KeyboardState player1State;
@@ -70,6 +71,11 @@ namespace Blink
             players[2] = player3;
             players[3] = player4;
 
+            spears[0] = spear1;
+            spears[1] = spear2;
+            spears[2] = spear3;
+            spears[3] = spear4;
+
             player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1, players);
             player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1, players);
             player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
@@ -80,10 +86,10 @@ namespace Blink
             player3.deadText = Content.Load<Texture2D>("spriteDead");
             player4.deadText = Content.Load<Texture2D>("spriteDead");
 
-            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
-            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
-            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
-            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1,players);
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
 
             StreamReader mapData;
             mapData = File.OpenText("Content/map1.map");

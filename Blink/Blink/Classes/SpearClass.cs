@@ -20,6 +20,7 @@ namespace Blink.Classes
         public Vector2 pos, velocity, SCREENSIZE;
         public int spearOrientation, Width , Height;
         PlayerClass[] players;
+        SpearClass[] spears;
         KeyboardState oldState;
         Vector2 staticPos = new Vector2(0, 0);
         //  Spear orientation values
@@ -36,12 +37,14 @@ namespace Blink.Classes
         public Boolean attached = true;
         //Constructor for new spear
         //Takes inputs (Player, ScreenSize, Map)
-        public SpearClass(PlayerClass spearOwner, Texture2D spearText, Vector2 ScreenSize, /*necesary?*/ Map m, PlayerClass[] players)
+        public SpearClass(PlayerClass spearOwner, Texture2D spearText, Vector2 ScreenSize, /*necesary?*/ Map m, PlayerClass[] players, SpearClass[] spears)
         {
             this.spearText = spearText;
             this.players = players;
+            this.spears = spears;
             spear.Width = spearOwner.getPlayerRect().Width/16;
             spear.Height = spearOwner.getPlayerRect().Height;
+            Rectangle spearRect = new Rectangle(0, 0, 83, 19);
             Width = spear.Width;
             Height = spear.Height; 
             this.spearOwner = spearOwner;
@@ -80,7 +83,7 @@ namespace Blink.Classes
             }
 
             //Holding spear attacks
-            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && oldState != newState && attached && !spearOwner.dead)
+            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && oldState != newState && attached && !spearOwner.dead && !isInUse)
             {
                 isInUse = true;
                 if (spearOwner.getDirectionFacing() == 0)
@@ -182,6 +185,15 @@ namespace Blink.Classes
 
         }
 
+        private void mapCollision()
+        {
+           
+        }
+
+        private void spearCollision()
+        {
+
+        }
         //Handle throw physics
         private void throwSpear()
         {
@@ -191,6 +203,8 @@ namespace Blink.Classes
             spearOwner.setSpear(null);
             this.setOwner(null);
             staticPos = new Vector2(96, 650);
+            spear.X = (int)staticPos.X;
+            spear.Y = (int)staticPos.Y;
         }
 
         public void Draw(SpriteBatch sB)
