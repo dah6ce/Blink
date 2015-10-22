@@ -30,6 +30,8 @@ namespace Blink.Classes
         public delegate void PlayerKilledHandler(object sender, DeathEventArgs e);
         public event PlayerKilledHandler onPlayerKilled;
 
+		public int score = 0;
+
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
         {
             oldPos = playerPos;
@@ -478,6 +480,7 @@ namespace Blink.Classes
         {
             if (onPlayerKilled == null) return;
 
+			killer.score += 1;
             DeathEventArgs args = new DeathEventArgs(killed, killer, method);
             onPlayerKilled(this, args);
         }

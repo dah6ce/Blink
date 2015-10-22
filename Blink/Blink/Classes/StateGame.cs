@@ -101,7 +101,7 @@ namespace Blink
             StreamReader mapData;
             mapData = File.OpenText("Content/MapData/"+mapName+".map");
             map1.Initialize(Content.Load<Texture2D>("MapData/"+mapName+"Color"), mapData.ReadToEnd(), 32, 50, 30, players);
-            font = Content.Load<SpriteFont>("miramo");
+            font = Content.Load<SpriteFont>("miramo30");
         }
 
 		public void UnloadContent()
@@ -250,6 +250,19 @@ namespace Blink
 			if (paused)
 			{
 				sb.DrawString(font, "P" + (playerPaused + 1) + " paused", new Vector2(screenSize.X / 2, screenSize.Y / 2), Color.Black);
+			}
+			if (roundReset > 0)
+			{
+				
+				Vector2 temp = new Vector2(screenSize.X / 2, 300);
+				sb.DrawString(font, "SCORES", temp, Color.White);
+
+				temp.Y += 32;
+				for (int i = 0; i < players.Length; i ++)
+				{
+					sb.DrawString(font, "P" + (i + 1) + ": " + players[i].score, temp, Color.White);
+					temp.Y += 32;
+				}
 			}
 		}
 
