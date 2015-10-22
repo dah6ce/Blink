@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,10 +14,12 @@ namespace Blink.GUI
         Vector2 screenSize;
         int selected;
         List<TextButton> buttons;
+        IEnumerable<string> maps;
         Label title;
 
         String titleString;
         String[] optionsStrings;
+        String selectedMap;
         GameState[] triggers;
 
         GameState nextState;
@@ -42,6 +45,28 @@ namespace Blink.GUI
 
         public void LoadContent(ContentManager Content)
         {
+
+
+            //Gets a list of all the .map files in our mapdata folder
+            maps = Directory.EnumerateFiles(Environment.CurrentDirectory+"\\Content\\MapData","*.map");
+            //Storage list for all our map names
+            List < string > mapNames = new List<string>();
+            //For each map file, slice off the path to store just the map's name.
+            foreach (string path in maps)
+            {
+                string mapName = path.Remove(0, Environment.CurrentDirectory.Length + "\\Content\\MapData".Length);
+                mapName = mapName.Replace(".map", "");
+                mapNames.Add(mapName);
+                
+            }
+
+            //Temporary random map picker, remove this when a map select screen is implemented //////////////////
+            Random r = new Random();
+            int map = r.Next(mapNames.Count);
+
+            selectedMap = mapNames[map];
+            /////////////////////////////////////////////////////////////////////////////////////////////////////
+            
             Vector2 pos = new Vector2(screenSize.X/2, 50);
             title = new Label(titleString, Content.Load<SpriteFont>("miramo"), pos, new Vector2(0.5f, 0));
             pos.Y += 50;
@@ -123,6 +148,11 @@ namespace Blink.GUI
         public GameState GetTransition()
         {
             return nextState;
+        }
+
+        public string getSelectedMap()
+        {
+            return selectedMap;
         }
     }
 }
