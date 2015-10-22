@@ -16,6 +16,7 @@ namespace Blink.Classes
 	    
         public Texture2D spearText;
         public Rectangle spear;
+        public Rectangle spearRect;
         public Vector2 pos, velocity, SCREENSIZE;
         public int spearOrientation, Width , Height;
         PlayerClass[] players;
@@ -167,7 +168,7 @@ namespace Blink.Classes
                     } **/
                     if (!attached && !alreadyChecked)
                     {
-                        Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle(spear.X,spear.Y, spear.Width, spear.Height));
+                        Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)staticPos.X,(int)staticPos.Y, spear.Width, spear.Height));
                         if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear)
                         {
                             attached = true;
