@@ -22,6 +22,10 @@ namespace Blink
 	public class StateGame : GameState
 	{
 		Vector2 screenSize;
+        SpearClass spear1;
+        SpearClass spear2;
+        SpearClass spear3;
+        SpearClass spear4;
 		PlayerClass player1;
 		PlayerClass player2;
 		PlayerClass player3;
@@ -97,6 +101,11 @@ namespace Blink
             player2.deadText = Content.Load<Texture2D>("spriteDead");
             player3.deadText = Content.Load<Texture2D>("spriteDead");
             player4.deadText = Content.Load<Texture2D>("spriteDead");
+
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1,players);
 
             StreamReader mapData;
             mapData = File.OpenText("Content/MapData/"+mapName+".map");
@@ -219,7 +228,10 @@ namespace Blink
 			player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
 			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
 			player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
-
+            spear1.Update(player1State, GamePad.GetState(PlayerIndex.One));
+            spear2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
+            spear3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
+            spear4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
 			oldState = currState;
 
             oldStartState[0] = GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start);
@@ -237,7 +249,7 @@ namespace Blink
                     resetMap();
 		}
             }
-        }
+		}
 
 		public void Draw(SpriteBatch sb)
 		{
@@ -246,6 +258,10 @@ namespace Blink
 			player2.Draw(sb);
 			player3.Draw(sb);
 			player4.Draw(sb);
+            spear1.Draw(sb);
+            spear2.Draw(sb);
+            spear3.Draw(sb);
+            spear4.Draw(sb);
 
 			if (paused)
 			{
