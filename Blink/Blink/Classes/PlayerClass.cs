@@ -16,6 +16,7 @@ namespace Blink.Classes
         private int curFriction = 24, airFriction = 2, groundFriction = 24, iceFriction = 2;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         KeyboardState oldState;
         GameTime time = new GameTime();
 =======
@@ -26,6 +27,9 @@ namespace Blink.Classes
         //debug variables
         private Boolean bounce = false;
 >>>>>>> refs/remotes/origin/master
+=======
+
+>>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
 =======
 
 >>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
@@ -43,6 +47,7 @@ namespace Blink.Classes
 
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
         public Texture2D playerText, deadText;
@@ -63,6 +68,8 @@ namespace Blink.Classes
             playerRect.Y = (int)playerPos.Y;
 =======
 >>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
+=======
+>>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
             players = p;
             playerText = text;
             pos = playerPos;
@@ -77,6 +84,7 @@ namespace Blink.Classes
 
         public void Update(KeyboardState input, GamePadState padState)
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             KeyboardState currState = Keyboard.GetState();
@@ -97,6 +105,12 @@ namespace Blink.Classes
             //Horizontal movement
             if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.DPadRight)) && velocity.X < ACC_CAP && !dead)
 >>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
+=======
+
+
+            //Horizontal movement
+            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.DPadRight)) && velocity.X < ACC_CAP && !dead)
+>>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
             {
                 velocity.X += SPEED;
                 if (velocity.X < -SPEED)
@@ -104,10 +118,14 @@ namespace Blink.Classes
             }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP && !dead)
 =======
             else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP && !dead && !victory)
 >>>>>>> refs/remotes/origin/master
+=======
+            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.DPadLeft)) && velocity.X > -ACC_CAP && !dead)
+>>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
 =======
             else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.DPadLeft)) && velocity.X > -ACC_CAP && !dead)
 >>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
@@ -145,6 +163,7 @@ namespace Blink.Classes
                 velocity.Y -= JUMP;
                 atRest = false;
 <<<<<<< HEAD
+<<<<<<< HEAD
             }
 
             //Blink
@@ -174,6 +193,8 @@ namespace Blink.Classes
                     atRest = false;
 >>>>>>> refs/remotes/origin/master
                 }
+=======
+>>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
 =======
 >>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
             }
@@ -233,12 +254,17 @@ namespace Blink.Classes
         {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             float testX = playerRect.X + velocity.X / 10f;
             float testY = playerRect.Y + velocity.Y / 10f;
 =======
             float testX = playerRect.X + velocity.X;
             float testY = playerRect.Y + velocity.Y;
 >>>>>>> refs/remotes/origin/master
+=======
+            float testX = pos.X + velocity.X / 10f;
+            float testY = pos.Y + velocity.Y / 10f;
+>>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
 =======
             float testX = pos.X + velocity.X / 10f;
             float testY = pos.Y + velocity.Y / 10f;
@@ -349,6 +375,7 @@ namespace Blink.Classes
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             playerRect.Y = (int)testY;
             playerRect.X = (int)testX;
 =======
@@ -362,6 +389,10 @@ namespace Blink.Classes
             if(!dead && (velocity.X != 0 || velocity.Y != 0))
                 playerCollision();
 >>>>>>> refs/remotes/origin/master
+=======
+            pos.Y = testY;
+            pos.X = testX;
+>>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
 =======
             pos.Y = testY;
             pos.X = testX;
@@ -552,6 +583,7 @@ namespace Blink.Classes
         {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             sB.Draw(playerText, new Vector2(playerRect.X,playerRect.Y + MARGIN), Color.White);
 =======
             sB.Draw(playerText, new Vector2(pos.X,pos.Y + MARGIN), Color.White);
@@ -622,5 +654,20 @@ namespace Blink.Classes
             velocity.Y = 0;
         }
 >>>>>>> refs/remotes/origin/master
+=======
+            sB.Draw(playerText, new Vector2(pos.X,pos.Y + MARGIN), Color.White);
+
+            //Drawing when the player is looping over
+            if (pos.X < Width)
+                sB.Draw(playerText, new Vector2(pos.X + SCREENSIZE.X,pos.Y + MARGIN), Color.White);
+            else if(pos.X + Width > SCREENSIZE.X)
+                sB.Draw(playerText, new Vector2(pos.X - (SCREENSIZE.X), pos.Y + MARGIN), Color.White);
+
+            if (pos.Y < Height)
+                sB.Draw(playerText, new Vector2(pos.X,pos.Y + SCREENSIZE.Y + MARGIN), Color.White);
+            else if (pos.Y + Height > SCREENSIZE.Y)
+                sB.Draw(playerText, new Vector2(pos.X, pos.Y - (SCREENSIZE.Y) + MARGIN), Color.White);
+        }
+>>>>>>> parent of f782a21... Blink Mechanic (Still figuring out timer)
     }
 }
