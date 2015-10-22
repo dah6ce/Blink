@@ -33,8 +33,12 @@ namespace Blink.Classes
         //Attacking or being thrown sets this to true
         public Boolean isInUse = false;
         public Boolean attached = true;
+        public Boolean attacking = false;
+        public long delayTimeMilli = 500;
+        private float timer = 0;
+        
         //Constructor for new spear
-        //Takes inputs (Player, ScreenSize, Map)
+        //Takes inputs (Player, Spear Texture, ScreenSize, Map, Players Array)
         public SpearClass(PlayerClass spearOwner, Texture2D spearText, Vector2 ScreenSize, /*necesary?*/ Map m, PlayerClass[] players)
         {
             this.spearText = spearText;
@@ -62,7 +66,7 @@ namespace Blink.Classes
             spear.Width = Width;
             spear.Height = Height;
             isInUse = false; 
-            //REMOVE LATER - Refresh mehtod (ctrl-r): restore all players to life for testing (dont do this while you're ontop of a dead character or things will break)
+            //**REMOVE LATER** - Refresh mehtod (ctrl-r): restore all players to life for testing (dont do this while you're ontop of a dead character or things will break)
             if (input.IsKeyDown(Keys.LeftControl) && input.IsKeyDown(Keys.R))
             {
                 PlayerClass[] players = spearOwner.getPlayers();
@@ -79,9 +83,11 @@ namespace Blink.Classes
             }
 
             //Holding spear attacks
-            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && oldState != newState && attached)
+            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && oldState != newState && attached && !attacking)
             {
                 isInUse = true;
+                attacking = true;
+                timer = (float)Blink.StateGame.gameTime.TotalGameTime.TotalMilliseconds;
                 if (spearOwner.getDirectionFacing() == 0)
                 {
                     spearOrientation = 0;
@@ -100,9 +106,23 @@ namespace Blink.Classes
                 }
             }
 
+            //If attack is still going (check timer) then the spear is in use
+            if (attacking)
+            {
+                isInUse = true;
+            }
+
             //Set the spear rectangle to fit the current orientation if the spear;
             if (isInUse)
             {
+                if (attacking)
+                {
+                    System.Diagnostics.Debug.Print("" + (float)(Blink.StateGame.gameTime.TotalGameTime.TotalMilliseconds - timer));
+                    if ((float)Blink.StateGame.gameTime.TotalGameTime.TotalMilliseconds - timer > delayTimeMilli) {
+                        attacking = false;
+                        timer = 0;
+                    }
+                }
                 int temp;
                 switch (spearOrientation)
                 {
@@ -144,6 +164,7 @@ namespace Blink.Classes
                 {
                     if (!player.Equals(spearOwner))
                     {
+                        //messy, fix this later
                         if (spear.X <= player.getPlayerRect().X + player.getPlayerRect().Width && spear.X + spear.Height >= player.getPlayerRect().X &&
                             spear.Y <= player.getPlayerRect().Y + player.getPlayerRect().Width && spear.Y + spear.Width >= player.getPlayerRect().Y)
                         {

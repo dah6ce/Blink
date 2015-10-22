@@ -37,7 +37,8 @@ namespace Blink
 		KeyboardState player2State;
 		KeyboardState player3State;
 		KeyboardState player4State;
-		Map map1;
+        public static GameTime gameTime = new GameTime();
+        Map map1;
 
 		public StateGame(Vector2 screenSize)
 		{
@@ -165,9 +166,12 @@ namespace Blink
             spear3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
             spear4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
 			oldState = currState;
-		}
 
-		public void Draw(SpriteBatch sb)
+            StateGame.gameTime = gameTime;
+
+        }
+
+        public void Draw(SpriteBatch sb)
 		{
 			map1.Draw(sb);
 			player1.Draw(sb);
