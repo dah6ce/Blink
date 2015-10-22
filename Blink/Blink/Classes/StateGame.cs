@@ -38,7 +38,20 @@ namespace Blink
 		KeyboardState player2State;
 		KeyboardState player3State;
 		KeyboardState player4State;
+        string mapName = "map1";
+        float roundReset = -1;
+        float timeElapsed;
+        GameTime gameTime = new GameTime();
 		Map map1;
+		bool[] oldStartState = new bool[4];
+		bool paused;
+		int playerPaused;
+		SpriteFont font;
+
+        public void setMap(string map)
+        {
+            mapName = map;
+        }
 
 		public StateGame(Vector2 screenSize)
 		{
@@ -51,12 +64,21 @@ namespace Blink
 			player2 = new PlayerClass();
 			player3 = new PlayerClass();
 			player4 = new PlayerClass();
+
             player1.title = "p1";
             player2.title = "p2";
             player3.title = "p3";
             player4.title = "p4";
+
+            player1.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
+            player2.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
+            player3.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
+            player4.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
+
 			map1 = new Map();
 			currPlayer = PlayerKeys.Player1;
+			paused = false;
+			playerPaused = 0;
 		}
 
 		public void LoadContent(ContentManager Content)
@@ -92,8 +114,9 @@ namespace Blink
             spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
 
             StreamReader mapData;
-            mapData = File.OpenText("Content/map1.map");
-            map1.Initialize(Content.Load<Texture2D>("map1Color"), mapData.ReadToEnd(), 32, 50, 30, players);
+            mapData = File.OpenText("Content/MapData/"+mapName+".map");
+            map1.Initialize(Content.Load<Texture2D>("MapData/"+mapName+"Color"), mapData.ReadToEnd(), 32, 50, 30, players);
+            font = Content.Load<SpriteFont>("miramo");
         }
 
 		public void UnloadContent()
@@ -104,6 +127,51 @@ namespace Blink
 		public void Update(GameTime gameTime)
 		{
 			KeyboardState currState = Keyboard.GetState();
+
+			if(paused)
+			{
+				if (currState.IsKeyDown(Keys.P) && currState != oldState && playerPaused == (int)currPlayer)
+				{
+					paused = false;
+					oldState = currState;
+				}
+				foreach (PlayerIndex x in Enum.GetValues(typeof(PlayerIndex)))
+				{
+					if (playerPaused == (int)x && GamePad.GetState(x).IsButtonDown(Buttons.Start) && !oldStartState[(int)x])
+					{
+						paused = false;
+						oldStartState[(int)x] = GamePad.GetState(x).IsButtonDown(Buttons.Start);
+                    }
+				}
+			}
+
+			if (!paused)
+			{
+				if (currState.IsKeyDown(Keys.P) && currState != oldState)
+				{
+					paused = true;
+					oldState = currState;
+					playerPaused = (int)currPlayer;
+				}
+				foreach (PlayerIndex x in Enum.GetValues(typeof(PlayerIndex)))
+				{
+					if (GamePad.GetState(x).IsButtonDown(Buttons.Start) && !oldStartState[(int)x])
+					{
+						paused = true;
+						playerPaused = (int)x;
+					}
+				}
+			}
+
+			if (paused)
+			{
+				oldState = currState;
+				oldStartState[0] = GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start);
+				oldStartState[1] = GamePad.GetState(PlayerIndex.Two).IsButtonDown(Buttons.Start);
+				oldStartState[2] = GamePad.GetState(PlayerIndex.Three).IsButtonDown(Buttons.Start);
+				oldStartState[3] = GamePad.GetState(PlayerIndex.Four).IsButtonDown(Buttons.Start);
+				return;
+			}
 
 			/* Press TAB to change player if using keyboard. *** For Testing Purposes Only ***
                 If you hold down a key while pressing TAB, the previous player will continue to do that same action
@@ -171,7 +239,23 @@ namespace Blink
             spear3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
             spear4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
 			oldState = currState;
+
+            oldStartState[0] = GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start);
+            oldStartState[1] = GamePad.GetState(PlayerIndex.Two).IsButtonDown(Buttons.Start);
+            oldStartState[2] = GamePad.GetState(PlayerIndex.Three).IsButtonDown(Buttons.Start);
+            oldStartState[3] = GamePad.GetState(PlayerIndex.Four).IsButtonDown(Buttons.Start);
+            //If a timer is running, decrement here
+
+            timeElapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if(roundReset > 0)
+            {
+                roundReset -= timeElapsed;
+                if(roundReset < 0)
+                {
+                    resetMap();
 		}
+            }
+        }
 
 		public void Draw(SpriteBatch sb)
 		{
@@ -184,12 +268,63 @@ namespace Blink
             spear2.Draw(sb);
             spear3.Draw(sb);
             spear4.Draw(sb);
+
+			if (paused)
+			{
+				sb.DrawString(font, "P" + (playerPaused + 1) + " paused", new Vector2(screenSize.X / 2, screenSize.Y / 2), Color.Black);
+		}
 		}
 
 		public GameState GetTransition() 
 		{
 			return null;
 		}
+
+        private void playerKilled(Object sender, DeathEventArgs args)
+        {
+            //Do things like announce death/method of death
+
+            detectWinner();
+        }
+
+        public void detectWinner()
+        {
+            Boolean survivor = false;
+            PlayerClass victor = null;
+            foreach (PlayerClass p in players)
+            {
+                if (victor == null && !p.isDead())
+                {
+                    victor = p;
+                    survivor = true;
+                }
+                else if (victor != null && !p.isDead())
+                {
+                    victor = null;
+                    break;
+                }
+            }
+
+            if (victor != null || (victor == null && !survivor))
+            {
+                declareVictor(victor);
+            }
+        }
+
+        private void declareVictor(PlayerClass victor)
+        {
+            victor.winner();
+            roundReset = 3;
+        }
+
+        private void resetMap()
+        {
+            map1.reset();
+            foreach(PlayerClass p in players)
+            {
+                p.reset();
+            }
+        }
 	}
 }
 
