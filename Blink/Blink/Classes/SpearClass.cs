@@ -98,7 +98,7 @@ namespace Blink.Classes
                 }
             }
             //Spear throw
-            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && oldState != newState && attached && !spearOwner.dead && !isInUse && coolDown <= 0)
+            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && attached && !spearOwner.dead && !isInUse && coolDown <= 0)
             {
                 isInUse = true;
                 if (spearOwner.getDirectionFacing() == 0)
