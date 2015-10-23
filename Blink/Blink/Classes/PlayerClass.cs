@@ -22,14 +22,14 @@ namespace Blink.Classes
         Map arena;
         public Texture2D playerText, deadText;
         public Vector2 velocity, SCREENSIZE, oldPos;
-        Boolean atRest = false, dead = false, victory = false;
+        public Boolean atRest = false, dead = false, victory = false;
         private PlayerClass[] players;
         Rectangle playerRect = new Rectangle(0, 0, 64, 64);
         public String title;
         private SpearClass spear;
         private int directionFacing = 0; //0 for left, 1 for right
         public Boolean hasSpear = true;
-        
+
         public delegate void PlayerKilledHandler(object sender, DeathEventArgs e);
         public event PlayerKilledHandler onPlayerKilled;
 
@@ -108,12 +108,12 @@ namespace Blink.Classes
             }
             else
             {
-            //Jump
-            if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.A) || bounce) && atRest && !dead)
-            {
-                velocity.Y -= JUMP;
-                atRest = false;
-            }
+                //Jump
+                if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.A) || bounce) && atRest && !dead)
+                {
+                    velocity.Y -= JUMP;
+                    atRest = false;
+                }
             }
 
             //Velocity applications
