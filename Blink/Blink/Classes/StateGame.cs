@@ -259,7 +259,9 @@ namespace Blink
                     }
                     else
                     {
-                        sp.Update(player1State, GamePad.GetState(PlayerIndex.One));
+                        KeyboardState fakestate = new KeyboardState();
+                        GamePadState faker = new GamePadState();
+                        sp.Update(fakestate, faker);
                     }
             }
 			oldState = currState;
