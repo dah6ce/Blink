@@ -324,6 +324,11 @@ namespace Blink
             {
                 p.reset();
             }
+
+            spear1.reset(players[0]);
+            spear2.reset(players[1]);
+            spear3.reset(players[2]);
+            spear4.reset(players[3]);
         }
 	}
 }

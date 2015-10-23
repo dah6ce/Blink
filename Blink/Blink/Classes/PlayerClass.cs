@@ -513,7 +513,7 @@ namespace Blink.Classes
 
 
 
-        private void throwKilled(PlayerClass killed, PlayerClass killer, string method)
+        public void throwKilled(PlayerClass killed, PlayerClass killer, string method)
         {
             if (onPlayerKilled == null) return;
 
