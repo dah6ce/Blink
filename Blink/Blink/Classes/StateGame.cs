@@ -93,10 +93,6 @@ namespace Blink
             players[2] = player3;
             players[3] = player4;
 
-            spears[0] = spear1;
-            spears[1] = spear2;
-            spears[2] = spear3;
-            spears[3] = spear4;
 
             Vector2 offset = new Vector2(-4, -4);
 
@@ -110,10 +106,15 @@ namespace Blink
             player3.deadText = Content.Load<Texture2D>("spriteDead");
             player4.deadText = Content.Load<Texture2D>("spriteDead");
 
-            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
-            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
-            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
-            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+
+            spears[0] = spear1;
+            spears[1] = spear2;
+            spears[2] = spear3;
+            spears[3] = spear4;
 
             StreamReader mapData;
             mapData = File.OpenText("Content/MapData/"+mapName+".map");
@@ -236,10 +237,31 @@ namespace Blink
 			player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
 			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
 			player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
-            spear1.Update(player1State, GamePad.GetState(PlayerIndex.One));
-            spear2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
-            spear3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
-            spear4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
+            foreach (SpearClass sp in spears)
+            {
+              
+                    if (sp.spearOwner == player1)
+                    {
+                        sp.Update(player1State, GamePad.GetState(PlayerIndex.One));
+                    }
+
+                    if (sp.spearOwner == player2)
+                    {
+                        sp.Update(player2State, GamePad.GetState(PlayerIndex.Two));
+                    }
+                    if (sp.spearOwner == player3)
+                    {
+                        sp.Update(player3State, GamePad.GetState(PlayerIndex.Three));
+                    }
+                    if (sp.spearOwner == player4)
+                    {
+                        sp.Update(player4State, GamePad.GetState(PlayerIndex.Four));
+                    }
+                    else
+                    {
+                        sp.Update(player1State, GamePad.GetState(PlayerIndex.One));
+                    }
+            }
 			oldState = currState;
 
             oldStartState[0] = GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start);

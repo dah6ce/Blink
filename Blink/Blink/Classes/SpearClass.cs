@@ -39,11 +39,10 @@ namespace Blink.Classes
         public Boolean attached = true, throwing = false, attackDown = false;
         //Constructor for new spear
         //Takes inputs (Player, ScreenSize, Map)
-        public SpearClass(PlayerClass spearOwner, Texture2D spearText, Vector2 ScreenSize, /*necesary?*/ Map m, PlayerClass[] players, SpearClass[] spears)
+        public SpearClass(PlayerClass spearOwner, Texture2D spearText, Vector2 ScreenSize, /*necesary?*/ Map m, PlayerClass[] players)
         {
             this.spearText = spearText;
             this.players = players;
-            this.spears = spears;
             spear.Width = spearText.Width;
             spear.Height = spearText.Height;
             Width = spear.Width;
@@ -238,6 +237,7 @@ namespace Blink.Classes
                         Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
                         if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing)
                         {
+                            Console.WriteLine("Collision!!");
                             attached = true;
                             setOwner(p);
                             isInUse = false;
@@ -350,6 +350,7 @@ namespace Blink.Classes
                     spearOwner.hasSpear = false;
                     spearOwner.setSpear(null);
                     setOwner(null);
+                    Console.WriteLine("I CHOOSE YOU Collision!!");
                 }
             }
         }
