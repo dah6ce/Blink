@@ -576,8 +576,7 @@ namespace Blink.Classes
                         p.playerRect.Y -= otherDist;
                         this.velocity.Y = 20;
                         p.velocity.Y = -20;
-                        this.dead = true;
-                        throwKilled(this, p, "STOMP");
+                        setDead(true, p, "STOMP");
                         //this.rectA.Height = rectA.Height / 2;
                         //this.rectA.Y += rectA.Height;
                     }
@@ -616,6 +615,8 @@ namespace Blink.Classes
 
         internal void setDead(Boolean deathState, PlayerClass killer, String method)
         {
+            //Console.WriteLine("setDead: " + this.title);
+            //spear.dropSpear();
             dead = deathState;
             throwKilled(this, killer, method);
         }

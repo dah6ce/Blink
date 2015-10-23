@@ -22,7 +22,6 @@ namespace Blink.Classes
         private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
         PlayerClass thrownBy = null;
         PlayerClass[] players;
-        SpearClass[] spears;
         KeyboardState oldState;
         //  Spear orientation values
         //      1       2        3
@@ -53,6 +52,7 @@ namespace Blink.Classes
             spearOrientation = 0;
             this.SCREENSIZE = ScreenSize;
             this.m = m;
+            spearOwner.setSpear(this);
         }
 
         internal void setOwner(PlayerClass player)
@@ -240,6 +240,7 @@ namespace Blink.Classes
                             Console.WriteLine("Collision!!");
                             attached = true;
                             setOwner(p);
+                            spearOwner.setSpear(this);
                             isInUse = false;
                             throwing = false;
                             p.hasSpear = true;
@@ -348,9 +349,8 @@ namespace Blink.Classes
                     isInUse = false;
                     attached = false;
                     spearOwner.hasSpear = false;
-            spearOwner.setSpear(null);
+                    spearOwner.setSpear(null);
                     setOwner(null);
-                    Console.WriteLine("I CHOOSE YOU Collision!!");
                 }
             }
         }
@@ -447,6 +447,16 @@ namespace Blink.Classes
             attached = true;
             atRest = true;
             spear = spearOwner.getPlayerRect();
+        }
+
+        internal void dropSpear()
+        {
+            spear = spearOwner.getPlayerRect();
+            spearOwner.setSpear(null);
+            attached = false;
+            isInUse = false;
+            throwing = false;
+            atRest = true;
         }
     }
 }
