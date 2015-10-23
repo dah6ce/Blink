@@ -34,6 +34,7 @@ namespace Blink.Classes
         public readonly Keys THROW_KEY = Keys.Q, ATTACK_KEY = Keys.Space;
         public readonly Buttons THROW_BUTTON = Buttons.RightShoulder, ATTACK_BUTTON = Buttons.A;
 
+		public int inUseTimer = 10;
         //Attacking or being thrown sets this to true
         public Boolean isInUse = false, atRest = true;
         public Boolean attached = true;
@@ -69,7 +70,18 @@ namespace Blink.Classes
             KeyboardState newState = input;
             spear.Width = Width;
             spear.Height = Height;
-            isInUse = false; 
+			if (isInUse)
+			{
+				if(inUseTimer > 0)
+				{
+					inUseTimer -= 1;
+				}
+				else
+				{
+					isInUse = false;
+					inUseTimer = 10;
+				}
+			}
             //REMOVE LATER - Refresh mehtod (ctrl-r): restore all players to life for testing (dont do this while you're ontop of a dead character or things will break)
             if (input.IsKeyDown(Keys.LeftControl) && input.IsKeyDown(Keys.R))
             {
