@@ -34,6 +34,9 @@ namespace Blink
         PlayerClass[] players = new PlayerClass[4];
         SpearClass[] spears = new SpearClass[4];
 
+        public GameState levelSelect;
+        GameState returnState;
+
 		PlayerKeys currPlayer;
 		KeyboardState oldState;
 		KeyboardState player1State;
@@ -67,6 +70,8 @@ namespace Blink
 			player2 = new PlayerClass();
 			player3 = new PlayerClass();
 			player4 = new PlayerClass();
+
+            returnState = null;
 
             animations = new List<Animation>();
 
@@ -198,7 +203,20 @@ namespace Blink
 				oldStartState[1] = GamePad.GetState(PlayerIndex.Two).IsButtonDown(Buttons.Start);
 				oldStartState[2] = GamePad.GetState(PlayerIndex.Three).IsButtonDown(Buttons.Start);
 				oldStartState[3] = GamePad.GetState(PlayerIndex.Four).IsButtonDown(Buttons.Start);
-				return;
+
+                GamePadState p1 = GamePad.GetState(PlayerIndex.One);
+                if (p1.IsButtonDown(Buttons.LeftTrigger) && p1.IsButtonDown(Buttons.RightTrigger) && p1.IsButtonDown(Buttons.LeftShoulder) && p1.IsButtonDown(Buttons.RightShoulder))
+                    returnState = levelSelect;
+                GamePadState p2 = GamePad.GetState(PlayerIndex.One);
+                if (p2.IsButtonDown(Buttons.LeftTrigger) && p2.IsButtonDown(Buttons.RightTrigger) && p2.IsButtonDown(Buttons.LeftShoulder) && p2.IsButtonDown(Buttons.RightShoulder))
+                    returnState = levelSelect;
+                GamePadState p3 = GamePad.GetState(PlayerIndex.One);
+                if (p3.IsButtonDown(Buttons.LeftTrigger) && p3.IsButtonDown(Buttons.RightTrigger) && p3.IsButtonDown(Buttons.LeftShoulder) && p3.IsButtonDown(Buttons.RightShoulder))
+                    returnState = levelSelect;
+                GamePadState p4 = GamePad.GetState(PlayerIndex.One);
+                if (p4.IsButtonDown(Buttons.LeftTrigger) && p4.IsButtonDown(Buttons.RightTrigger) && p4.IsButtonDown(Buttons.LeftShoulder) && p4.IsButtonDown(Buttons.RightShoulder))
+                    returnState = levelSelect;
+                return;
 			}
 
 			/* Press TAB to change player if using keyboard. *** For Testing Purposes Only ***
@@ -352,7 +370,7 @@ namespace Blink
 
 		public GameState GetTransition() 
 		{
-			return null;
+			return returnState;
 		}
 
         private void playerKilled(Object sender, DeathEventArgs args)
@@ -388,7 +406,8 @@ namespace Blink
 
         private void declareVictor(PlayerClass victor)
         {
-            victor.winner();
+            if(victor != null)
+                victor.winner();
             roundReset = 3;
         }
 

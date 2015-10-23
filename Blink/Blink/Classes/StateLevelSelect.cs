@@ -52,6 +52,8 @@ namespace Blink.GUI
 
         public void Initialize()
         {
+            if (this.mapThumbs.Count > 0)
+                this.mapThumbs[selected].unselect();
             this.selected = 0;
             this.nextState = null;
 
@@ -65,6 +67,11 @@ namespace Blink.GUI
 
         public void LoadContent(ContentManager Content)
         {
+            if (mapNames.Count > 0)
+            {
+                this.mapThumbs[selected].select();
+                return;
+            }
 
             selectedOverlay = Content.Load<Texture2D>("select");
 
@@ -90,14 +97,13 @@ namespace Blink.GUI
             Vector2 pos = new Vector2(screenSize.X / 2, 50);
             title = new Label(titleString, Content.Load<SpriteFont>("miramo"), pos, new Vector2(0.5f, 0));
             pos.Y += 50;
-            foreach (String s in optionsStrings)
-            {
-                pos.Y += 50;
-                buttons.Add(new TextButton(s, Content.Load<SpriteFont>("miramo"), pos, Content.Load<Texture2D>("buttonUp"),
-                    Content.Load<Texture2D>("buttonDown"), new Vector2(0.5f, 0)));
-            }
 
-            buttons[0].Select();
+            mapThumbs[0].select();
+        }
+
+        public void UnloadContent()
+        {
+            
         }
 
         private void positionThumbs(List<mapThumb> thumbs)
@@ -107,11 +113,6 @@ namespace Blink.GUI
                 mapThumb thumb = thumbs[i];
                 thumb.setPosition(new Vector2(200 * (i % THUMBROWSIZE), (float)Math.Floor((i / 8f)) * 120 + 600));
             }
-        }
-
-        public void UnloadContent()
-        {
-
         }
 
         public void Update(GameTime gameTime)

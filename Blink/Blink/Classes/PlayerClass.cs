@@ -359,7 +359,7 @@ namespace Blink.Classes
                     else if (velocity.Y > 0)
                     {
                         testY = TILEWIDTH * (float)Math.Ceiling((double)playerRect.Y / TILEWIDTH);
-                        if (blinked || velocity.Y > (TERMINAL_V / 3 * 2))
+                        if ((blinked || velocity.Y > (TERMINAL_V / 3 * 2)) && !atRest)
                         {
                             Animation poof = new Animation(dustPoof, new Vector2(testX - 16, testY + playerRect.Height - 60), 20f, 10, aniList, directionFacing);
                         }
@@ -395,7 +395,7 @@ namespace Blink.Classes
                     else if (velocity.Y > 0)
                     {
                         testY = TILEWIDTH * (float)Math.Ceiling((double)playerRect.Y / TILEWIDTH);
-                        if (blinked || velocity.Y > (TERMINAL_V / 3 * 2))
+                        if (((blinked && velocity.Y > (TERMINAL_V / 4) || velocity.Y > (TERMINAL_V / 3 * 2))))
                         {
                             Animation poof = new Animation(dustPoof, new Vector2(testX - 16, testY + playerRect.Height - 60), 20f, 10, aniList, directionFacing);
                         }
@@ -583,8 +583,7 @@ namespace Blink.Classes
                         p.playerRect.Y -= otherDist;
                         this.velocity.Y = 20;
                         p.velocity.Y = -20;
-                        this.dead = true;
-                        throwKilled(this, p, "STOMP");
+                        this.setDead(true, p, "STOMP");
                         //this.rectA.Height = rectA.Height / 2;
                         //this.rectA.Y += rectA.Height;
                     }
@@ -594,8 +593,7 @@ namespace Blink.Classes
                         p.playerRect.Y += otherDist;
                         this.velocity.Y = -20;
                         p.velocity.Y = 20;
-                        p.dead = true;
-                        throwKilled(p, this, "STOMP");
+                        p.setDead(true, this, "STOMP");
                         //rectB.Height = rectB.Height / 2;
                         //rectB.Y += rectB.Height;
                     }
@@ -687,7 +685,6 @@ namespace Blink.Classes
             if (killer == killed)
             {
                 killer.score -= 1;
-                return;
             }
             else if (killer != null)
                 killer.score += 1;
