@@ -170,7 +170,7 @@ namespace Blink.Classes
                 PlayerClass[] players = spearOwner.getPlayers();
                 foreach (PlayerClass player in players)
                 {
-                    if (!player.Equals(spearOwner) && !player.dead)
+                    if (!player.Equals(spearOwner) && !player.dead && player.blinked == spearOwner.blinked)
                     {
                         if (player.getPlayerRect().Intersects(this.spear))
                         {
@@ -258,6 +258,8 @@ namespace Blink.Classes
 
             else if (!isInUse && spearOwner!=null)
             {
+                if (spearOwner.blinked)
+                    return;
                 Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y);
                 RotationAngle = (float)(MathHelper.Pi * .5);
                 //screenPos.Y += spearOwner.getPlayerRect().Height;
