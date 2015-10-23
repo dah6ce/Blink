@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Blink.GUI
 {
+
     public class StateSimpleMenu : GameState
     {
         Vector2 screenSize;
@@ -27,6 +28,11 @@ namespace Blink.GUI
         bool lastMoveUp;
         bool lastMoveDown;
         bool lastAccept;
+        bool prematureEnter;
+
+
+        //Storage list for all our map names
+        List<string> mapNames = new List<string>();
 
         public StateSimpleMenu(Vector2 screenSize, String title, String[] options, GameState[] triggers)
         {
@@ -41,6 +47,13 @@ namespace Blink.GUI
         {
             this.selected = 0;
             this.nextState = null;
+
+            KeyboardState keyState = Keyboard.GetState();
+            GamePadState padState = GamePad.GetState(PlayerIndex.One);
+            if (keyState.IsKeyDown(Keys.Enter))
+            {
+                prematureEnter = true;
+            }
         }
 
         public void LoadContent(ContentManager Content)
@@ -48,32 +61,25 @@ namespace Blink.GUI
 
 
             //Gets a list of all the .map files in our mapdata folder
-            maps = Directory.EnumerateFiles(Environment.CurrentDirectory+"\\Content\\MapData","*.map");
-            //Storage list for all our map names
-            List < string > mapNames = new List<string>();
+            maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "\\Content\\MapData", "*.map");
+
             //For each map file, slice off the path to store just the map's name.
             foreach (string path in maps)
             {
                 string mapName = path.Remove(0, Environment.CurrentDirectory.Length + "\\Content\\MapData".Length);
                 mapName = mapName.Replace(".map", "");
                 mapNames.Add(mapName);
-                
+
             }
 
-            //Temporary random map picker, remove this when a map select screen is implemented //////////////////
-            Random r = new Random();
-            int map = r.Next(mapNames.Count);
 
-            selectedMap = mapNames[map];
-            /////////////////////////////////////////////////////////////////////////////////////////////////////
-            
-            Vector2 pos = new Vector2(screenSize.X/2, 50);
+            Vector2 pos = new Vector2(screenSize.X / 2, 50);
             title = new Label(titleString, Content.Load<SpriteFont>("miramo"), pos, new Vector2(0.5f, 0));
             pos.Y += 50;
             foreach (String s in optionsStrings)
             {
                 pos.Y += 50;
-                buttons.Add(new TextButton(s, Content.Load<SpriteFont>("miramo"), pos, Content.Load<Texture2D>("buttonUp"), 
+                buttons.Add(new TextButton(s, Content.Load<SpriteFont>("miramo"), pos, Content.Load<Texture2D>("buttonUp"),
                     Content.Load<Texture2D>("buttonDown"), new Vector2(0.5f, 0)));
             }
 
@@ -82,25 +88,30 @@ namespace Blink.GUI
 
         public void UnloadContent()
         {
-           
+
         }
 
         public void Update(GameTime gameTime)
         {
             KeyboardState keyState = Keyboard.GetState();
             GamePadState padState = GamePad.GetState(PlayerIndex.One);
-            
+
             bool moveUp = false;
             bool moveDown = false;
             bool accept = false;
+
+            if (keyState.IsKeyUp(Keys.Enter))
+            {
+                prematureEnter = false;
+            }
 
             if (keyState.IsKeyDown(Keys.Up))
                 moveUp = true;
             if (keyState.IsKeyDown(Keys.Down))
                 moveDown = true;
-            if (keyState.IsKeyDown(Keys.Enter))
+            if (keyState.IsKeyDown(Keys.Enter) && prematureEnter == false)
                 accept = true;
-           
+
             Vector2 thumbDir = padState.ThumbSticks.Left.ToPoint().ToVector2();
             if (thumbDir.Length() > .01)
             {
@@ -111,24 +122,28 @@ namespace Blink.GUI
             }
             if (padState.IsButtonDown(Buttons.A))
                 accept = true;
-            
+
 
             if (moveUp && !lastMoveUp)
             {
                 buttons[selected].UnSelect();
-                selected++;
+                selected--;
                 selected %= buttons.Count;
                 buttons[selected].Select();
             }
             if (moveDown && !lastMoveDown)
             {
                 buttons[selected].UnSelect();
-                selected--;
+                selected++;
                 selected = (selected + buttons.Count) % buttons.Count;
                 buttons[selected].Select();
             }
             if (accept && !lastAccept)
             {
+                if (titleString == "Map Select" && selected != triggers.Length - 1)
+                {
+                    selectedMap = mapNames[selected];
+                }
                 nextState = triggers[selected];
             }
 

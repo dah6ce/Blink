@@ -11,22 +11,23 @@ namespace Blink
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    
+
 
 
     public class Game1 : Game
     {
-		public static bool running;
+        public static bool running;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-		GameState currState;
-		GameState mainMenu;
-		GameState game;
+        GameState currState;
+        GameState mainMenu;
+        GameState levelMenu;
+        GameState game;
 
         public Game1()
         {
-			running = true;
+            running = true;
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1600;
             graphics.PreferredBackBufferHeight = 960;
@@ -55,14 +56,16 @@ namespace Blink
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-			// Should probably be in Initialize, but screen size is updated after Initialize causing weird collision issues
-			Vector2 screenSize = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.Right, GraphicsDevice.Viewport.TitleSafeArea.Bottom);
-			game = new StateGame(screenSize);
-			mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[]{ "Start", "Quit" }, new GameState[]{ game, new StateQuit() });
+            // Should probably be in Initialize, but screen size is updated after Initialize causing weird collision issues
+            Vector2 screenSize = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.Right, GraphicsDevice.Viewport.TitleSafeArea.Bottom);
+            game = new StateGame(screenSize);
+            levelMenu = new StateSimpleMenu(screenSize, "Map Select", new string[] { "Start", "Start", "Quit" }, new GameState[] { game, game, new StateQuit() });
+            mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit" }, new GameState[] { levelMenu, new StateQuit() });
 
-			currState = mainMenu;
-			currState.Initialize();
-			currState.LoadContent(Content);
+
+            currState = mainMenu;
+            currState.Initialize();
+            currState.LoadContent(Content);
 
         }
 
@@ -72,7 +75,7 @@ namespace Blink
         /// </summary>
         protected override void UnloadContent()
         {
-			currState.UnloadContent();
+            currState.UnloadContent();
         }
 
         /// <summary>
@@ -82,23 +85,23 @@ namespace Blink
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape) || !running)
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape) || !running)
                 Exit();
 
-			currState.Update(gameTime);
+            currState.Update(gameTime);
 
-			// Handle GameState transitions
-			GameState newState = currState.GetTransition();
-			if (newState != null)
+            // Handle GameState transitions
+            GameState newState = currState.GetTransition();
+            if (newState != null)
             {
                 //Set map
-                ((StateGame)game).setMap(((StateSimpleMenu)mainMenu).getSelectedMap());
+                ((StateGame)game).setMap(((StateSimpleMenu)levelMenu).getSelectedMap());
 
                 //State unload/load
                 currState.UnloadContent();
-				currState = newState;
-				currState.Initialize();
-				currState.LoadContent(Content);
+                currState = newState;
+                currState.Initialize();
+                currState.LoadContent(Content);
 
             }
 
@@ -112,12 +115,12 @@ namespace Blink
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-			GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
 
             spriteBatch.Begin();
-			currState.Draw(spriteBatch);
+            currState.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);
