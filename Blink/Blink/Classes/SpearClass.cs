@@ -61,7 +61,7 @@ namespace Blink.Classes
             if (spearOwner != null)
             {
                 spearOwner.hasSpear = true;
-            }
+        }
         }
 
         //Manage inputs, check for a spear throw.
@@ -79,7 +79,7 @@ namespace Blink.Classes
 				}
 				else
 				{
-            isInUse = false; 
+					isInUse = false;
 					inUseTimer = 10;
                     coolDown = 20;
 				}
@@ -202,7 +202,7 @@ namespace Blink.Classes
                 PlayerClass[] players = spearOwner.getPlayers();
                 foreach (PlayerClass player in players)
                 {
-                    if (!player.Equals(spearOwner) && !player.dead)
+                    if (!player.Equals(spearOwner) && !player.dead && player.blinked == spearOwner.blinked)
                     {
                         if (player.getPlayerRect().Intersects(this.spear))
                         {
@@ -217,10 +217,10 @@ namespace Blink.Classes
                             }
                         }
                         else if(this.spear.X >= SCREENSIZE.X - this.spear.Width)
-                    {
+                        {
                             Rectangle tempRect = new Rectangle((int)(spear.X - SCREENSIZE.X), (int)spear.Y, spear.Width, spear.Height);
                             if (player.getPlayerRect().Intersects(tempRect))
-                        {
+                            {
                                 player.setDead(true, this.spearOwner, "SPEAR");
                             }
                         }
@@ -275,7 +275,7 @@ namespace Blink.Classes
 
             Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, new Vector2(spear.Width, spear.Height));
             if (collisions[0] || collisions[1] || collisions[2])
-            {
+        {
                 spear.X = (int)testX;
                 spear.Y = (int)testY;
                 velocity.X = 0;
@@ -348,7 +348,7 @@ namespace Blink.Classes
                     isInUse = false;
                     attached = false;
                     spearOwner.hasSpear = false;
-                    spearOwner.setSpear(null);
+            spearOwner.setSpear(null);
                     setOwner(null);
                     Console.WriteLine("I CHOOSE YOU Collision!!");
                 }
@@ -386,6 +386,8 @@ namespace Blink.Classes
 
             else if (!isInUse && spearOwner!=null)
             {
+                if (spearOwner.blinked)
+                    return;
                 Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y);
                 RotationAngle = (float)(MathHelper.Pi * .5);
                 //screenPos.Y += spearOwner.getPlayerRect().Height;

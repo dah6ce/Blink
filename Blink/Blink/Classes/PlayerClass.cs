@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 using Blink.Classes;
 
 namespace Blink.Classes
@@ -10,8 +11,9 @@ namespace Blink.Classes
     {
         //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
         //private int curFriction = 12, airFriction = 1;
-        private int JUMP = 30, TILEWIDTH = 32, MARGIN = 0;
-        private float GRAVITY = 1.6f, TERMINAL_V = 30, SPEED = 1.2f, GROUNDSPEED = 1.2f, ICESPEED = 0.4f, ACC_CAP = 16;
+        private int JUMP = 22, TILEWIDTH = 32, MARGIN = 0;
+        private float GRAVITY = 1.6f, TERMINAL_V = 30, SPEED = 1.2f, GROUNDSPEED = 1.2f, ICESPEED = 0.4f, ACC_CAP = 15;
+        private float STUNTIME = 3f, BLINKCOOL = 0.5f, MAXBLINKJUICE = 6f, DEATHTIMER = 5f, BLINKMULTI = 1.5f, TRAILTIMER = 0.1f;
         private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
 
         //debug variables
@@ -20,7 +22,7 @@ namespace Blink.Classes
         public Boolean active = true;
         
         Map arena;
-        public Texture2D playerText, deadText;
+        public Texture2D playerText, deadText, blinkRect;
         public Vector2 velocity, SCREENSIZE, oldPos;
         public Boolean atRest = false, dead = false, victory = false;
         private PlayerClass[] players;
@@ -29,15 +31,21 @@ namespace Blink.Classes
         private SpearClass spear;
         private int directionFacing = 0; //0 for left, 1 for right
         public Boolean hasSpear = true;
+        public Boolean blinked = false, blinkKeyDown = false;
+        private float blinkJuice, blinkCoolDown, stunTimer, deathTimer, curMultiplier, dustTimer;
+        private int curJump;
 
         private Vector2 offset;
+
+        public Texture2D dustEffect;
+        public List<Animation> aniList;
 
         public delegate void PlayerKilledHandler(object sender, DeathEventArgs e);
         public event PlayerKilledHandler onPlayerKilled;
 
 		public int score = 0;
 
-        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p, Vector2 off)
+        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p, Vector2 off, Texture2D bar)
         {
             offset = off;
             oldPos = playerPos;
@@ -49,6 +57,14 @@ namespace Blink.Classes
             velocity.Y = 0;
             SCREENSIZE = ScreenSize;
             arena = m;
+
+            curMultiplier = 1f;
+
+            blinkRect = bar;
+            blinkJuice = MAXBLINKJUICE;
+            blinkCoolDown = 0;
+            stunTimer = 0;
+            deathTimer = -2;
         }
 
         public void setSpear(SpearClass spr)
@@ -60,24 +76,118 @@ namespace Blink.Classes
             }
         }
 
-        public void Update(KeyboardState input, GamePadState padState)
+        public void Update(KeyboardState input, GamePadState padState, GameTime gameTime)
         {
             //debug stuff goes here
             if ((input.IsKeyDown(Keys.LeftShift)))
                 this.bounce = !this.bounce;
 
-            //Horizontal movement
-            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP && !dead && !victory)
+            if (blinked)
             {
-                velocity.X += SPEED;
-                if (velocity.X < -SPEED)
-                    velocity.X += SPEED / 2;
+                if (velocity.X != 0 && atRest)
+                {
+                    dustTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    if (dustTimer < 0)
+                    {
+                        Animation poof = new Animation(dustEffect, new Vector2(playerRect.X - 30, playerRect.Y + playerRect.Height - 16), 50f, 3, aniList, directionFacing);
+                        dustTimer = TRAILTIMER;
+                    }
+                }
+                if(deathTimer < -1) { 
+                    blinkJuice -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    if(blinkJuice <= 0)
+                    {
+                        blinkJuice = 0;
+                        Boolean blocked = inPlayer();
+                        if (!blocked)
+                        {
+                            blinked = false;
+                            curMultiplier = 1f;
+                            blinkCoolDown = BLINKCOOL;
+                            stunTimer = STUNTIME;
+                            deathTimer = -2;
+                        }
+                        else
+                        {
+                            deathTimer = DEATHTIMER;
+                        }
+                    }
+                }
+                else
+                {
+                    deathTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                    if(deathTimer <= 0)
+                    {
+                        setDead(true, null, "EXPIRE");
+                        blinked = false;
+                        curMultiplier = 1f;
+                    }
+                }
             }
-            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP && !dead && !victory)
+            else
             {
-                velocity.X -= SPEED;
+                if(blinkJuice < MAXBLINKJUICE)
+                {
+                    blinkJuice += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    if (blinkJuice > MAXBLINKJUICE)
+                        blinkJuice = MAXBLINKJUICE;
+                }
+            }
+
+            if(blinkCoolDown > 0)
+            {
+                blinkCoolDown -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+
+            if(stunTimer > 0)
+            {
+                stunTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+
+            //Blink
+            if ((input.IsKeyDown(Keys.LeftAlt) || padState.IsButtonDown(Buttons.LeftShoulder)) && !blinkKeyDown)
+            {
+                blinkKeyDown = true;
+
+                Boolean inAPlayer = inPlayer();
+
+                if (!inAPlayer) {
+                    if (!blinked && blinkCoolDown <= 0 && blinkJuice > 1)
+                    {
+                        blinked = true;
+                        curMultiplier = BLINKMULTI;
+                    }
+                    else
+                    {
+                        blinked = false;
+                        curMultiplier = 1f;
+                        blinkCoolDown = BLINKCOOL;
+                    }
+                }
+                
+            }
+            else if (blinkKeyDown && (input.IsKeyUp(Keys.LeftAlt) || padState.IsButtonDown(Buttons.LeftShoulder)))
+            {
+                blinkKeyDown = false;
+            }
+
+
+            
+
+
+            //Horizontal movement
+            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP*curMultiplier && !dead && !victory && stunTimer <= 0)
+            {
+                velocity.X += SPEED*curMultiplier;
+                if (velocity.X < -SPEED)
+                    velocity.X += SPEED * curMultiplier / 2;
+            }
+            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP*curMultiplier && !dead && !victory && stunTimer <= 0)
+            {
+                velocity.X -= SPEED * curMultiplier;
                 if (velocity.X > SPEED)
-                    velocity.X -= SPEED / 2;
+                    velocity.X -= SPEED * curMultiplier / 2;
             }
             //Friction
             else if (velocity.X != 0)
@@ -112,9 +222,9 @@ namespace Blink.Classes
             else
             {
                 //Jump
-                if ((input.IsKeyDown(Keys.LeftControl) || padState.IsButtonDown(Buttons.A) || bounce) && atRest && !dead)
+                if ((input.IsKeyDown(Keys.LeftControl) || padState.IsButtonDown(Buttons.A) || bounce) && atRest && !dead && stunTimer <= 0)
                 {
-                    velocity.Y -= JUMP;
+                    velocity.Y -= JUMP * curMultiplier;
                     atRest = false;
                 }
             }
@@ -152,6 +262,18 @@ namespace Blink.Classes
             else if (velocity.X < 0)
                 directionFacing = 0;
 
+        }
+
+        private Boolean inPlayer()
+        {
+            Boolean inAPlayer = false;
+            foreach (PlayerClass p in players)
+            {
+                if (p != this && p.playerRect.Intersects(this.playerRect) && p.blinked != blinked)
+                    inAPlayer = true;
+            }
+
+            return inAPlayer;
         }
 
         public void blockDataUpdate()
@@ -320,7 +442,7 @@ namespace Blink.Classes
                 counter += 1;
                 //Make sure we're not checking self collision, or dead players
                 Boolean collided;
-                if (p != this && !p.dead && !alreadyChecked)
+                if (p != this && !p.dead && !alreadyChecked && blinked == p.blinked)
                 {
                     collided = doCollisions(playerRect, oldPos, p.playerRect, p.oldPos, p);
 
@@ -509,14 +631,26 @@ namespace Blink.Classes
 
         public void Draw(SpriteBatch sB)
         {
+            if (blinked)
+                return;
+
             Texture2D drawnText = playerText;
 
-
+            
+            
             //THIS HEIGHT AND WIDTH IS HARDCODED. CHANGE THIS COLIN YOU LAZY ASS
             Rectangle frame = new Rectangle(0,0,36,68);
 
             int offX = (directionFacing == 0 ? (int)offset.X : (int)-offset.X);
             int offY = (int)offset.Y;
+
+            Rectangle barFrame = new Rectangle(0, 0, 30, 6);
+            barFrame.Width = (int)(30 * (blinkJuice / MAXBLINKJUICE));
+
+            if (blinkJuice < MAXBLINKJUICE)
+            {
+                sB.Draw(blinkRect, new Vector2(playerRect.X , playerRect.Y + offY - 12), barFrame, Color.Green);
+            }
 
             frame = getFrame(frame);
 
@@ -575,6 +709,12 @@ namespace Blink.Classes
             victory = false;
             velocity.X = 0;
             velocity.Y = 0;
+            blinkCoolDown = 0;
+            deathTimer = -2;
+            stunTimer = 0;
+            blinked = false;
+            curMultiplier = 1f;
+            blinkJuice = MAXBLINKJUICE;
         }
     }
 }

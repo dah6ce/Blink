@@ -2,6 +2,7 @@
 using System.IO;
 using Blink.GUI;
 using Blink.Classes;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -32,6 +33,7 @@ namespace Blink
 		PlayerClass player4;
         PlayerClass[] players = new PlayerClass[4];
         SpearClass[] spears = new SpearClass[4];
+
 		PlayerKeys currPlayer;
 		KeyboardState oldState;
 		KeyboardState player1State;
@@ -47,6 +49,7 @@ namespace Blink
 		bool paused;
 		int playerPaused;
 		SpriteFont font;
+        List<Animation> animations;
 
         public void setMap(string map)
         {
@@ -64,6 +67,8 @@ namespace Blink
 			player2 = new PlayerClass();
 			player3 = new PlayerClass();
 			player4 = new PlayerClass();
+
+            animations = new List<Animation>();
 
             player1.title = "p1";
             player2.title = "p2";
@@ -95,21 +100,33 @@ namespace Blink
 
 
             Vector2 offset = new Vector2(-4, -4);
+            Texture2D bar = Content.Load<Texture2D>("bar");
+            Texture2D dust = Content.Load<Texture2D>("Dust_Trail");
 
-            player1.Initialize(Content.Load<Texture2D>("ROTH-OG-SPEARLESS"), player1Pos, screenSize, map1, players, offset);
-            player2.Initialize(Content.Load<Texture2D>("ROTH-RED-SPEARLESS"), player2Pos, screenSize, map1, players, offset);
-            player3.Initialize(Content.Load<Texture2D>("ROTH-SILVER-SPEARLESS"), player3Pos, screenSize, map1, players, offset);
-            player4.Initialize(Content.Load<Texture2D>("ROTH-BLACK-SPEARLESS"), player4Pos, screenSize, map1, players, offset);
+            player1.Initialize(Content.Load<Texture2D>("ROTH-OG-SPEARLESS"), player1Pos, screenSize, map1, players, offset, bar);
+            player2.Initialize(Content.Load<Texture2D>("ROTH-RED-SPEARLESS"), player2Pos, screenSize, map1, players, offset, bar);
+            player3.Initialize(Content.Load<Texture2D>("ROTH-SILVER-SPEARLESS"), player3Pos, screenSize, map1, players, offset, bar);
+            player4.Initialize(Content.Load<Texture2D>("ROTH-BLACK-SPEARLESS"), player4Pos, screenSize, map1, players, offset, bar);
 
             player1.deadText = Content.Load<Texture2D>("spriteDead");
             player2.deadText = Content.Load<Texture2D>("spriteDead");
             player3.deadText = Content.Load<Texture2D>("spriteDead");
             player4.deadText = Content.Load<Texture2D>("spriteDead");
 
-            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
-            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
-            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
-            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            player1.dustEffect = dust;
+            player2.dustEffect = dust;
+            player3.dustEffect = dust;
+            player4.dustEffect = dust;
+
+            player1.aniList = animations;
+            player2.aniList = animations;
+            player3.aniList = animations;
+            player4.aniList = animations;
+
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
 
             spears[0] = spear1;
             spears[1] = spear2;
@@ -130,6 +147,11 @@ namespace Blink
 		public void Update(GameTime gameTime)
 		{
 			KeyboardState currState = Keyboard.GetState();
+
+            for (int i = 0; i < animations.Count; i++)
+            {
+                animations[i].Update(gameTime);
+            }
 
 			if(paused)
 			{
@@ -294,6 +316,11 @@ namespace Blink
             spear2.Draw(sb);
             spear3.Draw(sb);
             spear4.Draw(sb);
+
+            for (int i = 0; i < animations.Count; i++)
+            {
+                animations[i].Draw(sb);
+            }
 
 			if (paused)
 			{
