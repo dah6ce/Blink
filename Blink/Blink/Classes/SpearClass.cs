@@ -362,7 +362,8 @@ namespace Blink.Classes
 
             if (spearOwner == null)
             {
-                Vector2 screenPos = new Vector2(spear.X, spear.Y);
+                origin.X = 32;
+                Vector2 screenPos = new Vector2(spear.X + 32, spear.Y + 8);
                 RotationAngle = (float)(MathHelper.Pi * .5);
                 switch (spearOrientation)
                 {
