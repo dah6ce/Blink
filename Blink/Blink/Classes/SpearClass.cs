@@ -31,7 +31,7 @@ namespace Blink.Classes
         public PlayerClass spearOwner; 
         public Map m;
         public readonly Keys THROW_KEY = Keys.Q, ATTACK_KEY = Keys.Space;
-        public readonly Buttons THROW_BUTTON = Buttons.RightShoulder, ATTACK_BUTTON = Buttons.A;
+        public readonly Buttons THROW_BUTTON = Buttons.RightShoulder, ATTACK_BUTTON = Buttons.X;
 
 		public int inUseTimer = 10, coolDown = 10;
         //Attacking or being thrown sets this to true
