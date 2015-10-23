@@ -59,7 +59,7 @@ namespace Blink
             // Should probably be in Initialize, but screen size is updated after Initialize causing weird collision issues
             Vector2 screenSize = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.Right, GraphicsDevice.Viewport.TitleSafeArea.Bottom);
             game = new StateGame(screenSize);
-            levelMenu = new StateSimpleMenu(screenSize, "Map Select", new string[] { "Start", "Start", "Quit" }, new GameState[] { game, game, new StateQuit() });
+            levelMenu = new StateLevelSelect(screenSize, "Map Select", new string[] { "Start", "Start", "Quit" }, game);
             mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit" }, new GameState[] { levelMenu, new StateQuit() });
 
 
@@ -95,7 +95,8 @@ namespace Blink
             if (newState != null)
             {
                 //Set map
-                ((StateGame)game).setMap(((StateSimpleMenu)levelMenu).getSelectedMap());
+                if(newState == game)
+                    ((StateGame)game).setMap(((StateLevelSelect)levelMenu).getSelectedMap());
 
                 //State unload/load
                 currState.UnloadContent();
