@@ -249,9 +249,9 @@ namespace Blink.Classes
                     if (!atRest)
                     {
                         Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
-                        if (inter.Width > 0 && inter.Height > 0 && spearOwner != p)
+                        if (inter.Width > 0 && inter.Height > 0 && spearOwner != p && !p.dead)
                         {
-                            p.dead = true;
+                            p.setDead(true, thrownBy, "SPEAR");
                 }
             }
                 }

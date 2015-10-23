@@ -541,7 +541,11 @@ namespace Blink.Classes
         public void throwKilled(PlayerClass killed, PlayerClass killer, string method)
         {
             if (onPlayerKilled == null) return;
-
+            if (killer == killed)
+            {
+                killer.score -= 1;
+                return;
+            }
 			killer.score += 1;
             DeathEventArgs args = new DeathEventArgs(killed, killer, method);
             onPlayerKilled(this, args);
