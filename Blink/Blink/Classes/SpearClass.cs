@@ -16,7 +16,6 @@ namespace Blink.Classes
 	    
         public Texture2D spearText;
         public Rectangle spear;
-        public Rectangle spearRect;
         public Vector2 pos, velocity, SCREENSIZE;
         private int JUMP = 30, TILEWIDTH = 32, MARGIN = 0;
         public int spearOrientation, Width , Height;
@@ -47,7 +46,6 @@ namespace Blink.Classes
             this.spears = spears;
             spear.Width = spearOwner.getPlayerRect().Width/16;
             spear.Height = spearOwner.getPlayerRect().Height;
-            Rectangle spearRect = new Rectangle(0, 0, 83, 19);
             Width = spear.Width;
             Height = spear.Height;
             velocity.X = 0;
@@ -140,6 +138,10 @@ namespace Blink.Classes
                 }
             }
             playerCollision();
+            if(!attached)
+            {
+            mapCollision();
+            }
             oldState = newState;
         }
 
@@ -176,7 +178,7 @@ namespace Blink.Classes
                     } **/
                     if (!attached && !alreadyChecked)
                     {
-                        Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)staticPos.X,(int)staticPos.Y, spear.Width, spear.Height));
+                        Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
                         if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear)
                         {
                             attached = true;
@@ -192,7 +194,27 @@ namespace Blink.Classes
 
         private void mapCollision()
         {
-                playerCollision();
+            float testX = spear.X + velocity.X;
+            float testY = spear.Y + velocity.Y;
+
+            int d = 0, r = 0;
+            if (velocity.X > 0)
+                r = 1;
+            else if (velocity.X < 0)
+                r = -1;
+            if (velocity.Y > 0)
+                d = 1;
+            else if (velocity.Y < 0)
+                d = -1;
+
+            Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r);
+            if (collisions[0] || collisions[1] || collisions[2])
+            {
+                staticPos.X = testX;
+                staticPos.Y = testY;
+                atRest = true;
+            }
+            //playerCollision();
         }
 
         private void spearCollision()
@@ -205,11 +227,13 @@ namespace Blink.Classes
             attached = false;
             isInUse = false;
             spearOwner.hasSpear = false;
+            velocity.X = spearOwner.velocity.X;
+            velocity.Y = spearOwner.velocity.Y;
+            spear.X = spearOwner.getPlayerRect().X;
+            spear.Y = spearOwner.getPlayerRect().X;
+            atRest = false;
             spearOwner.setSpear(null);
             this.setOwner(null);
-            staticPos = new Vector2(96, 650);
-            spear.X = (int)staticPos.X;
-            spear.Y = (int)staticPos.Y;
         }
 
         public void Draw(SpriteBatch sB)
@@ -219,7 +243,8 @@ namespace Blink.Classes
             Texture2D drawnText = spearText;
             if (spearOwner == null)
             {
-                sB.Draw(spearText, staticPos, null, Color.White);
+                Vector2 screenPos = new Vector2(spear.X, spear.Y);
+                sB.Draw(drawnText, screenPos, null ,  Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
             }
 
             else if (!isInUse && spearOwner!=null)
