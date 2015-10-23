@@ -109,7 +109,7 @@ namespace Blink.Classes
             else
             {
                 //Jump
-                if ((input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.A) || bounce) && atRest && !dead)
+                if ((input.IsKeyDown(Keys.LeftControl) || padState.IsButtonDown(Buttons.A) || bounce) && atRest && !dead)
                 {
                     velocity.Y -= JUMP;
                     atRest = false;

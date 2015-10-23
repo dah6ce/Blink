@@ -34,10 +34,10 @@ namespace Blink.Classes
         public readonly Keys THROW_KEY = Keys.Q, ATTACK_KEY = Keys.Space;
         public readonly Buttons THROW_BUTTON = Buttons.RightShoulder, ATTACK_BUTTON = Buttons.A;
 
-		public int inUseTimer = 10;
+		public int inUseTimer = 10, coolDown = 10;
         //Attacking or being thrown sets this to true
         public Boolean isInUse = false, atRest = true;
-        public Boolean attached = true;
+        public Boolean attached = true, attackDown = false;
         //Constructor for new spear
         //Takes inputs (Player, ScreenSize, Map)
         public SpearClass(PlayerClass spearOwner, Texture2D spearText, Vector2 ScreenSize, /*necesary?*/ Map m, PlayerClass[] players, SpearClass[] spears)
@@ -80,8 +80,13 @@ namespace Blink.Classes
 				{
 					isInUse = false;
 					inUseTimer = 10;
+                    coolDown = 20;
 				}
 			}
+            if (!isInUse && coolDown > 0)
+            {
+                coolDown -= 1;
+            }
             //REMOVE LATER - Refresh mehtod (ctrl-r): restore all players to life for testing (dont do this while you're ontop of a dead character or things will break)
             if (input.IsKeyDown(Keys.LeftControl) && input.IsKeyDown(Keys.R))
             {
@@ -93,14 +98,17 @@ namespace Blink.Classes
             }
 
             //Spear throw
-            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && oldState != newState && attached && !spearOwner.dead)
+            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && oldState != newState && attached && !spearOwner.dead && !isInUse && coolDown <= 0)
             {
                 throwSpear();
             }
 
+
+
             //Holding spear attacks
-            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && oldState != newState && attached && !spearOwner.dead && !isInUse)
+            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && !attackDown && attached && !spearOwner.dead && !isInUse && coolDown <= 0)
             {
+                attackDown = true;
                 isInUse = true;
                 if (spearOwner.getDirectionFacing() == 0)
                 {
@@ -119,6 +127,8 @@ namespace Blink.Classes
                     spearOrientation = 6;
                 }
             }
+            else if ((input.IsKeyUp(ATTACK_KEY) && padState.IsButtonUp(ATTACK_BUTTON)))
+                attackDown = false;
 
             //Set the spear rectangle to fit the current orientation if the spear;
             if (isInUse)
@@ -225,7 +235,7 @@ namespace Blink.Classes
 
         public void Draw(SpriteBatch sB)
         {
-            Vector2 origin = new Vector2(0, 0);
+            Vector2 origin = new Vector2(0, 8);
             float RotationAngle = 0;
             Texture2D drawnText = spearText;
             if (spearOwner == null)
