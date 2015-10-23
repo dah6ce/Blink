@@ -20,7 +20,7 @@ namespace Blink.Classes
         private Boolean bounce = false;
 
         public Boolean active = true;
-        
+
         Map arena;
         public Texture2D playerText, deadText, blinkRect;
         public Vector2 velocity, SCREENSIZE, oldPos;
@@ -167,7 +167,7 @@ namespace Blink.Classes
                 }
                 
             }
-            else if (blinkKeyDown && (input.IsKeyUp(Keys.LeftAlt) || padState.IsButtonDown(Buttons.LeftShoulder)))
+            else if (blinkKeyDown && (input.IsKeyUp(Keys.LeftAlt) && padState.IsButtonUp(Buttons.LeftShoulder)))
             {
                 blinkKeyDown = false;
             }
@@ -701,6 +701,11 @@ namespace Blink.Classes
         {
             playerRect.X = (int)pos.X;
             playerRect.Y = (int)pos.Y;
+        }
+
+        public float getMulti()
+        {
+            return curMultiplier;
         }
 
         public void reset()
