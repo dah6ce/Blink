@@ -66,6 +66,7 @@ namespace Blink.GUI
         public void LoadContent(ContentManager Content)
         {
 
+            selectedOverlay = Content.Load<Texture2D>("select");
 
             //Gets a list of all the .map files in our mapdata folder
             maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "\\Content\\MapData", "*.map");
@@ -80,11 +81,11 @@ namespace Blink.GUI
                 mapImages.Add(mapImage);
                 Texture2D mapThumbtext = Content.Load<Texture2D>("MapData/"+mapName + "Thumb");
                 mapThumb thumb = new mapThumb(mapThumbtext, new Vector2(), mapName);
+                thumb.selectionOverlay = selectedOverlay;
                 mapThumbs.Add(thumb);
             }
 
             positionThumbs(mapThumbs);
-            selectedOverlay = Content.Load<Texture2D>("select");
 
             Vector2 pos = new Vector2(screenSize.X / 2, 50);
             title = new Label(titleString, Content.Load<SpriteFont>("miramo"), pos, new Vector2(0.5f, 0));
@@ -148,6 +149,7 @@ namespace Blink.GUI
 
             if (moveLeft && !lastMoveLeft)
             {
+                mapThumbs[selected].unselect();
                 selected--;
                 if (selected % THUMBROWSIZE == 7)
                     selected += THUMBROWSIZE;
@@ -160,9 +162,11 @@ namespace Blink.GUI
                         selected = mapThumbs.Count - 1;
                     }
                 }
+                mapThumbs[selected].select();
             }
             if (moveRight && !lastMoveRight)
             {
+                mapThumbs[selected].unselect();
                 selected++;
                 if (selected % THUMBROWSIZE == 0)
                     selected -= THUMBROWSIZE;
@@ -170,6 +174,7 @@ namespace Blink.GUI
                 {
                     selected -= (selected % THUMBROWSIZE);
                 }
+                mapThumbs[selected].select();
             }
             if (accept && !lastAccept)
             {
@@ -189,7 +194,7 @@ namespace Blink.GUI
             sb.Draw(mapImages[selected], new Vector2(0,0));
             foreach (mapThumb thumb in mapThumbs)
                 thumb.Draw(sb);
-            sb.Draw(selectedOverlay, new Vector2(200 * (selected % THUMBROWSIZE), (float)Math.Floor((selected / 8f)) * 120 + 600));
+            //sb.Draw(selectedOverlay, new Vector2(200 * (selected % THUMBROWSIZE), (float)Math.Floor((selected / 8f)) * 120 + 600), Color.Gold);
         }
 
         public GameState GetTransition()

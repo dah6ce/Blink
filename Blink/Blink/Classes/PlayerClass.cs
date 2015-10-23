@@ -33,7 +33,6 @@ namespace Blink.Classes
         public Boolean hasSpear = true;
         public Boolean blinked = false, blinkKeyDown = false;
         private float blinkJuice, blinkCoolDown, stunTimer, deathTimer, curMultiplier, dustTimer;
-        private int curJump;
 
         private Vector2 offset;
 
@@ -291,9 +290,9 @@ namespace Blink.Classes
 
             foreach (int block in blocks)
             {
-                if (block == 5)
+                if (block == 5 && !dead)
                 {
-                    dead = true;
+                    setDead(true, null, "MAP");
                 }
             }
         }
@@ -576,7 +575,8 @@ namespace Blink.Classes
                         p.playerRect.Y -= otherDist;
                         this.velocity.Y = 20;
                         p.velocity.Y = -20;
-                        setDead(true, p, "STOMP");
+                        this.dead = true;
+                        throwKilled(this, p, "STOMP");
                         //this.rectA.Height = rectA.Height / 2;
                         //this.rectA.Y += rectA.Height;
                     }
@@ -615,8 +615,6 @@ namespace Blink.Classes
 
         internal void setDead(Boolean deathState, PlayerClass killer, String method)
         {
-            //Console.WriteLine("setDead: " + this.title);
-            //spear.dropSpear();
             dead = deathState;
             throwKilled(this, killer, method);
         }
@@ -681,7 +679,10 @@ namespace Blink.Classes
                 killer.score -= 1;
                 return;
             }
-			killer.score += 1;
+            else if (killer != null)
+                killer.score += 1;
+            else
+                killed.score -= 1;
             DeathEventArgs args = new DeathEventArgs(killed, killer, method);
             onPlayerKilled(this, args);
         }
