@@ -123,10 +123,10 @@ namespace Blink
             player3.aniList = animations;
             player4.aniList = animations;
 
-            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
-            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
-            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
-            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
 
             spears[0] = spear1;
             spears[1] = spear2;
@@ -255,10 +255,10 @@ namespace Blink
 				player4State = Keyboard.GetState();
 			}
 			//End of TAB code. Can now only control one player at a time using keyboard.
-			player1.Update(player1State, GamePad.GetState(PlayerIndex.One));
-			player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
-			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
-			player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
+			player1.Update(player1State, GamePad.GetState(PlayerIndex.One), gameTime);
+            player2.Update(player2State, GamePad.GetState(PlayerIndex.Two), gameTime);
+            player3.Update(player3State, GamePad.GetState(PlayerIndex.Three), gameTime);
+            player4.Update(player4State, GamePad.GetState(PlayerIndex.Four), gameTime);
             foreach (SpearClass sp in spears)
             {
               
