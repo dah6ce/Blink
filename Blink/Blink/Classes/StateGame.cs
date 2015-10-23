@@ -22,11 +22,16 @@ namespace Blink
 	public class StateGame : GameState
 	{
 		Vector2 screenSize;
+        SpearClass spear1;
+        SpearClass spear2;
+        SpearClass spear3;
+        SpearClass spear4;
 		PlayerClass player1;
 		PlayerClass player2;
 		PlayerClass player3;
 		PlayerClass player4;
         PlayerClass[] players = new PlayerClass[4];
+        SpearClass[] spears = new SpearClass[4];
 		PlayerKeys currPlayer;
 		KeyboardState oldState;
 		KeyboardState player1State;
@@ -36,7 +41,7 @@ namespace Blink
         string mapName = "map1";
         float roundReset = -1;
         float timeElapsed;
-        GameTime gameTime = new GameTime();
+        public static GameTime gameTime = new GameTime();
 		Map map1;
 		bool[] oldStartState = new bool[4];
 		bool paused;
@@ -88,6 +93,11 @@ namespace Blink
             players[2] = player3;
             players[3] = player4;
 
+            spears[0] = spear1;
+            spears[1] = spear2;
+            spears[2] = spear3;
+            spears[3] = spear4;
+
             player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1, players);
             player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1, players);
             player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
@@ -97,6 +107,11 @@ namespace Blink
             player2.deadText = Content.Load<Texture2D>("spriteDead");
             player3.deadText = Content.Load<Texture2D>("spriteDead");
             player4.deadText = Content.Load<Texture2D>("spriteDead");
+
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
 
             StreamReader mapData;
             mapData = File.OpenText("Content/MapData/"+mapName+".map");
@@ -219,7 +234,10 @@ namespace Blink
 			player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
 			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
 			player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
-
+            spear1.Update(player1State, GamePad.GetState(PlayerIndex.One));
+            spear2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
+            spear3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
+            spear4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
 			oldState = currState;
 
             oldStartState[0] = GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start);
@@ -246,6 +264,10 @@ namespace Blink
 			player2.Draw(sb);
 			player3.Draw(sb);
 			player4.Draw(sb);
+            spear1.Draw(sb);
+            spear2.Draw(sb);
+            spear3.Draw(sb);
+            spear4.Draw(sb);
 
 			if (paused)
 			{

@@ -22,10 +22,13 @@ namespace Blink.Classes
         Map arena;
         public Texture2D playerText, deadText;
         public Vector2 velocity, SCREENSIZE, oldPos;
-        Boolean atRest = false, dead = false, victory = false;
+        public Boolean atRest = false, dead = false, victory = false;
         private PlayerClass[] players;
-        Rectangle playerRect = new Rectangle(0,0,64,64);
+        Rectangle playerRect = new Rectangle(0, 0, 64, 64);
         public String title;
+        private SpearClass spear;
+        private int directionFacing = 0; //0 for left, 1 for right
+        public Boolean hasSpear = true;
 
         public delegate void PlayerKilledHandler(object sender, DeathEventArgs e);
         public event PlayerKilledHandler onPlayerKilled;
@@ -43,7 +46,15 @@ namespace Blink.Classes
             velocity.Y = 0;
             SCREENSIZE = ScreenSize;
             arena = m;
+        }
 
+        public void setSpear(SpearClass spr)
+        {
+            spear = spr;
+            if (spear != null)
+            {
+                spear.setOwner(this); 
+        }
         }
 
         public void Update(KeyboardState input, GamePadState padState)
@@ -106,7 +117,7 @@ namespace Blink.Classes
             }
 
             //Velocity applications
-            int footing = arena.checkFooting(new Vector2(playerRect.X,playerRect.Y));
+            int footing = arena.checkFooting(new Vector2(playerRect.X, playerRect.Y));
 
             if (atRest && footing < 10)
                 atRest = false;
@@ -132,24 +143,30 @@ namespace Blink.Classes
             if (!atRest && velocity.Y < TERMINAL_V)
                 velocity.Y += GRAVITY;
 
+            //Check whether player is moving left/right
+            if (velocity.X > 0)
+                directionFacing = 1;
+            else if (velocity.X < 0)
+                directionFacing = 0;
+
         }
 
         public void blockDataUpdate()
         {
             int[] blocks = new int[9];
-            int x,y;
+            int x, y;
 
-            for(x = 0; x < 3; x++)
+            for (x = 0; x < 3; x++)
             {
-                for(y = 0; y < 3; y++)
+                for (y = 0; y < 3; y++)
                 {
                     blocks[x * 3 + y] = arena.blockInfo(new Vector2(playerRect.X + x * 16 - 1, playerRect.Y + y * 16 - 1));
                 }
             }
 
-            foreach(int block in blocks)
+            foreach (int block in blocks)
             {
-                if(block == 5)
+                if (block == 5)
                 {
                     dead = true;
                 }
@@ -171,7 +188,7 @@ namespace Blink.Classes
             else if (velocity.Y < 0)
                 d = -1;
 
-            Boolean[] collisions = arena.collides(new Vector2(testX, testY), new Vector2(playerRect.X,playerRect.Y), d, r);
+            Boolean[] collisions = arena.collides(new Vector2(testX, testY), new Vector2(playerRect.X, playerRect.Y), d, r);
 
             //This is kinda messy, I should eventually clean it up
 
@@ -193,7 +210,7 @@ namespace Blink.Classes
                 else
                     vertDist = TILEWIDTH - (testY % TILEWIDTH);
 
-                if(horiDist > vertDist)
+                if (horiDist > vertDist)
                 {
                     //If player is traveling left
                     if (velocity.X < 0)
@@ -259,7 +276,7 @@ namespace Blink.Classes
             testY %= SCREENSIZE.Y;
             testX %= SCREENSIZE.X;
 
-            if(testY < 0)
+            if (testY < 0)
                 testY += SCREENSIZE.Y;
             if (testX < 0)
                 testX += SCREENSIZE.X;
@@ -271,7 +288,7 @@ namespace Blink.Classes
             playerRect.X = (int)testX;
 
 
-            if(!dead && (velocity.X != 0 || velocity.Y != 0))
+            if (!dead && (velocity.X != 0 || velocity.Y != 0))
                 playerCollision();
         }
 
@@ -304,7 +321,8 @@ namespace Blink.Classes
                 {
                     collided = doCollisions(playerRect, oldPos, p.playerRect, p.oldPos, p);
 
-                    if (!collided) { 
+                    if (!collided)
+                    {
                         Rectangle loopRectA = new Rectangle(playerRect.X, playerRect.Y, playerRect.Width, playerRect.Height);
                         loopRectA = loopRectangle(loopRectA);
                         Vector2 loopOldRectA = new Vector2(oldPos.X, oldPos.Y);
@@ -455,21 +473,42 @@ namespace Blink.Classes
             return false;
         }
 
+        //Getter for player dimensions for spear class
+        public Rectangle getPlayerRect()
+        {
+            return playerRect;
+                    }
+        
+        internal int getDirectionFacing()
+        {
+            return directionFacing;
+                }
+
+        public PlayerClass[] getPlayers()
+        {
+            return players;
+            }
+
+        internal void setDead(Boolean deathState)
+        {
+            dead = deathState;
+        }
+
         public void Draw(SpriteBatch sB)
         {
             Texture2D drawnText = playerText;
             if (dead)
                 drawnText = deadText;
-            sB.Draw(drawnText, new Vector2(playerRect.X,playerRect.Y + MARGIN), Color.White);
+            sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y + MARGIN), Color.White);
 
             //Drawing when the player is looping over
             if (playerRect.X < playerRect.Width)
                 sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X, playerRect.Y + MARGIN), Color.White);
-            else if(playerRect.X + playerRect.Width > SCREENSIZE.X)
+            else if (playerRect.X + playerRect.Width > SCREENSIZE.X)
                 sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X), playerRect.Y + MARGIN), Color.White);
 
             if (playerRect.Y < playerRect.Height)
-                sB.Draw(drawnText, new Vector2(playerRect.X,playerRect.Y + SCREENSIZE.Y + MARGIN), Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y + SCREENSIZE.Y + MARGIN), Color.White);
             else if (playerRect.Y + playerRect.Height > SCREENSIZE.Y)
                 sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y - (SCREENSIZE.Y) + MARGIN), Color.White);
         }

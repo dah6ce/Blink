@@ -39,6 +39,7 @@
     <Compile Include="Classes\DeathEventArgs.cs" />
     <Compile Include="Classes\Map.cs" />
     <Compile Include="Classes\PlayerClass.cs" />
+    <Compile Include="Classes\SpearClass.cs" />
     <Compile Include="Classes\StateLevelSelect.cs" />
     <Compile Include="Classes\mapThumb.cs" />
     <Compile Include="Game1.cs" />
@@ -73,18 +74,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\MapData\map2Color.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\MapData\map2Thumb.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\MapData\SpaceColor.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\MapData\SpaceThumb.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\select.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\sprite.png">
