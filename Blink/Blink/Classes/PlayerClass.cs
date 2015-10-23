@@ -57,7 +57,7 @@ namespace Blink.Classes
             if (spear != null)
             {
                 spear.setOwner(this); 
-        }
+            }
         }
 
         public void Update(KeyboardState input, GamePadState padState)

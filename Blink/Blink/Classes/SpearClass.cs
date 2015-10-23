@@ -24,7 +24,6 @@ namespace Blink.Classes
         PlayerClass[] players;
         SpearClass[] spears;
         KeyboardState oldState;
-        Vector2 staticPos = new Vector2(0, 0);
         //  Spear orientation values
         //      1       2        3
         //      0     Player     4
@@ -60,6 +59,10 @@ namespace Blink.Classes
         internal void setOwner(PlayerClass player)
         {
             spearOwner = player;
+            if (spearOwner != null)
+            {
+                spearOwner.hasSpear = true;
+            }
         }
 
         //Manage inputs, check for a spear throw.
@@ -95,7 +98,6 @@ namespace Blink.Classes
                     player.setDead(false,null,"wtf");
                 }
             }
-
             //Spear throw
             if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && oldState != newState && attached && !spearOwner.dead && !isInUse && coolDown <= 0)
             {
@@ -228,24 +230,18 @@ namespace Blink.Classes
             }
             if (!attached)
             {
-                PlayerClass[] checkedPlayers = new PlayerClass[4];
-                //PlayerClass[] players = spearOwner.getPlayers();
-                //Make sure we're not checking a collision that wasn't already checked
                 foreach (PlayerClass p in players)
                 {
-                    Boolean alreadyChecked = false;
-                  /**  foreach (PlayerClass checkedPlayer in checkedPlayers)
-                    {
-                        if (checkedPlayer == p)
-                            alreadyChecked = true;
-                    } **/
-                    if (!attached && !alreadyChecked && !throwing && atRest)
+                 
+                    if (!attached && !throwing && atRest)
                     {
                         Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
                         if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing)
                         {
                             attached = true;
                             setOwner(p);
+                            isInUse = false;
+                            throwing = false;
                             p.hasSpear = true;
                         }
                     }
@@ -349,8 +345,11 @@ namespace Blink.Classes
                 if (inter.Width == 0 && inter.Height == 0)
                 {
                     throwing = false;
-            spearOwner.setSpear(null);
-            this.setOwner(null);
+                    isInUse = false;
+                    attached = false;
+                    spearOwner.hasSpear = false;
+                    spearOwner.setSpear(null);
+                    setOwner(null);
                 }
             }
         }
