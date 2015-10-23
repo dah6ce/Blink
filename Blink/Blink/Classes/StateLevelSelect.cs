@@ -67,8 +67,12 @@ namespace Blink.GUI
         {
 
 
-            //Gets a list of all the .map files in our mapdata folder
+            //Gets a list of all the .map files in our mapdata folder, Platform specific paths
+            #if WINDOWS
             maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "\\Content\\MapData", "*.map");
+            #elif LINUX
+            maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "/Content/MapData", "*.map");
+            #endif
 
             //For each map file, slice off the path to store just the map's name.
             foreach (string path in maps)
