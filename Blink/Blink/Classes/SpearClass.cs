@@ -246,7 +246,7 @@ namespace Blink.Classes
                             p.hasSpear = true;
                         }
                     }
-                    if (!atRest)
+                    if (!atRest && p.blinked == thrownBy.blinked)
                     {
                         Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
                         if (inter.Width > 0 && inter.Height > 0 && spearOwner != p && !p.dead)
@@ -274,7 +274,13 @@ namespace Blink.Classes
             else if (velocity.Y < 0)
                 d = -1;
 
-            Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, new Vector2(spear.Width, spear.Height));
+            Vector2 hitBox;
+            if (spearOrientation == 0 || spearOrientation == 4)
+                hitBox = new Vector2(spear.Width, spear.Height);
+            else
+                hitBox = new Vector2(spear.Height, spear.Width);
+
+            Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, hitBox);
             if (collisions[0] || collisions[1] || collisions[2])
         {
                 spear.X = (int)testX;
@@ -295,8 +301,28 @@ namespace Blink.Classes
             spearOwner.hasSpear = false;
             velocity.X = spearOwner.velocity.X;
             spear.X = spearOwner.getPlayerRect().X;
-            spear.Y = spearOwner.getPlayerRect().Y;
+            spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height/3;
             atRest = false;
+
+            switch (spearOrientation)
+            {
+                case 0:
+                    velocity.X = -20;
+                    spear.X += (int)velocity.X;
+                    break;
+                case 2:
+                    velocity.Y = -20;
+                    spear.Y += (int)velocity.Y;
+                    break;
+                case 4:
+                    velocity.X = 20;
+                    spear.X += (int)velocity.X;
+                    break;
+                case 6:
+                    velocity.Y = 20;
+                    spear.Y += (int)velocity.Y;
+                    break;
+            }
         }
 
         private void throwUpdate()
@@ -320,26 +346,11 @@ namespace Blink.Classes
             {
                 spear.Y += (int)SCREENSIZE.Y;
             }
-         
-            switch (spearOrientation)
-            {
-                case 0:
-                    velocity.X = -15;
-                    spear.X += (int)velocity.X;
-                    break;
-                case 2:
-                    velocity.Y = -15;
-                    spear.Y += (int)velocity.Y;
-                    break;
-                case 4:
-                    velocity.X = 15;
-                    spear.X += (int)velocity.X;
-                    break;
-                case 6:
-                    velocity.Y = 15;
-                    spear.Y += (int)velocity.Y;
-                    break;
-            }
+
+            spear.X += (int)(velocity.X*thrownBy.getMulti());
+            spear.Y += (int)(velocity.Y*thrownBy.getMulti());
+
+
             if (spearOwner != null)
             {
                 Rectangle inter = Rectangle.Intersect(spearOwner.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
@@ -363,22 +374,32 @@ namespace Blink.Classes
 
             if (spearOwner == null)
             {
+                if (!atRest && thrownBy.blinked)
+                    return;
                 origin.X = 32;
-                Vector2 screenPos = new Vector2(spear.X + 32, spear.Y + 8);
+                Vector2 screenPos = new Vector2(spear.X, spear.Y);
                 RotationAngle = (float)(MathHelper.Pi * .5);
                 switch (spearOrientation)
                 {
                     case 0:
                         RotationAngle = 0;
+                        screenPos.X += 32;
+                        screenPos.Y += 8;
                         break;
                     case 2:
                         RotationAngle = (float)(MathHelper.Pi / 2);
+                        screenPos.X += 8;
+                        screenPos.Y += 32;
                         break;
                     case 4:
                         RotationAngle = (float)(MathHelper.Pi);
+                        screenPos.X += 32;
+                        screenPos.Y += 8;
                         break;
                     case 6:
                         RotationAngle = (float)(3 * MathHelper.Pi / 2);
+                        screenPos.X += 8;
+                        screenPos.Y += 32;
                         break;
                 }
                 sB.Draw(drawnText, screenPos, null ,  Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
