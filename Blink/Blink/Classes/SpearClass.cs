@@ -301,7 +301,6 @@ namespace Blink.Classes
             spearOwner.hasSpear = false;
             velocity.X = spearOwner.velocity.X;
             spear.X = spearOwner.getPlayerRect().X;
-            spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height/3;
             atRest = false;
 
             switch (spearOrientation)
@@ -309,18 +308,22 @@ namespace Blink.Classes
                 case 0:
                     velocity.X = -20;
                     spear.X += (int)velocity.X;
+                    spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 3;
                     break;
                 case 2:
                     velocity.Y = -20;
                     spear.Y += (int)velocity.Y;
+                    spear.Y = spearOwner.getPlayerRect().Y;
                     break;
                 case 4:
                     velocity.X = 20;
                     spear.X += (int)velocity.X;
+                    spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 3;
                     break;
                 case 6:
                     velocity.Y = 20;
                     spear.Y += (int)velocity.Y;
+                    spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
                     break;
             }
         }
