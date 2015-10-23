@@ -24,19 +24,22 @@ namespace Blink.Classes
         public Vector2 velocity, SCREENSIZE, oldPos;
         public Boolean atRest = false, dead = false, victory = false;
         private PlayerClass[] players;
-        Rectangle playerRect = new Rectangle(0, 0, 64, 64);
+        Rectangle playerRect = new Rectangle(0, 0, 32, 64);
         public String title;
         private SpearClass spear;
         private int directionFacing = 0; //0 for left, 1 for right
         public Boolean hasSpear = true;
+
+        private Vector2 offset;
 
         public delegate void PlayerKilledHandler(object sender, DeathEventArgs e);
         public event PlayerKilledHandler onPlayerKilled;
 
 		public int score = 0;
 
-        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p)
+        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p, Vector2 off)
         {
+            offset = off;
             oldPos = playerPos;
             playerRect.X = (int)playerPos.X;
             playerRect.Y = (int)playerPos.Y;
@@ -489,28 +492,48 @@ namespace Blink.Classes
             return players;
             }
 
-        internal void setDead(Boolean deathState)
+        internal void setDead(Boolean deathState, PlayerClass killer, String method)
         {
             dead = deathState;
+            throwKilled(this, killer, method);
+        }
+
+        private Rectangle getFrame(Rectangle rect)
+        {
+            if (directionFacing == 0)
+                rect.X = 0;
+            else
+                rect.X = 36;
+            return rect;
         }
 
         public void Draw(SpriteBatch sB)
         {
             Texture2D drawnText = playerText;
+
+
+            //THIS HEIGHT AND WIDTH IS HARDCODED. CHANGE THIS COLIN YOU LAZY ASS
+            Rectangle frame = new Rectangle(0,0,36,68);
+
+            int offX = (directionFacing == 0 ? (int)offset.X : (int)-offset.X);
+            int offY = (int)offset.Y;
+
+            frame = getFrame(frame);
+
             if (dead)
                 drawnText = deadText;
-            sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y + MARGIN), Color.White);
+            sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, Color.White);
 
             //Drawing when the player is looping over
             if (playerRect.X < playerRect.Width)
-                sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X, playerRect.Y + MARGIN), Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X + offX, playerRect.Y + MARGIN + offY), frame, Color.White);
             else if (playerRect.X + playerRect.Width > SCREENSIZE.X)
-                sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X), playerRect.Y + MARGIN), Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X) + offX, playerRect.Y + MARGIN + offY), frame, Color.White);
 
             if (playerRect.Y < playerRect.Height)
-                sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y + SCREENSIZE.Y + MARGIN), Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + SCREENSIZE.Y + MARGIN + offY), frame, Color.White);
             else if (playerRect.Y + playerRect.Height > SCREENSIZE.Y)
-                sB.Draw(drawnText, new Vector2(playerRect.X, playerRect.Y - (SCREENSIZE.Y) + MARGIN), Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y - (SCREENSIZE.Y) + MARGIN + offY), frame, Color.White);
         }
 
 

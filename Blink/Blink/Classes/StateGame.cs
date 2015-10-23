@@ -98,10 +98,12 @@ namespace Blink
             spears[2] = spear3;
             spears[3] = spear4;
 
-            player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1, players);
-            player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1, players);
-            player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
-            player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1, players);
+            Vector2 offset = new Vector2(-4, -4);
+
+            player1.Initialize(Content.Load<Texture2D>("ROTH-OG-SPEARLESS"), player1Pos, screenSize, map1, players, offset);
+            player2.Initialize(Content.Load<Texture2D>("ROTH-RED-SPEARLESS"), player2Pos, screenSize, map1, players, offset);
+            player3.Initialize(Content.Load<Texture2D>("ROTH-SILVER-SPEARLESS"), player3Pos, screenSize, map1, players, offset);
+            player4.Initialize(Content.Load<Texture2D>("ROTH-BLACK-SPEARLESS"), player4Pos, screenSize, map1, players, offset);
 
             player1.deadText = Content.Load<Texture2D>("spriteDead");
             player2.deadText = Content.Load<Texture2D>("spriteDead");

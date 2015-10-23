@@ -15,7 +15,6 @@ namespace Blink.Classes
 	    
         public Texture2D spearText;
         public Rectangle spear;
-        public Rectangle spearRect;
         public Vector2 pos, velocity, SCREENSIZE;
         private int JUMP = 30, TILEWIDTH = 32, MARGIN = 0;
         public int spearOrientation, Width , Height;
@@ -45,9 +44,8 @@ namespace Blink.Classes
             this.spearText = spearText;
             this.players = players;
             this.spears = spears;
-            spear.Width = spearOwner.getPlayerRect().Width/16;
-            spear.Height = spearOwner.getPlayerRect().Height;
-            Rectangle spearRect = new Rectangle(0, 0, 83, 19);
+            spear.Width = spearText.Width;
+            spear.Height = spearText.Height;
             Width = spear.Width;
             Height = spear.Height;
             velocity.X = 0;
@@ -93,7 +91,7 @@ namespace Blink.Classes
                 PlayerClass[] players = spearOwner.getPlayers();
                 foreach (PlayerClass player in players)
                 {
-                    player.setDead(false);
+                    player.setDead(false,null,"wtf");
                 }
             }
 
@@ -137,7 +135,7 @@ namespace Blink.Classes
                 switch (spearOrientation)
                 {
                     case 0:
-                        spear.X = spearOwner.getPlayerRect().X - spearOwner.getPlayerRect().Width;
+                        spear.X = spearOwner.getPlayerRect().X - spear.Width + spearOwner.getPlayerRect().Width;
                         spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
                         break;
                     case 2:
@@ -148,7 +146,7 @@ namespace Blink.Classes
                         spear.Height = temp;
                         break;
                     case 4:
-                        spear.X = spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width;
+                        spear.X = spearOwner.getPlayerRect().X;
                         spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
                         break;
                     case 6:
@@ -172,12 +170,27 @@ namespace Blink.Classes
                 PlayerClass[] players = spearOwner.getPlayers();
                 foreach (PlayerClass player in players)
                 {
-                    if (!player.Equals(spearOwner))
+                    if (!player.Equals(spearOwner) && !player.dead)
                     {
-                        if (spear.X <= player.getPlayerRect().X + player.getPlayerRect().Width && spear.X + spear.Height >= player.getPlayerRect().X &&
-                            spear.Y <= player.getPlayerRect().Y + player.getPlayerRect().Width && spear.Y + spear.Width >= player.getPlayerRect().Y)
+                        if (player.getPlayerRect().Intersects(this.spear))
                         {
-                            player.setDead(true);
+                            player.setDead(true, this.spearOwner, "SPEAR");
+                        }
+                        else if(this.spear.X <= 0)
+                        {
+                            Rectangle tempRect = new Rectangle((int)(spear.X + SCREENSIZE.X), (int)spear.Y, spear.Width, spear.Height);
+                            if (player.getPlayerRect().Intersects(tempRect))
+                            {
+                                player.setDead(true, this.spearOwner, "SPEAR");
+                            }
+                        }
+                        else if(this.spear.X >= SCREENSIZE.X - this.spear.Width)
+                        {
+                            Rectangle tempRect = new Rectangle((int)(spear.X - SCREENSIZE.X), (int)spear.Y, spear.Width, spear.Height);
+                            if (player.getPlayerRect().Intersects(tempRect))
+                            {
+                                player.setDead(true, this.spearOwner, "SPEAR");
+                            }
                         }
                     }
                 }
@@ -249,9 +262,9 @@ namespace Blink.Classes
                 RotationAngle = (float)(MathHelper.Pi * .5);
                 //screenPos.Y += spearOwner.getPlayerRect().Height;
                 if(spearOwner.getDirectionFacing() == 1)
-                    screenPos.X += spearOwner.getPlayerRect().Width+3*spear.Width;
+                    screenPos.X += spearOwner.getPlayerRect().Width+spear.Width/13;
                 else if (spearOwner.getDirectionFacing() == 0)
-                    screenPos.X -= spear.Width;
+                    screenPos.X -= spear.Width/16;
                 //Drawing when the player is looping over
                 if (spearOwner.getDirectionFacing() == 1 && spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width > SCREENSIZE.X)
                 {
