@@ -186,6 +186,10 @@ namespace Blink.Classes
             {
                 throwUpdate();
             }
+            if (!atRest && velocity.Y < TERMINAL_V)
+            {
+                spear.Y += (int)GRAVITY;
+            }
             oldState = newState;
         }
 
@@ -241,8 +245,7 @@ namespace Blink.Classes
                         if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing)
                         {
                             attached = true;
-                            spearOwner = p;
-                            spearOwner.setSpear(this);
+                            setOwner(p);
                             p.hasSpear = true;
                         }
                     }
@@ -274,7 +277,7 @@ namespace Blink.Classes
             else if (velocity.Y < 0)
                 d = -1;
 
-            Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r);
+            Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, new Vector2(spear.Width, spear.Height));
             if (collisions[0] || collisions[1] || collisions[2])
             {
                 spear.X = (int)testX;
@@ -431,8 +434,6 @@ namespace Blink.Classes
         public void reset(PlayerClass p)
         {
             setOwner(p);
-            spear.Width = spearOwner.getPlayerRect().Width / 16;
-            spear.Height = spearOwner.getPlayerRect().Height;
             Width = spear.Width;
             Height = spear.Height;
             velocity.X = 0;

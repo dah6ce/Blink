@@ -191,7 +191,7 @@ namespace Blink.Classes
             else if (velocity.Y < 0)
                 d = -1;
 
-            Boolean[] collisions = arena.collides(new Vector2(testX, testY), new Vector2(playerRect.X, playerRect.Y), d, r);
+            Boolean[] collisions = arena.collides(new Vector2(testX, testY), new Vector2(playerRect.X, playerRect.Y), d, r, new Vector2(playerRect.Width, playerRect.Height));
 
             //This is kinda messy, I should eventually clean it up
 
