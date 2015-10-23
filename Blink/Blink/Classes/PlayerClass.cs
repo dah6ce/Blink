@@ -284,7 +284,7 @@ namespace Blink.Classes
             {
                 for (y = 0; y < 3; y++)
                 {
-                    blocks[x * 3 + y] = arena.blockInfo(new Vector2(playerRect.X + x * 16 - 1, playerRect.Y + y * 16 - 1));
+                    blocks[x * 3 + y] = arena.blockInfo(new Vector2(playerRect.X + x * (int)(playerRect.Width/3) - 1, playerRect.Y + y * (int)(playerRect.Height/3) - 1));
                 }
             }
 
@@ -624,6 +624,8 @@ namespace Blink.Classes
         internal void setDead(Boolean deathState, PlayerClass killer, String method)
         {
             dead = deathState;
+            blinkJuice = MAXBLINKJUICE;
+            blinked = false;
             throwKilled(this, killer, method);
         }
 
