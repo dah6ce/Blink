@@ -1,5 +1,4 @@
 ﻿using System;
-
 using System.IO;
 using Blink.GUI;
 using Blink;
@@ -35,9 +34,10 @@ namespace Blink.Classes
         public readonly Keys THROW_KEY = Keys.Q, ATTACK_KEY = Keys.Space;
         public readonly Buttons THROW_BUTTON = Buttons.RightShoulder, ATTACK_BUTTON = Buttons.A;
 
+		public int inUseTimer = 10, coolDown = 10;
         //Attacking or being thrown sets this to true
         public Boolean isInUse = false, atRest = true;
-        public Boolean attached = true, throwing = false;
+        public Boolean attached = true, throwing = false, attackDown = false;
         //Constructor for new spear
         //Takes inputs (Player, ScreenSize, Map)
         public SpearClass(PlayerClass spearOwner, Texture2D spearText, Vector2 ScreenSize, /*necesary?*/ Map m, PlayerClass[] players, SpearClass[] spears)
@@ -45,8 +45,8 @@ namespace Blink.Classes
             this.spearText = spearText;
             this.players = players;
             this.spears = spears;
-            spear.Width = spearOwner.getPlayerRect().Width/16;
-            spear.Height = spearOwner.getPlayerRect().Height;
+            spear.Width = spearText.Width;
+            spear.Height = spearText.Height;
             Width = spear.Width;
             Height = spear.Height;
             velocity.X = 0;
@@ -69,19 +69,35 @@ namespace Blink.Classes
             KeyboardState newState = input;
             spear.Width = Width;
             spear.Height = Height;
+			if (isInUse)
+			{
+				if(inUseTimer > 0)
+				{
+					inUseTimer -= 1;
+				}
+				else
+				{
             isInUse = false; 
+					inUseTimer = 10;
+                    coolDown = 20;
+				}
+			}
+            if (!isInUse && coolDown > 0)
+            {
+                coolDown -= 1;
+            }
             //REMOVE LATER - Refresh mehtod (ctrl-r): restore all players to life for testing (dont do this while you're ontop of a dead character or things will break)
             if (input.IsKeyDown(Keys.LeftControl) && input.IsKeyDown(Keys.R))
             {
                 PlayerClass[] players = spearOwner.getPlayers();
                 foreach (PlayerClass player in players)
                 {
-                    player.setDead(false);
+                    player.setDead(false,null,"wtf");
                 }
             }
 
             //Spear throw
-            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && oldState != newState && attached && !spearOwner.dead)
+            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && oldState != newState && attached && !spearOwner.dead && !isInUse && coolDown <= 0)
             {
                 isInUse = true;
                 if (spearOwner.getDirectionFacing() == 0)
@@ -104,9 +120,12 @@ namespace Blink.Classes
                 throwSpear();
             }
 
+
+
             //Holding spear attacks
-            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && oldState != newState && attached && !spearOwner.dead && !isInUse)
+            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && !attackDown && attached && !spearOwner.dead && !isInUse && coolDown <= 0)
             {
+                attackDown = true;
                 isInUse = true;
                 if (spearOwner.getDirectionFacing() == 0)
                 {
@@ -125,6 +144,8 @@ namespace Blink.Classes
                     spearOrientation = 6;
                 }
             }
+            else if ((input.IsKeyUp(ATTACK_KEY) && padState.IsButtonUp(ATTACK_BUTTON)))
+                attackDown = false;
 
             //Set the spear rectangle to fit the current orientation if the spear;
             if (isInUse)
@@ -133,7 +154,7 @@ namespace Blink.Classes
                 switch (spearOrientation)
                 {
                     case 0:
-                        spear.X = spearOwner.getPlayerRect().X - spearOwner.getPlayerRect().Width;
+                        spear.X = spearOwner.getPlayerRect().X - spear.Width + spearOwner.getPlayerRect().Width;
                         spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
                         break;
                     case 2:
@@ -144,7 +165,7 @@ namespace Blink.Classes
                         spear.Height = temp;
                         break;
                     case 4:
-                        spear.X = spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width;
+                        spear.X = spearOwner.getPlayerRect().X;
                         spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
                         break;
                     case 6:
@@ -176,12 +197,27 @@ namespace Blink.Classes
                 PlayerClass[] players = spearOwner.getPlayers();
                 foreach (PlayerClass player in players)
                 {
-                    if (!player.Equals(spearOwner))
+                    if (!player.Equals(spearOwner) && !player.dead)
                     {
-                        if (spear.X <= player.getPlayerRect().X + player.getPlayerRect().Width && spear.X + spear.Height >= player.getPlayerRect().X &&
-                            spear.Y <= player.getPlayerRect().Y + player.getPlayerRect().Width && spear.Y + spear.Width >= player.getPlayerRect().Y)
+                        if (player.getPlayerRect().Intersects(this.spear))
                         {
-                            player.setDead(true);
+                            player.setDead(true, this.spearOwner, "SPEAR");
+                        }
+                        else if(this.spear.X <= 0)
+                        {
+                            Rectangle tempRect = new Rectangle((int)(spear.X + SCREENSIZE.X), (int)spear.Y, spear.Width, spear.Height);
+                            if (player.getPlayerRect().Intersects(tempRect))
+                            {
+                                player.setDead(true, this.spearOwner, "SPEAR");
+                            }
+                        }
+                        else if(this.spear.X >= SCREENSIZE.X - this.spear.Width)
+                    {
+                            Rectangle tempRect = new Rectangle((int)(spear.X - SCREENSIZE.X), (int)spear.Y, spear.Width, spear.Height);
+                            if (player.getPlayerRect().Intersects(tempRect))
+                        {
+                                player.setDead(true, this.spearOwner, "SPEAR");
+                            }
                         }
                     }
                 }
@@ -216,8 +252,8 @@ namespace Blink.Classes
                         if (inter.Width > 0 && inter.Height > 0 && spearOwner != p)
                         {
                             p.dead = true;
-                        }
-                    }
+                }
+            }
                 }
             }
 
@@ -247,7 +283,7 @@ namespace Blink.Classes
                 velocity.Y = 0;
                 atRest = true;
                 throwing = false;
-            }
+        }
         }
 
         //Handle throw physics
@@ -310,15 +346,15 @@ namespace Blink.Classes
                 if (inter.Width == 0 && inter.Height == 0)
                 {
                     throwing = false;
-                    spearOwner.setSpear(null);
-                    this.setOwner(null);
+            spearOwner.setSpear(null);
+            this.setOwner(null);
                 }
             }
         }
-        
+
         public void Draw(SpriteBatch sB)
         {
-            Vector2 origin = new Vector2(0, 0);
+            Vector2 origin = new Vector2(0, 8);
             float RotationAngle = 0;
             Texture2D drawnText = spearText;
 
@@ -350,9 +386,9 @@ namespace Blink.Classes
                 RotationAngle = (float)(MathHelper.Pi * .5);
                 //screenPos.Y += spearOwner.getPlayerRect().Height;
                 if(spearOwner.getDirectionFacing() == 1)
-                    screenPos.X += spearOwner.getPlayerRect().Width+3*spear.Width;
+                    screenPos.X += spearOwner.getPlayerRect().Width+spear.Width/13;
                 else if (spearOwner.getDirectionFacing() == 0)
-                    screenPos.X -= spear.Width;
+                    screenPos.X -= spear.Width/16;
                 //Drawing when the player is looping over
                 if (spearOwner.getDirectionFacing() == 1 && spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width > SCREENSIZE.X)
                 {

@@ -19,3 +19,9 @@
 /processorParam:TextureFormat=Compressed
 /build:miramo.spritefont
 
+#begin miramo30.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:miramo30.spritefont
+
