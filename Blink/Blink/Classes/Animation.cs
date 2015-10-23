@@ -69,5 +69,11 @@ namespace Blink.Classes
                 sb.Draw(sheet, pos, frame, Color.White, 0f, new Vector2(), 1f, SpriteEffects.FlipHorizontally,0f);
 
         }
+
+        public void setFrame(Vector2 dimensions)
+        {
+            frame.X = (int)dimensions.X;
+            frame.Y = (int)dimensions.Y;
+        }
     }
 }

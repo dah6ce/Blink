@@ -13,7 +13,7 @@ namespace Blink.Classes
         //private int curFriction = 12, airFriction = 1;
         private int JUMP = 22, TILEWIDTH = 32, MARGIN = 0;
         private float GRAVITY = 1.6f, TERMINAL_V = 30, SPEED = 1.2f, GROUNDSPEED = 1.2f, ICESPEED = 0.4f, ACC_CAP = 15;
-        private float STUNTIME = 3f, BLINKCOOL = 0.5f, MAXBLINKJUICE = 6f, DEATHTIMER = 5f, BLINKMULTI = 1.5f, TRAILTIMER = 0.1f;
+        private float STUNTIME = 3f, BLINKCOOL = 0.2f, MAXBLINKJUICE = 6f, DEATHTIMER = 5f, BLINKMULTI = 1.5f, TRAILTIMER = 0.075f;
         private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
 
         //debug variables
@@ -36,7 +36,7 @@ namespace Blink.Classes
 
         private Vector2 offset;
 
-        public Texture2D dustEffect;
+        public Texture2D dustEffect, dustPoof;
         public List<Animation> aniList;
 
         public delegate void PlayerKilledHandler(object sender, DeathEventArgs e);
@@ -88,7 +88,7 @@ namespace Blink.Classes
                     dustTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
                     if (dustTimer < 0)
                     {
-                        Animation poof = new Animation(dustEffect, new Vector2(playerRect.X - 30, playerRect.Y + playerRect.Height - 16), 50f, 3, aniList, directionFacing);
+                        Animation poof = new Animation(dustEffect, new Vector2(playerRect.X - 30, playerRect.Y + playerRect.Height - 16), 20f, 6, aniList, directionFacing);
                         dustTimer = TRAILTIMER;
                     }
                 }
@@ -359,6 +359,10 @@ namespace Blink.Classes
                     else if (velocity.Y > 0)
                     {
                         testY = TILEWIDTH * (float)Math.Ceiling((double)playerRect.Y / TILEWIDTH);
+                        if (blinked || velocity.Y > (TERMINAL_V / 3 * 2))
+                        {
+                            Animation poof = new Animation(dustPoof, new Vector2(testX - 16, testY + playerRect.Height - 60), 20f, 10, aniList, directionFacing);
+                        }
                         velocity.Y = 0;
                         atRest = true;
                     }
@@ -391,6 +395,10 @@ namespace Blink.Classes
                     else if (velocity.Y > 0)
                     {
                         testY = TILEWIDTH * (float)Math.Ceiling((double)playerRect.Y / TILEWIDTH);
+                        if (blinked || velocity.Y > (TERMINAL_V / 3 * 2))
+                        {
+                            Animation poof = new Animation(dustPoof, new Vector2(testX - 16, testY + playerRect.Height - 60), 20f, 10, aniList, directionFacing);
+                        }
                         velocity.Y = 0;
                         atRest = true;
                     }

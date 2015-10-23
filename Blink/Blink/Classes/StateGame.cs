@@ -102,6 +102,7 @@ namespace Blink
             Vector2 offset = new Vector2(-4, -4);
             Texture2D bar = Content.Load<Texture2D>("bar");
             Texture2D dust = Content.Load<Texture2D>("Dust_Trail");
+            Texture2D dustPoof = Content.Load<Texture2D>("Dust_Poof");
 
             player1.Initialize(Content.Load<Texture2D>("ROTH-OG-SPEARLESS"), player1Pos, screenSize, map1, players, offset, bar);
             player2.Initialize(Content.Load<Texture2D>("ROTH-RED-SPEARLESS"), player2Pos, screenSize, map1, players, offset, bar);
@@ -117,6 +118,11 @@ namespace Blink
             player2.dustEffect = dust;
             player3.dustEffect = dust;
             player4.dustEffect = dust;
+
+            player1.dustPoof = dustPoof;
+            player2.dustPoof = dustPoof;
+            player3.dustPoof = dustPoof;
+            player4.dustPoof = dustPoof;
 
             player1.aniList = animations;
             player2.aniList = animations;
@@ -148,10 +154,7 @@ namespace Blink
 		{
 			KeyboardState currState = Keyboard.GetState();
 
-            for (int i = 0; i < animations.Count; i++)
-            {
-                animations[i].Update(gameTime);
-            }
+            
 
 			if(paused)
 			{
@@ -301,7 +304,13 @@ namespace Blink
                 if(roundReset < 0)
                 {
                     resetMap();
-		}
+		        }
+            }
+
+            //Update animations
+            for (int i = 0; i < animations.Count; i++)
+            {
+                animations[i].Update(gameTime);
             }
         }
 
