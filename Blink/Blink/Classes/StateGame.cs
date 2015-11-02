@@ -89,6 +89,7 @@ namespace Blink
 			currPlayer = PlayerKeys.Player1;
 			paused = false;
 			playerPaused = 0;
+            
 		}
 
 		public void LoadContent(ContentManager Content)
@@ -148,6 +149,8 @@ namespace Blink
             mapData = File.OpenText("Content/MapData/"+mapName+".map");
             map1.Initialize(Content.Load<Texture2D>("MapData/"+mapName+"Color"), mapData.ReadToEnd(), 32, 50, 30, players);
             font = Content.Load<SpriteFont>("miramo30");
+
+            resetMap();
         }
 
 		public void UnloadContent()
@@ -207,14 +210,16 @@ namespace Blink
                 GamePadState p1 = GamePad.GetState(PlayerIndex.One);
                 if (p1.IsButtonDown(Buttons.LeftTrigger) && p1.IsButtonDown(Buttons.RightTrigger) && p1.IsButtonDown(Buttons.LeftShoulder) && p1.IsButtonDown(Buttons.RightShoulder))
                     returnState = levelSelect;
-                GamePadState p2 = GamePad.GetState(PlayerIndex.One);
+                GamePadState p2 = GamePad.GetState(PlayerIndex.Two);
                 if (p2.IsButtonDown(Buttons.LeftTrigger) && p2.IsButtonDown(Buttons.RightTrigger) && p2.IsButtonDown(Buttons.LeftShoulder) && p2.IsButtonDown(Buttons.RightShoulder))
                     returnState = levelSelect;
-                GamePadState p3 = GamePad.GetState(PlayerIndex.One);
+                GamePadState p3 = GamePad.GetState(PlayerIndex.Three);
                 if (p3.IsButtonDown(Buttons.LeftTrigger) && p3.IsButtonDown(Buttons.RightTrigger) && p3.IsButtonDown(Buttons.LeftShoulder) && p3.IsButtonDown(Buttons.RightShoulder))
                     returnState = levelSelect;
-                GamePadState p4 = GamePad.GetState(PlayerIndex.One);
+                GamePadState p4 = GamePad.GetState(PlayerIndex.Four);
                 if (p4.IsButtonDown(Buttons.LeftTrigger) && p4.IsButtonDown(Buttons.RightTrigger) && p4.IsButtonDown(Buttons.LeftShoulder) && p4.IsButtonDown(Buttons.RightShoulder))
+                    returnState = levelSelect;
+                if (Keyboard.GetState().IsKeyDown(Keys.R))
                     returnState = levelSelect;
                 return;
 			}

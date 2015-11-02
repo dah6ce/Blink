@@ -31,6 +31,7 @@ namespace Blink
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1600;
             graphics.PreferredBackBufferHeight = 960;
+            //graphics.ToggleFullScreen();
             Content.RootDirectory = "Content";
         }
 

@@ -16,6 +16,7 @@ namespace Blink.Classes
         public Texture2D spearText;
         public Rectangle spear;
         public Vector2 pos, velocity, SCREENSIZE;
+        public float gravityEffect;
         private int JUMP = 30, TILEWIDTH = 32, MARGIN = 0;
         public int spearOrientation, Width , Height;
         private float GRAVITY = 1.6f, TERMINAL_V = 30, SPEED = 1.2f, GROUNDSPEED = 1.2f, ICESPEED = 0.4f, ACC_CAP = 16;
@@ -31,6 +32,7 @@ namespace Blink.Classes
         public Map m;
         public readonly Keys THROW_KEY = Keys.Q, ATTACK_KEY = Keys.Space;
         public readonly Buttons THROW_BUTTON = Buttons.RightShoulder, ATTACK_BUTTON = Buttons.X;
+        public Boolean throwDown = false;
 
 		public int inUseTimer = 10, coolDown = 10;
         //Attacking or being thrown sets this to true
@@ -98,8 +100,9 @@ namespace Blink.Classes
                 }
             }
             //Spear throw
-            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && attached && !spearOwner.dead && !isInUse && coolDown <= 0)
+            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && attached && !spearOwner.dead && !isInUse && coolDown <= 0 && !throwDown)
             {
+                throwDown = true;
                 isInUse = true;
                 if (spearOwner.getDirectionFacing() == 0)
                 {
@@ -109,18 +112,19 @@ namespace Blink.Classes
                 {
                     spearOrientation = 4;
                 }
-                if (input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.DPadUp))
+                if (input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.LeftThumbstickUp))
                 {
                     spearOrientation = 2;
                 }
-                else if (input.IsKeyDown(Keys.Down) || padState.IsButtonDown(Buttons.DPadDown))
+                else if (input.IsKeyDown(Keys.Down) || padState.IsButtonDown(Buttons.LeftThumbstickDown))
                 {
                     spearOrientation = 6;
                 }
                 thrownBy = spearOwner;
                 throwSpear();
             }
-
+            if ((input.IsKeyUp(THROW_KEY) && padState.IsButtonUp(ATTACK_BUTTON)))
+                throwDown = false;
 
 
             //Holding spear attacks
@@ -136,11 +140,11 @@ namespace Blink.Classes
                 {
                     spearOrientation = 4;
                 }
-                if (input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.DPadUp))
+                if (input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.LeftThumbstickUp))
                 {
                     spearOrientation = 2;
                 }
-                else if (input.IsKeyDown(Keys.Down) || padState.IsButtonDown(Buttons.DPadDown))
+                else if (input.IsKeyDown(Keys.Down) || padState.IsButtonDown(Buttons.LeftThumbstickDown))
                 {
                     spearOrientation = 6;
                 }
@@ -187,9 +191,11 @@ namespace Blink.Classes
             {
                 throwUpdate();
             }
-            if (!atRest && velocity.Y < TERMINAL_V)
+            if (!atRest)
             {
-                spear.Y += (int)GRAVITY;
+                if(Math.Abs(velocity.Y) + gravityEffect < TERMINAL_V)
+                    gravityEffect += GRAVITY/10;
+                spear.Y += (int)(velocity.Y + gravityEffect);
             }
             oldState = newState;
         }
@@ -237,6 +243,7 @@ namespace Blink.Classes
                         Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
                         if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing)
                         {
+                            gravityEffect = 0;
                             Console.WriteLine("Collision!!");
                             attached = true;
                             setOwner(p);
@@ -353,6 +360,20 @@ namespace Blink.Classes
             spear.X += (int)(velocity.X*thrownBy.getMulti());
             spear.Y += (int)(velocity.Y*thrownBy.getMulti());
 
+            if(Math.Abs(velocity.X) >= Math.Abs(velocity.Y))
+            {
+                if (velocity.X > 0)
+                    spearOrientation = 4;
+                else
+                    spearOrientation = 0;
+            }
+            else
+            {
+                if (velocity.Y > 0)
+                    spearOrientation = 6;
+                else
+                    spearOrientation = 2;
+            }
 
             if (spearOwner != null)
             {
@@ -460,6 +481,7 @@ namespace Blink.Classes
 
         public void reset(PlayerClass p)
         {
+            gravityEffect = 0;
             setOwner(p);
             Width = spear.Width;
             Height = spear.Height;
