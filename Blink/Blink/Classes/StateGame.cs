@@ -356,12 +356,13 @@ namespace Blink
 
 			if (paused)
 			{
-				sb.DrawString(font, "P" + (playerPaused + 1) + " paused", new Vector2(screenSize.X / 2, screenSize.Y / 2), Color.Black);
+                string pauseMessage = "P" + (playerPaused + 1) + " paused";
+                sb.DrawString(font, pauseMessage, new Vector2(screenSize.X / 2 - font.MeasureString(pauseMessage).X/2, screenSize.Y / 2), Color.Black);
 			}
 			if (roundReset > 0)
 			{
 				
-				Vector2 temp = new Vector2(screenSize.X / 2, 300);
+				Vector2 temp = new Vector2(screenSize.X / 2 - font.MeasureString("SCORES").X/2, 300);
 				sb.DrawString(font, "SCORES", temp, Color.White);
 
 				temp.Y += 32;
