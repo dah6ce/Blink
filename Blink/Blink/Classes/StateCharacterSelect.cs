@@ -10,20 +10,18 @@ using Microsoft.Xna.Framework.Input;
 namespace Blink.GUI
 {
 
-    public class StateLevelSelect : GameState
+    public class StateCharacterSelect : GameState
     {
         const int THUMBROWSIZE = 8;
 
         Vector2 screenSize;
         int selected;
-        IEnumerable<string> maps;
+        IEnumerable<string> chars;
 
         String titleString;
-        String selectedMap;
 
         GameState nextState;
-        StateGame game;
-        StateCharacterSelect charSelect;
+        GameState game;
 
         bool lastMoveLeft;
         bool lastMoveRight;
@@ -31,28 +29,23 @@ namespace Blink.GUI
         bool prematureEnter;
 
 
-        //Storage list for all our map names
-        List<string> mapNames = new List<string>();
-        //Storage for large map images
-        List<Texture2D> mapImages = new List<Texture2D>();
-        List<ImageButton> mapThumbs = new List<ImageButton>();
+        //Storage list for all our char names
+        List<string> charNames = new List<string>();
+        List<ImageButton> charThumbs = new List<ImageButton>();
 
         Texture2D selectedOverlay;
 
-        Label title;
-
-        public StateLevelSelect(Vector2 screenSize, String title, StateGame g, StateCharacterSelect charSel)
+        public StateCharacterSelect(Vector2 screenSize, String title, GameState g)
         {
             this.game = g;
-            this.charSelect = charSel;
             this.screenSize = screenSize;
             this.titleString = title;
         }
 
         public void Initialize()
         {
-            if (this.mapThumbs.Count > 0)
-                this.mapThumbs[selected].unselect();
+            if (this.charThumbs.Count > 0)
+                this.charThumbs[selected].unselect();
             this.selected = 0;
             this.nextState = null;
 
@@ -66,47 +59,44 @@ namespace Blink.GUI
 
         public void LoadContent(ContentManager Content)
         {
-            if (mapNames.Count > 0)
+            if (charNames.Count > 0)
             {
-                this.mapThumbs[selected].select();
+                this.charThumbs[selected].select();
                 return;
             }
 
             selectedOverlay = Content.Load<Texture2D>("select");
 
-            //Gets a list of all the .map files in our mapdata folder, Platform specific paths
+            //Gets a list of all the .char files in our chardata folder, Platform specific paths
             #if WINDOWS
-            maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "\\Content\\MapData", "*.map");
+            chars = Directory.EnumerateFiles(Environment.CurrentDirectory + "\\Content\\CharData", "*.char");
             #elif LINUX
-            maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "/Content/MapData", "*.map");
+            chars = Directory.EnumerateFiles(Environment.CurrentDirectory + "/Content/CharData", "*.char");
             #endif
 
-            //For each map file, slice off the path to store just the map's name.
-            foreach (string path in maps)
+            //For each char file, slice off the path to store just the char's name.
+            foreach (string path in chars)
             {
-                string mapName = path.Remove(0, Environment.CurrentDirectory.Length + "\\Content\\MapData\\".Length);
-                mapName = mapName.Replace(".map", "");
-                mapNames.Add(mapName);
-                Texture2D mapImage = Content.Load<Texture2D>("MapData/"+mapName + "Color");
-                mapImages.Add(mapImage);
-                Texture2D mapThumbtext = Content.Load<Texture2D>("MapData/"+mapName + "Thumb");
-                ImageButton thumb = new ImageButton(mapThumbtext, new Vector2(), mapName);
+                string charName = path.Remove(0, Environment.CurrentDirectory.Length + "\\Content\\CharData\\".Length);
+                charName = charName.Replace(".char", "");
+                charNames.Add(charName);
+                Texture2D charThumbtext = Content.Load<Texture2D>("CharData/"+charName + "Thumb");
+                ImageButton thumb = new ImageButton(charThumbtext, new Vector2(), charName);
                 thumb.selectionOverlay = selectedOverlay;
-                mapThumbs.Add(thumb);
+                charThumbs.Add(thumb);
             }
 
-            positionThumbs(mapThumbs);
+            positionThumbs(charThumbs);
 
             Vector2 pos = new Vector2(screenSize.X / 2, 50);
-            title = new Label(titleString, Content.Load<SpriteFont>("miramo"), pos, new Vector2(0.5f, 0));
             pos.Y += 50;
 
-            mapThumbs[0].select();
+            charThumbs[0].select();
         }
 
         public void UnloadContent()
         {
-            
+
         }
 
         private void positionThumbs(List<ImageButton> thumbs)
@@ -153,38 +143,36 @@ namespace Blink.GUI
 
             if (moveLeft && !lastMoveLeft)
             {
-                mapThumbs[selected].unselect();
+                charThumbs[selected].unselect();
                 selected--;
                 if (selected % THUMBROWSIZE == 7)
                     selected += THUMBROWSIZE;
                 else if(selected < 0)
                 {
-                    if (mapThumbs.Count > 8)
+                    if (charThumbs.Count > 8)
                         selected = 7;
                     else
                     {
-                        selected = mapThumbs.Count - 1;
+                        selected = charThumbs.Count - 1;
                     }
                 }
-                mapThumbs[selected].select();
+                charThumbs[selected].select();
             }
             if (moveRight && !lastMoveRight)
             {
-                mapThumbs[selected].unselect();
+                charThumbs[selected].unselect();
                 selected++;
                 if (selected % THUMBROWSIZE == 0)
                     selected -= THUMBROWSIZE;
-                else if(selected >= mapThumbs.Count)
+                else if(selected >= charThumbs.Count)
                 {
                     selected -= (selected % THUMBROWSIZE);
                 }
-                mapThumbs[selected].select();
+                charThumbs[selected].select();
             }
             if (accept && !lastAccept)
             {
-                selectedMap = mapNames[selected];
-                game.setMap(selectedMap);
-                nextState = charSelect;
+                nextState = game;
             }
 
             lastAccept = accept;
@@ -196,8 +184,7 @@ namespace Blink.GUI
         public void Draw(SpriteBatch sb)
         {
             //title.Draw(sb);
-            sb.Draw(mapImages[selected], new Vector2(0,0));
-            foreach (ImageButton thumb in mapThumbs)
+            foreach (ImageButton thumb in charThumbs)
                 thumb.Draw(sb);
             //sb.Draw(selectedOverlay, new Vector2(200 * (selected % THUMBROWSIZE), (float)Math.Floor((selected / 8f)) * 120 + 600), Color.Gold);
         }
@@ -207,10 +194,7 @@ namespace Blink.GUI
             return nextState;
         }
 
-        public string getSelectedMap()
-        {
-            return selectedMap;
-        }
+
     }
 }
 

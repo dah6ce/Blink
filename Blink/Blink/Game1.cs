@@ -21,9 +21,10 @@ namespace Blink
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         GameState currState;
-        GameState mainMenu;
-        GameState levelMenu;
-        GameState game;
+        StateSimpleMenu mainMenu;
+        StateLevelSelect levelMenu;
+        StateCharacterSelect charMenu;
+        StateGame game;
 
         public Game1()
         {
@@ -60,8 +61,11 @@ namespace Blink
             // Should probably be in Initialize, but screen size is updated after Initialize causing weird collision issues
             Vector2 screenSize = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.Right, GraphicsDevice.Viewport.TitleSafeArea.Bottom);
             game = new StateGame(screenSize);
-            levelMenu = new StateLevelSelect(screenSize, "Map Select", new string[] { "Start", "Start", "Quit" }, game);
+            charMenu = new StateCharacterSelect(screenSize, "Character Select", game);
+            levelMenu = new StateLevelSelect(screenSize, "Map Select", game, charMenu);
             mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit" }, new GameState[] { levelMenu, new StateQuit() });
+
+
             ((StateGame)game).levelSelect = levelMenu;
 
             currState = mainMenu;
@@ -95,9 +99,6 @@ namespace Blink
             GameState newState = currState.GetTransition();
             if (newState != null)
             {
-                //Set map
-                if(newState == game)
-                    ((StateGame)game).setMap(((StateLevelSelect)levelMenu).getSelectedMap());
 
                 //State unload/load
                 currState.UnloadContent();

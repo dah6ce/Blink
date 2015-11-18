@@ -148,8 +148,11 @@ namespace Blink
             StreamReader mapData;
             mapData = File.OpenText("Content/MapData/"+mapName+".map");
             map1.Initialize(Content.Load<Texture2D>("MapData/"+mapName+"Color"), mapData.ReadToEnd(), 32, 50, 30, players);
+            #if LINUX
+            font = Content.Load<SpriteFont>("miramo");
+            #else
             font = Content.Load<SpriteFont>("miramo30");
-
+            #endif
             resetMap();
         }
 
