@@ -36,6 +36,9 @@ namespace Blink
 
         public GameState levelSelect;
         GameState returnState;
+        StateSimpleMenu pauseMenu;
+
+        Texture2D pauseBg;
 
 		PlayerKeys currPlayer;
 		KeyboardState oldState;
@@ -62,6 +65,7 @@ namespace Blink
 		public StateGame(Vector2 screenSize)
 		{
 			this.screenSize = screenSize;
+
 		}
 
 		public void Initialize()
@@ -89,7 +93,9 @@ namespace Blink
 			currPlayer = PlayerKeys.Player1;
 			paused = false;
 			playerPaused = 0;
-            
+
+            pauseMenu = new StateSimpleMenu(screenSize, "Paused", new string[]{"Resume", "Exit to main menu", "Quit"}, new GameState[]{this, levelSelect, new StateQuit()});
+            pauseMenu.Initialize();
 		}
 
 		public void LoadContent(ContentManager Content)
@@ -154,6 +160,9 @@ namespace Blink
             font = Content.Load<SpriteFont>("miramo30");
             #endif
             resetMap();
+
+            pauseMenu.LoadContent(Content);
+            pauseBg = Content.Load<Texture2D>("pause");
         }
 
 		public void UnloadContent()
@@ -200,6 +209,8 @@ namespace Blink
 						playerPaused = (int)x;
 					}
 				}
+                if (paused)
+                    pauseMenu.Initialize();
 			}
 
 			if (paused)
@@ -224,6 +235,12 @@ namespace Blink
                     returnState = levelSelect;
                 if (Keyboard.GetState().IsKeyDown(Keys.R))
                     returnState = levelSelect;
+
+                pauseMenu.Update(gameTime);
+                if (pauseMenu.GetTransition() is StateGame)
+                    paused = false;
+                else
+                    returnState = pauseMenu.GetTransition();
                 return;
 			}
 
@@ -359,8 +376,8 @@ namespace Blink
 
 			if (paused)
 			{
-                string pauseMessage = "P" + (playerPaused + 1) + " paused";
-                sb.DrawString(font, pauseMessage, new Vector2(screenSize.X / 2 - font.MeasureString(pauseMessage).X/2, screenSize.Y / 2), Color.Black);
+                sb.Draw(pauseBg,new Rectangle(0,0,(int)screenSize.X,(int)screenSize.Y), new Color(Color.MediumSeaGreen, 125));
+                pauseMenu.Draw(sb);
 			}
 			if (roundReset > 0)
 			{

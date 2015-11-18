@@ -15,12 +15,10 @@ namespace Blink.GUI
         Vector2 screenSize;
         int selected;
         List<TextButton> buttons;
-        IEnumerable<string> maps;
         Label title;
 
         String titleString;
         String[] optionsStrings;
-        String selectedMap;
         GameState[] triggers;
 
         GameState nextState;
@@ -58,24 +56,6 @@ namespace Blink.GUI
 
         public void LoadContent(ContentManager Content)
         {
-
-
-            //Gets a list of all the .map files in our mapdata folder
-            #if WINDOWS
-            maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "\\Content\\MapData", "*.map");
-            #elif LINUX
-            maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "/Content/MapData", "*.map");
-            #endif
-
-            //For each map file, slice off the path to store just the map's name.
-            foreach (string path in maps)
-            {
-                string mapName = path.Remove(0, Environment.CurrentDirectory.Length + "\\Content\\MapData".Length);
-                mapName = mapName.Replace(".map", "");
-                mapNames.Add(mapName);
-
-            }
-
 
             Vector2 pos = new Vector2(screenSize.X / 2, 50);
             title = new Label(titleString, Content.Load<SpriteFont>("miramo"), pos, new Vector2(0.5f, 0));
@@ -143,12 +123,7 @@ namespace Blink.GUI
                 selected = (selected + buttons.Count) % buttons.Count;
                 buttons[selected].Select();
             }
-            if (accept && !lastAccept)
-            {
-                if (titleString == "Map Select" && selected != triggers.Length - 1)
-                {
-                    selectedMap = mapNames[selected];
-                }
+            if (accept && !lastAccept){
                 nextState = triggers[selected];
             }
 
@@ -168,11 +143,6 @@ namespace Blink.GUI
         public GameState GetTransition()
         {
             return nextState;
-        }
-
-        public string getSelectedMap()
-        {
-            return selectedMap;
         }
     }
 }
