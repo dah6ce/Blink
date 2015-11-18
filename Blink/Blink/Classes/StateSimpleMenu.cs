@@ -132,7 +132,8 @@ namespace Blink.GUI
             {
                 buttons[selected].UnSelect();
                 selected--;
-                selected %= buttons.Count;
+                // Need extra step because mod of a negative is negative
+                selected = (selected+buttons.Count) % buttons.Count;
                 buttons[selected].Select();
             }
             if (moveDown && !lastMoveDown)
