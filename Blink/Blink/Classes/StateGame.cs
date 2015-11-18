@@ -2,6 +2,7 @@
 using System.IO;
 using Blink.GUI;
 using Blink.Classes;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -32,6 +33,10 @@ namespace Blink
 		PlayerClass player4;
         PlayerClass[] players = new PlayerClass[4];
         SpearClass[] spears = new SpearClass[4];
+
+        public GameState levelSelect;
+        GameState returnState;
+
 		PlayerKeys currPlayer;
 		KeyboardState oldState;
 		KeyboardState player1State;
@@ -47,6 +52,7 @@ namespace Blink
 		bool paused;
 		int playerPaused;
 		SpriteFont font;
+        List<Animation> animations;
 
         public void setMap(string map)
         {
@@ -65,6 +71,10 @@ namespace Blink
 			player3 = new PlayerClass();
 			player4 = new PlayerClass();
 
+            returnState = null;
+
+            animations = new List<Animation>();
+
             player1.title = "p1";
             player2.title = "p2";
             player3.title = "p3";
@@ -79,6 +89,7 @@ namespace Blink
 			currPlayer = PlayerKeys.Player1;
 			paused = false;
 			playerPaused = 0;
+            
 		}
 
 		public void LoadContent(ContentManager Content)
@@ -93,30 +104,53 @@ namespace Blink
             players[2] = player3;
             players[3] = player4;
 
-            spears[0] = spear1;
-            spears[1] = spear2;
-            spears[2] = spear3;
-            spears[3] = spear4;
 
-            player1.Initialize(Content.Load<Texture2D>("sprite"), player1Pos, screenSize, map1, players);
-            player2.Initialize(Content.Load<Texture2D>("sprite"), player2Pos, screenSize, map1, players);
-            player3.Initialize(Content.Load<Texture2D>("sprite"), player3Pos, screenSize, map1, players);
-            player4.Initialize(Content.Load<Texture2D>("sprite"), player4Pos, screenSize, map1, players);
+            Vector2 offset = new Vector2(-4, -4);
+            Texture2D bar = Content.Load<Texture2D>("bar");
+            Texture2D dust = Content.Load<Texture2D>("Dust_Trail");
+            Texture2D dustPoof = Content.Load<Texture2D>("Dust_Poof");
+
+            player1.Initialize(Content.Load<Texture2D>("ROTH-OG-SPEARLESS"), player1Pos, screenSize, map1, players, offset, bar);
+            player2.Initialize(Content.Load<Texture2D>("ROTH-RED-SPEARLESS"), player2Pos, screenSize, map1, players, offset, bar);
+            player3.Initialize(Content.Load<Texture2D>("ROTH-SILVER-SPEARLESS"), player3Pos, screenSize, map1, players, offset, bar);
+            player4.Initialize(Content.Load<Texture2D>("ROTH-BLACK-SPEARLESS"), player4Pos, screenSize, map1, players, offset, bar);
 
             player1.deadText = Content.Load<Texture2D>("spriteDead");
             player2.deadText = Content.Load<Texture2D>("spriteDead");
             player3.deadText = Content.Load<Texture2D>("spriteDead");
             player4.deadText = Content.Load<Texture2D>("spriteDead");
 
-            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
-            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
-            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
-            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players, spears);
+            player1.dustEffect = dust;
+            player2.dustEffect = dust;
+            player3.dustEffect = dust;
+            player4.dustEffect = dust;
+
+            player1.dustPoof = dustPoof;
+            player2.dustPoof = dustPoof;
+            player3.dustPoof = dustPoof;
+            player4.dustPoof = dustPoof;
+
+            player1.aniList = animations;
+            player2.aniList = animations;
+            player3.aniList = animations;
+            player4.aniList = animations;
+
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+
+            spears[0] = spear1;
+            spears[1] = spear2;
+            spears[2] = spear3;
+            spears[3] = spear4;
 
             StreamReader mapData;
             mapData = File.OpenText("Content/MapData/"+mapName+".map");
             map1.Initialize(Content.Load<Texture2D>("MapData/"+mapName+"Color"), mapData.ReadToEnd(), 32, 50, 30, players);
             font = Content.Load<SpriteFont>("miramo30");
+
+            resetMap();
         }
 
 		public void UnloadContent()
@@ -127,6 +161,8 @@ namespace Blink
 		public void Update(GameTime gameTime)
 		{
 			KeyboardState currState = Keyboard.GetState();
+
+            
 
 			if(paused)
 			{
@@ -170,7 +206,22 @@ namespace Blink
 				oldStartState[1] = GamePad.GetState(PlayerIndex.Two).IsButtonDown(Buttons.Start);
 				oldStartState[2] = GamePad.GetState(PlayerIndex.Three).IsButtonDown(Buttons.Start);
 				oldStartState[3] = GamePad.GetState(PlayerIndex.Four).IsButtonDown(Buttons.Start);
-				return;
+
+                GamePadState p1 = GamePad.GetState(PlayerIndex.One);
+                if (p1.IsButtonDown(Buttons.LeftTrigger) && p1.IsButtonDown(Buttons.RightTrigger) && p1.IsButtonDown(Buttons.LeftShoulder) && p1.IsButtonDown(Buttons.RightShoulder))
+                    returnState = levelSelect;
+                GamePadState p2 = GamePad.GetState(PlayerIndex.Two);
+                if (p2.IsButtonDown(Buttons.LeftTrigger) && p2.IsButtonDown(Buttons.RightTrigger) && p2.IsButtonDown(Buttons.LeftShoulder) && p2.IsButtonDown(Buttons.RightShoulder))
+                    returnState = levelSelect;
+                GamePadState p3 = GamePad.GetState(PlayerIndex.Three);
+                if (p3.IsButtonDown(Buttons.LeftTrigger) && p3.IsButtonDown(Buttons.RightTrigger) && p3.IsButtonDown(Buttons.LeftShoulder) && p3.IsButtonDown(Buttons.RightShoulder))
+                    returnState = levelSelect;
+                GamePadState p4 = GamePad.GetState(PlayerIndex.Four);
+                if (p4.IsButtonDown(Buttons.LeftTrigger) && p4.IsButtonDown(Buttons.RightTrigger) && p4.IsButtonDown(Buttons.LeftShoulder) && p4.IsButtonDown(Buttons.RightShoulder))
+                    returnState = levelSelect;
+                if (Keyboard.GetState().IsKeyDown(Keys.R))
+                    returnState = levelSelect;
+                return;
 			}
 
 			/* Press TAB to change player if using keyboard. *** For Testing Purposes Only ***
@@ -230,14 +281,37 @@ namespace Blink
 				player4State = Keyboard.GetState();
 			}
 			//End of TAB code. Can now only control one player at a time using keyboard.
-			player1.Update(player1State, GamePad.GetState(PlayerIndex.One));
-			player2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
-			player3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
-			player4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
-            spear1.Update(player1State, GamePad.GetState(PlayerIndex.One));
-            spear2.Update(player2State, GamePad.GetState(PlayerIndex.Two));
-            spear3.Update(player3State, GamePad.GetState(PlayerIndex.Three));
-            spear4.Update(player4State, GamePad.GetState(PlayerIndex.Four));
+			player1.Update(player1State, GamePad.GetState(PlayerIndex.One), gameTime);
+            player2.Update(player2State, GamePad.GetState(PlayerIndex.Two), gameTime);
+            player3.Update(player3State, GamePad.GetState(PlayerIndex.Three), gameTime);
+            player4.Update(player4State, GamePad.GetState(PlayerIndex.Four), gameTime);
+            foreach (SpearClass sp in spears)
+            {
+              
+                    if (sp.spearOwner == player1)
+                    {
+                        sp.Update(player1State, GamePad.GetState(PlayerIndex.One));
+                    }
+
+                    if (sp.spearOwner == player2)
+                    {
+                        sp.Update(player2State, GamePad.GetState(PlayerIndex.Two));
+                    }
+                    if (sp.spearOwner == player3)
+                    {
+                        sp.Update(player3State, GamePad.GetState(PlayerIndex.Three));
+                    }
+                    if (sp.spearOwner == player4)
+                    {
+                        sp.Update(player4State, GamePad.GetState(PlayerIndex.Four));
+                    }
+                    else
+                    {
+                        KeyboardState fakestate = new KeyboardState();
+                        GamePadState faker = new GamePadState();
+                        sp.Update(fakestate, faker);
+                    }
+            }
 			oldState = currState;
 
             oldStartState[0] = GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Start);
@@ -253,7 +327,13 @@ namespace Blink
                 if(roundReset < 0)
                 {
                     resetMap();
-		}
+		        }
+            }
+
+            //Update animations
+            for (int i = 0; i < animations.Count; i++)
+            {
+                animations[i].Update(gameTime);
             }
         }
 
@@ -269,14 +349,20 @@ namespace Blink
             spear3.Draw(sb);
             spear4.Draw(sb);
 
+            for (int i = 0; i < animations.Count; i++)
+            {
+                animations[i].Draw(sb);
+            }
+
 			if (paused)
 			{
-				sb.DrawString(font, "P" + (playerPaused + 1) + " paused", new Vector2(screenSize.X / 2, screenSize.Y / 2), Color.Black);
+                string pauseMessage = "P" + (playerPaused + 1) + " paused";
+                sb.DrawString(font, pauseMessage, new Vector2(screenSize.X / 2 - font.MeasureString(pauseMessage).X/2, screenSize.Y / 2), Color.Black);
 			}
 			if (roundReset > 0)
 			{
 				
-				Vector2 temp = new Vector2(screenSize.X / 2, 300);
+				Vector2 temp = new Vector2(screenSize.X / 2 - font.MeasureString("SCORES").X/2, 300);
 				sb.DrawString(font, "SCORES", temp, Color.White);
 
 				temp.Y += 32;
@@ -290,7 +376,7 @@ namespace Blink
 
 		public GameState GetTransition() 
 		{
-			return null;
+			return returnState;
 		}
 
         private void playerKilled(Object sender, DeathEventArgs args)
@@ -326,7 +412,8 @@ namespace Blink
 
         private void declareVictor(PlayerClass victor)
         {
-            victor.winner();
+            if(victor != null)
+                victor.winner();
             roundReset = 3;
         }
 
@@ -337,6 +424,11 @@ namespace Blink
             {
                 p.reset();
             }
+
+            spear1.reset(players[0]);
+            spear2.reset(players[1]);
+            spear3.reset(players[2]);
+            spear4.reset(players[3]);
         }
 	}
 }

@@ -11,7 +11,7 @@ namespace Blink.Classes
     {
         Color[] map = new Color[50*30];
         int[,] collisionMap = new int[50,30];
-        Vector2 charSize = new Vector2(64, 64);
+        Vector2 charSize = new Vector2(32, 64);
         int tileSize;
         Texture2D mapTexture;
         Vector2 mapSize;
@@ -97,18 +97,21 @@ namespace Blink.Classes
 
 
         //There are still a couple of issues with collisions, but they're hard to reproduce. They should eventually get ironed out.
-        public Boolean[] collides(Vector2 pos, Vector2 oPos, int down, int right)
+        public Boolean[] collides(Vector2 pos, Vector2 oPos, int down, int right, Vector2 charSize)
         {
+            this.charSize = charSize;
             Vector2 newPos = new Vector2();
             Vector2 oldPos = new Vector2();
             Boolean[] collisions = new bool[3];
             //convert positions to respective tile locations, taking into account movement direction
-            if(right == 1)
-                newPos.X = (float)Math.Floor((pos.X+charSize.X) / tileSize);
+            if (right == 1)
+            {
+                newPos.X = (float)Math.Floor((pos.X + charSize.X) / tileSize);
+            }
             else
                 newPos.X = (float)Math.Floor(pos.X / tileSize);
             if(down == 1)
-                newPos.Y = (float)Math.Floor((pos.Y+charSize.Y) / tileSize);
+                newPos.Y = (float)Math.Floor((pos.Y + charSize.Y) / tileSize);
             else
                 newPos.Y = (float)Math.Floor(pos.Y / tileSize);
 

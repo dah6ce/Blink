@@ -31,6 +31,7 @@ namespace Blink
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1600;
             graphics.PreferredBackBufferHeight = 960;
+            //graphics.ToggleFullScreen();
             Content.RootDirectory = "Content";
         }
 
@@ -61,7 +62,7 @@ namespace Blink
             game = new StateGame(screenSize);
             levelMenu = new StateLevelSelect(screenSize, "Map Select", new string[] { "Start", "Start", "Quit" }, game);
             mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit" }, new GameState[] { levelMenu, new StateQuit() });
-
+            ((StateGame)game).levelSelect = levelMenu;
 
             currState = mainMenu;
             currState.Initialize();
