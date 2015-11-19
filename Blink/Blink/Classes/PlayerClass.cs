@@ -675,14 +675,14 @@ namespace Blink.Classes
 
             //Drawing when the player is looping over
             if (playerRect.X < playerRect.Width)
-                sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X + offX, playerRect.Y + MARGIN + offY), frame, Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn);
             else if (playerRect.X + playerRect.Width > SCREENSIZE.X)
-                sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X) + offX, playerRect.Y + MARGIN + offY), frame, Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X) + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn);
 
             if (playerRect.Y < playerRect.Height)
-                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + SCREENSIZE.Y + MARGIN + offY), frame, Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + SCREENSIZE.Y + MARGIN + offY), frame, colorDrawn);
             else if (playerRect.Y + playerRect.Height > SCREENSIZE.Y)
-                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y - (SCREENSIZE.Y) + MARGIN + offY), frame, Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y - (SCREENSIZE.Y) + MARGIN + offY), frame, colorDrawn);
         }
 
 
