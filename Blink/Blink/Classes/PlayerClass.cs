@@ -638,8 +638,15 @@ namespace Blink.Classes
 
         public void Draw(SpriteBatch sB)
         {
-            if (blinked)
-                return;
+			if(blinked && velocity.X == 0 && velocity.Y == 0)
+			{
+				return;
+			}
+			Color colorDrawn;
+			if (blinked)
+				colorDrawn = new Color(100, 100, 100, 10);
+			else
+				colorDrawn = Color.White;
 
             Texture2D drawnText = playerText;
 
@@ -654,16 +661,17 @@ namespace Blink.Classes
             Rectangle barFrame = new Rectangle(0, 0, 30, 6);
             barFrame.Width = (int)(30 * (blinkJuice / MAXBLINKJUICE));
 
-            if (blinkJuice < MAXBLINKJUICE)
+            if (blinkJuice < MAXBLINKJUICE && !blinked)
             {
                 sB.Draw(blinkRect, new Vector2(playerRect.X , playerRect.Y + offY - 12), barFrame, Color.Green);
             }
 
             frame = getFrame(frame);
 
-            if (dead)
-                drawnText = deadText;
-            sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, Color.White);
+			if (dead)
+				drawnText = deadText;
+
+            sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn);
 
             //Drawing when the player is looping over
             if (playerRect.X < playerRect.Width)
