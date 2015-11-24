@@ -48,7 +48,7 @@ namespace Blink.GUI
                 this.charThumbs[selected].unselect();
             this.selected = 0;
             this.nextState = null;
-
+            AudioManager.TriggerCharacterSelect();
             KeyboardState keyState = Keyboard.GetState();
             GamePadState padState = GamePad.GetState(PlayerIndex.One);
             if (keyState.IsKeyDown(Keys.Enter))

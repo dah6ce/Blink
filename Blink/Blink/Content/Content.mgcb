@@ -13,15 +13,15 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin miramo.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:miramo.spritefont
+#begin menu2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:menu2.wav
 
-#begin miramo30.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:miramo30.spritefont
+#begin menu1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:menu1.wav
 

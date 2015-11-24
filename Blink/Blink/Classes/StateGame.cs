@@ -93,7 +93,7 @@ namespace Blink
 			currPlayer = PlayerKeys.Player1;
 			paused = false;
 			playerPaused = 0;
-
+            AudioManager.TriggerBattle();
             pauseMenu = new StateSimpleMenu(screenSize, "Paused", new string[]{"Resume", "Exit to main menu", "Quit"}, new GameState[]{this, levelSelect, new StateQuit()});
             pauseMenu.Initialize();
 		}

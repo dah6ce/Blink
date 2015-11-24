@@ -47,6 +47,7 @@ namespace Blink
 
 
             base.Initialize();
+            AudioManager.Initialize();
         }
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace Blink
             currState = mainMenu;
             currState.Initialize();
             currState.LoadContent(Content);
-
+            AudioManager.LoadContent(Content);
         }
 
         /// <summary>
@@ -90,10 +91,11 @@ namespace Blink
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape) || !running)
+            if (!running)
                 Exit();
 
             currState.Update(gameTime);
+            AudioManager.Update(gameTime);
 
             // Handle GameState transitions
             GameState newState = currState.GetTransition();
