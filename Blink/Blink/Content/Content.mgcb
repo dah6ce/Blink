@@ -146,29 +146,6 @@
 /processorParam:TextureFormat=Color
 /build:spriteDead.png
 
-#begin audio/sfx/Cheer_1.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:audio/sfx/Cheer_1.wav
-
-#begin audio/sfx/Cheer_2.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:audio/sfx/Cheer_2.wav
-
-#begin audio/sfx/Crowd_1.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:audio/sfx/Crowd_1.wav
-
-#begin audio/sfx/Crowd_2.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:audio/sfx/Crowd_2.wav
 
 #begin audio/sfx/Player_Blink.wav
 /importer:WavImporter
