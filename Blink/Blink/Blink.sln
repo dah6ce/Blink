@@ -1,22 +1,20 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blink", "Blink.csproj", "{0E6FFF72-2F9F-4714-9BDD-D9BED1AEEF0E}"
+
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blink", "Blink.csproj", "{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
 		Release|x86 = Release|x86
+		DebugLinux|Any CPU = DebugLinux|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0E6FFF72-2F9F-4714-9BDD-D9BED1AEEF0E}.Debug|x86.ActiveCfg = Debug|x86
-		{0E6FFF72-2F9F-4714-9BDD-D9BED1AEEF0E}.Debug|x86.Build.0 = Debug|x86
-		{0E6FFF72-2F9F-4714-9BDD-D9BED1AEEF0E}.Release|x86.ActiveCfg = Release|x86
-		{0E6FFF72-2F9F-4714-9BDD-D9BED1AEEF0E}.Release|x86.Build.0 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
+		{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}.Debug|x86.ActiveCfg = Debug|x86
+		{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}.Debug|x86.Build.0 = Debug|x86
+		{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}.DebugLinux|Any CPU.ActiveCfg = DebugLinux|Any CPU
+		{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}.DebugLinux|Any CPU.Build.0 = DebugLinux|Any CPU
+		{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}.Release|x86.ActiveCfg = Release|x86
+		{E2DDF705-5D9D-4C6E-A8FF-A70905C854A6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal

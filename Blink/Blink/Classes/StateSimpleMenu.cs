@@ -61,7 +61,11 @@ namespace Blink.GUI
 
 
             //Gets a list of all the .map files in our mapdata folder
+            #if WINDOWS
             maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "\\Content\\MapData", "*.map");
+            #elif LINUX
+            maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "/Content/MapData", "*.map");
+            #endif
 
             //For each map file, slice off the path to store just the map's name.
             foreach (string path in maps)
@@ -128,7 +132,8 @@ namespace Blink.GUI
             {
                 buttons[selected].UnSelect();
                 selected--;
-                selected %= buttons.Count;
+                // Need extra step because mod of a negative is negative
+                selected = (selected+buttons.Count) % buttons.Count;
                 buttons[selected].Select();
             }
             if (moveDown && !lastMoveDown)
