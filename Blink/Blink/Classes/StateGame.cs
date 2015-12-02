@@ -5,6 +5,7 @@ using Blink.Classes;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -37,7 +38,13 @@ namespace Blink
         public GameState levelSelect;
         GameState returnState;
 
-		PlayerKeys currPlayer;
+        SoundEffectInstance p1Death;
+        SoundEffectInstance p2Death;
+        SoundEffectInstance p3Death;
+        SoundEffectInstance p4Death;
+
+
+        PlayerKeys currPlayer;
 		KeyboardState oldState;
 		KeyboardState player1State;
 		KeyboardState player2State;
@@ -115,26 +122,27 @@ namespace Blink
             player3.Initialize(Content.Load<Texture2D>("ROTH-SILVER-SPEARLESS"), player3Pos, screenSize, map1, players, offset, bar);
             player4.Initialize(Content.Load<Texture2D>("ROTH-BLACK-SPEARLESS"), player4Pos, screenSize, map1, players, offset, bar);
 
-            player1.deadText = Content.Load<Texture2D>("spriteDead");
-            player2.deadText = Content.Load<Texture2D>("spriteDead");
-            player3.deadText = Content.Load<Texture2D>("spriteDead");
-            player4.deadText = Content.Load<Texture2D>("spriteDead");
 
-            player1.dustEffect = dust;
-            player2.dustEffect = dust;
-            player3.dustEffect = dust;
-            player4.dustEffect = dust;
+            //Setup for common player resources
+            foreach (PlayerClass p in players)
+            {
+                p.deadText = Content.Load<Texture2D>("spriteDead");
 
-            player1.dustPoof = dustPoof;
-            player2.dustPoof = dustPoof;
-            player3.dustPoof = dustPoof;
-            player4.dustPoof = dustPoof;
+                p.Death_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Death").CreateInstance();
 
-            player1.aniList = animations;
-            player2.aniList = animations;
-            player3.aniList = animations;
-            player4.aniList = animations;
+                p.Jump_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Jump").CreateInstance();
+            
+                p.Blink_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Blink").CreateInstance();
 
+
+                p.dustEffect = dust;
+
+                p.dustPoof = dustPoof;
+
+                p.aniList = animations;
+            }
+
+            
             spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
             spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
             spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
@@ -145,6 +153,20 @@ namespace Blink
             spears[2] = spear3;
             spears[3] = spear4;
 
+
+            //Setup for common spear resources
+            foreach (SpearClass s in spears)
+            {
+                s.Throw_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Throw").CreateInstance();
+
+                s.Hit_Player_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Player_Hit").CreateInstance();
+
+                s.Hit_Wall_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Wall_Hit").CreateInstance();
+
+                s.Stab_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Attack").CreateInstance();
+
+            }
+
             StreamReader mapData;
             mapData = File.OpenText("Content/MapData/"+mapName+".map");
             map1.Initialize(Content.Load<Texture2D>("MapData/"+mapName+"Color"), mapData.ReadToEnd(), 32, 50, 30, players);
@@ -152,10 +174,15 @@ namespace Blink
 
             resetMap();
         }
+        
 
 		public void UnloadContent()
 		{
-			
+            /*p1Death.Dispose();
+            p2Death.Dispose();
+            p3Death.Dispose();
+            p4Death.Dispose();
+            */
 		}
 
 		public void Update(GameTime gameTime)
