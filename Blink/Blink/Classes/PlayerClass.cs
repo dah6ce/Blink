@@ -158,7 +158,7 @@ namespace Blink.Classes
                 Boolean inAPlayer = inPlayer();
 
                 if (!inAPlayer) {
-                    if (!blinked && blinkCoolDown <= 0 && blinkJuice > 1)
+                    if (!blinked && blinkCoolDown <= 0 && blinkJuice > 1 && !dead)
                     {
                         blinked = true;
                         Blink_Sound.Play();
