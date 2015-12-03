@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using Blink.Classes;
 
@@ -33,6 +34,10 @@ namespace Blink.Classes
         public Boolean hasSpear = true;
         public Boolean blinked = false, blinkKeyDown = false;
         private float blinkJuice, blinkCoolDown, stunTimer, deathTimer, curMultiplier, dustTimer;
+
+        public SoundEffectInstance Death_Sound;
+        public SoundEffectInstance Jump_Sound;
+        public SoundEffectInstance Blink_Sound;
 
         private Vector2 offset;
 
@@ -120,6 +125,7 @@ namespace Blink.Classes
                     {
                         setDead(true, null, "EXPIRE");
                         blinked = false;
+                        Blink_Sound.Play();
                         curMultiplier = 1f;
                     }
                 }
@@ -155,11 +161,13 @@ namespace Blink.Classes
                     if (!blinked && blinkCoolDown <= 0 && blinkJuice > 1)
                     {
                         blinked = true;
+                        Blink_Sound.Play();
                         curMultiplier = BLINKMULTI;
                     }
                     else
                     {
                         blinked = false;
+                        Blink_Sound.Play();
                         curMultiplier = 1f;
                         blinkCoolDown = BLINKCOOL;
                     }
@@ -225,6 +233,7 @@ namespace Blink.Classes
                 {
                     velocity.Y -= JUMP * curMultiplier;
                     atRest = false;
+                    Jump_Sound.Play();
                 }
             }
 
@@ -682,6 +691,7 @@ namespace Blink.Classes
         public void throwKilled(PlayerClass killed, PlayerClass killer, string method)
         {
             if (onPlayerKilled == null) return;
+            Death_Sound.Play();
             if (killer == killed)
             {
                 killer.score -= 1;
