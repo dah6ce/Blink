@@ -272,7 +272,7 @@ namespace Blink.Classes
                             p.hasSpear = true;
                         }
                     }
-                    if (!atRest && thrownBy != null &&  p.blinked == thrownBy.blinked)
+                    if (!atRest && thrownBy != null && p.blinked == thrownBy.blinked)
                     {
                         Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
                         if (inter.Width > 0 && inter.Height > 0 && spearOwner != p && !p.dead)
@@ -301,7 +301,7 @@ namespace Blink.Classes
             else if (velocity.Y < 0)
                 d = -1;
 
-            Vector2 hitBox;
+            //Vector2 hitBox;
             //if (spearOrientation == 0 || spearOrientation == 4)
             //    hitBox = new Vector2(spear.Width, spear.Height);
             //else
@@ -347,6 +347,7 @@ namespace Blink.Classes
                     break;
                 case 4:
                     velocity.X = 20;
+                    spear.X = spearOwner.getPlayerRect().Width + spearOwner.getPlayerRect().X - spear.Width;
                     spear.X += (int)velocity.X;
                     spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 3;
                     break;
@@ -408,7 +409,7 @@ namespace Blink.Classes
                 {
                     throwing = false;
                     isInUse = false;
-                    attachedToPlayer = false;
+                    //attachedToPlayer = false;
                     spearOwner.hasSpear = false;
                     spearOwner.setSpear(null);
                     setOwner(null);
