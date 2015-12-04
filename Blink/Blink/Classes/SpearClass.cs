@@ -70,8 +70,8 @@ namespace Blink.Classes
         {
             //Reset variables to defualt state
             KeyboardState newState = input;
-            spear.Width = Width;  //updates the rectangle of the spear
-            spear.Height = Height;
+            //spear.Width = Width;  //updates the rectangle of the spear
+            //spear.Height = Height;
 			if (isInUse)  //delay after spear being thrown
 			{
 				if(inUseTimer > 0)
@@ -203,6 +203,22 @@ namespace Blink.Classes
             oldState = newState;
         }
 
+        //Change spear hitbox
+        private void correctHitBox()
+        {
+            if (spearOrientation == 0 || spearOrientation == 4)
+            {
+                spear.Width = Width;
+                spear.Height = Height;
+            }
+            //When vertical, flip the hitbox
+            else if(spearOrientation == 2 || spearOrientation == 6)
+            {
+                spear.Width = Height;
+                spear.Height = Width;
+            }
+        }
+
         //Check to see if the spear is colliding with a player
         private void playerCollision()
         {
@@ -244,7 +260,7 @@ namespace Blink.Classes
                  
                     if (!attachedToPlayer && !throwing)
                     {
-                        Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
+                        Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), spear);//new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
                         if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing)
                         {
                             gravityEffect = 0;
@@ -286,12 +302,12 @@ namespace Blink.Classes
                 d = -1;
 
             Vector2 hitBox;
-            if (spearOrientation == 0 || spearOrientation == 4)
-                hitBox = new Vector2(spear.Width, spear.Height);
-            else
-                hitBox = new Vector2(spear.Height, spear.Width);
+            //if (spearOrientation == 0 || spearOrientation == 4)
+            //    hitBox = new Vector2(spear.Width, spear.Height);
+            //else
+            //    hitBox = new Vector2(spear.Height, spear.Width);
 
-            Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, hitBox, false, 0f);
+            Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, new Vector2(spear.Width,spear.Height), false, 0f);
             if (collisions[0] || collisions[1] || collisions[2])
         {
                 spear.X = (int)testX;
@@ -300,7 +316,7 @@ namespace Blink.Classes
                 velocity.Y = 0;
                 atRest = true;
                 throwing = false;
-
+                correctHitBox();
                 Hit_Wall_Sound.Play();
         }
         }
@@ -340,6 +356,8 @@ namespace Blink.Classes
                     spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
                     break;
             }
+
+            correctHitBox();
         }
 
         private void throwUpdate()
@@ -368,7 +386,7 @@ namespace Blink.Classes
             spear.Y += (int)(velocity.Y * thrownBy.getMulti());
 
 
-            if (Math.Abs(velocity.X) >= Math.Abs(velocity.Y))
+            /*if (Math.Abs(velocity.X) >= Math.Abs(velocity.Y))
             {
                 if (velocity.X > 0)
                     spearOrientation = 4;
@@ -381,7 +399,7 @@ namespace Blink.Classes
                     spearOrientation = 6;
                 else
                     spearOrientation = 2;
-            }
+            }*/
 
             if (spearOwner != null)
             {
