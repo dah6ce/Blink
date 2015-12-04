@@ -652,6 +652,10 @@ namespace Blink.Classes
         {
             dead = deathState;
             blinkJuice = MAXBLINKJUICE;
+            if(spear != null)
+            {
+                spear.dropSpear();
+            }
             blinked = false;
             throwKilled(this, killer, method);
         }

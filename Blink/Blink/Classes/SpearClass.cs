@@ -190,9 +190,13 @@ namespace Blink.Classes
             }
             if (!atRest)
             {
-                throwUpdate();
+                if(thrownBy != null)
+                    throwUpdate();
                 if (Math.Abs(velocity.Y) + gravityEffect < TERMINAL_V)
-                    gravityEffect += GRAVITY / 10;
+                    if(thrownBy != null)
+                        gravityEffect += GRAVITY / 10;
+                    else
+                        gravityEffect += GRAVITY;
                 spear.Y += (int)(velocity.Y + gravityEffect);
             }
 
@@ -238,7 +242,7 @@ namespace Blink.Classes
                 foreach (PlayerClass p in players)
                 {
                  
-                    if (!attachedToPlayer && !throwing && atRest)
+                    if (!attachedToPlayer && !throwing)
                     {
                         Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
                         if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing)
@@ -252,7 +256,7 @@ namespace Blink.Classes
                             p.hasSpear = true;
                         }
                     }
-                    if (!atRest && p.blinked == thrownBy.blinked)
+                    if (!atRest && thrownBy != null &&  p.blinked == thrownBy.blinked)
                     {
                         Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
                         if (inter.Width > 0 && inter.Height > 0 && spearOwner != p && !p.dead)
@@ -359,11 +363,12 @@ namespace Blink.Classes
             {
                 spear.Y += (int)SCREENSIZE.Y;
             }
+            
+            spear.X += (int)(velocity.X * thrownBy.getMulti());
+            spear.Y += (int)(velocity.Y * thrownBy.getMulti());
 
-            spear.X += (int)(velocity.X*thrownBy.getMulti());
-            spear.Y += (int)(velocity.Y*thrownBy.getMulti());
 
-            if(Math.Abs(velocity.X) >= Math.Abs(velocity.Y))
+            if (Math.Abs(velocity.X) >= Math.Abs(velocity.Y))
             {
                 if (velocity.X > 0)
                     spearOrientation = 4;
@@ -401,7 +406,7 @@ namespace Blink.Classes
 
             if (spearOwner == null)
             {
-                if (!atRest && thrownBy.blinked)
+                if (!atRest && thrownBy != null && thrownBy.blinked)
                     return;
                 origin.X = 32;
                 Vector2 screenPos = new Vector2(spear.X, spear.Y);
@@ -502,10 +507,12 @@ namespace Blink.Classes
         {
             spear = spearOwner.getPlayerRect();
             spearOwner.setSpear(null);
+            spearOwner = null;
+            spearOrientation = 2;
             attachedToPlayer = false;
             isInUse = false;
             throwing = false;
-            atRest = true;
+            atRest = false;
         }
 
         internal void setOwner(PlayerClass player) //set new Spear owner to player
