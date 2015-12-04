@@ -287,7 +287,7 @@ namespace Blink.Classes
             else
                 hitBox = new Vector2(spear.Height, spear.Width);
 
-            Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, hitBox);
+            Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, hitBox, false, 0f);
             if (collisions[0] || collisions[1] || collisions[2])
         {
                 spear.X = (int)testX;

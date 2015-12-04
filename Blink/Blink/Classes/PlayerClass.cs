@@ -104,6 +104,8 @@ namespace Blink.Classes
                         blinkJuice = 0;
                         Boolean blocked = inPlayer();
                         if (!blocked)
+                            blocked = inWall();
+                        if (!blocked)
                         {
                             blinked = false;
                             curMultiplier = 1f;
@@ -155,9 +157,11 @@ namespace Blink.Classes
             {
                 blinkKeyDown = true;
 
-                Boolean inAPlayer = inPlayer();
+                Boolean blocked = inPlayer();
+                if (!blocked)
+                    blocked = inWall();
 
-                if (!inAPlayer) {
+                if (!blocked) {
                     if (!blinked && blinkCoolDown <= 0 && blinkJuice > 1)
                     {
                         blinked = true;
@@ -240,10 +244,10 @@ namespace Blink.Classes
             //Velocity applications
             int footing = arena.checkFooting(new Vector2(playerRect.X, playerRect.Y));
 
-            if (atRest && footing < 10)
+            if ((atRest && footing < 10) || (atRest && footing >= 20 && blinked))
                 atRest = false;
 
-            if (footing == 11)
+            if (footing == 11 || footing == 21)
             {
                 curFriction = iceFriction;
                 SPEED = ICESPEED;
@@ -284,6 +288,22 @@ namespace Blink.Classes
             return inAPlayer;
         }
 
+        private Boolean inWall()
+        {
+            Boolean inAWall = false;
+            Boolean[] collisions = arena.collides(new Vector2(playerRect.X, playerRect.Y), new Vector2(playerRect.X, playerRect.Y), 1, 0, new Vector2(playerRect.Width, playerRect.Height), false, 1f);
+            foreach(bool b in collisions)
+            {
+                if (b)
+                {
+                    inAWall = true;
+                    break;
+                }
+            }
+
+            return inAWall;
+        }
+
         public void blockDataUpdate()
         {
             int[] blocks = new int[9];
@@ -321,7 +341,7 @@ namespace Blink.Classes
             else if (velocity.Y < 0)
                 d = -1;
 
-            Boolean[] collisions = arena.collides(new Vector2(testX, testY), new Vector2(playerRect.X, playerRect.Y), d, r, new Vector2(playerRect.Width, playerRect.Height));
+            Boolean[] collisions = arena.collides(new Vector2(testX, testY), new Vector2(playerRect.X, playerRect.Y), d, r, new Vector2(playerRect.Width, playerRect.Height), blinked, 0f);
 
             //This is kinda messy, I should eventually clean it up
 

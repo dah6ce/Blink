@@ -165,12 +165,6 @@
 /processorParam:Quality=Best
 /build:audio/sfx/Player_Jump.wav
 
-#begin audio/sfx/Silent.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:audio/sfx/Silent.wav
-
 #begin audio/sfx/Spear_Attack.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
