@@ -162,7 +162,7 @@ namespace Blink.Classes
                     blocked = inWall();
 
                 if (!blocked) {
-                    if (!blinked && blinkCoolDown <= 0 && blinkJuice > 1)
+                    if (!blinked && blinkCoolDown <= 0 && blinkJuice > 1 && !dead)
                     {
                         blinked = true;
                         Blink_Sound.Play();
@@ -667,8 +667,15 @@ namespace Blink.Classes
 
         public void Draw(SpriteBatch sB)
         {
-            if (blinked)
+			if(blinked && velocity.X == 0 && velocity.Y == 0)
+			{
                 return;
+			}
+			Color colorDrawn;
+			if (blinked)
+				colorDrawn = new Color(100, 100, 100, 10);
+			else
+				colorDrawn = Color.White;
 
             Texture2D drawnText = playerText;
 
@@ -683,7 +690,7 @@ namespace Blink.Classes
             Rectangle barFrame = new Rectangle(0, 0, 30, 6);
             barFrame.Width = (int)(30 * (blinkJuice / MAXBLINKJUICE));
 
-            if (blinkJuice < MAXBLINKJUICE)
+            if (blinkJuice < MAXBLINKJUICE && !blinked)
             {
                 sB.Draw(blinkRect, new Vector2(playerRect.X , playerRect.Y + offY - 12), barFrame, Color.Green);
             }
@@ -692,18 +699,19 @@ namespace Blink.Classes
 
             if (dead)
                 drawnText = deadText;
-            sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, Color.White);
+
+            sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn);
 
             //Drawing when the player is looping over
             if (playerRect.X < playerRect.Width)
-                sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X + offX, playerRect.Y + MARGIN + offY), frame, Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn);
             else if (playerRect.X + playerRect.Width > SCREENSIZE.X)
-                sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X) + offX, playerRect.Y + MARGIN + offY), frame, Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X) + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn);
 
             if (playerRect.Y < playerRect.Height)
-                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + SCREENSIZE.Y + MARGIN + offY), frame, Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + SCREENSIZE.Y + MARGIN + offY), frame, colorDrawn);
             else if (playerRect.Y + playerRect.Height > SCREENSIZE.Y)
-                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y - (SCREENSIZE.Y) + MARGIN + offY), frame, Color.White);
+                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y - (SCREENSIZE.Y) + MARGIN + offY), frame, colorDrawn);
         }
 
 
