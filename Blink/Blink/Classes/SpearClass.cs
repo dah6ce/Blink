@@ -54,8 +54,8 @@ namespace Blink.Classes
             this.players = players;
             spear.Width = spearText.Width;
             spear.Height = spearText.Height;
-            Width = spear.Width;
-            Height = spear.Height;
+            Width = spearText.Width;
+            Height = spearText.Height;
             velocity.X = 0;
             velocity.Y = 0;
             this.spearOwner = spearOwner;
@@ -162,29 +162,33 @@ namespace Blink.Classes
                     case 0:
                         spear.X = spearOwner.getPlayerRect().X - spear.Width + spearOwner.getPlayerRect().Width;
                         spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
+                        spear.Width = Width;
+                        spear.Height = Height;
                         break;
                     case 2:
                         spear.X = spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width / 2;
                         spear.Y = spearOwner.getPlayerRect().Y - 3*spearOwner.getPlayerRect().Height / 4;
                         temp = spear.Width;
-                        spear.Width = spear.Height;
-                        spear.Height = temp;
+                        spear.Width = Height;
+                        spear.Height = Width;
                         break;
                     case 4:
                         spear.X = spearOwner.getPlayerRect().X;
                         spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
+                        spear.Width = Width;
+                        spear.Height = Height;
                         break;
                     case 6:
                         spear.X = spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width / 2;
                         spear.Y = spearOwner.getPlayerRect().Y + 3*spearOwner.getPlayerRect().Height / 4;
                         temp = spear.Width;
-                        spear.Width = spear.Height;
-                        spear.Height = temp;
+                        spear.Width = Height;
+                        spear.Height = Width;
                         break;
                 }
             }
             playerCollision();
-            if(!attachedToPlayer)
+            if(!attachedToPlayer && !atRest)
             {
                 mapCollision();
             }
@@ -261,7 +265,7 @@ namespace Blink.Classes
                     if (!attachedToPlayer && !throwing)
                     {
                         Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), spear);//new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
-                        if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing)
+                        if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing && !p.dead)
                         {
                             gravityEffect = 0;
                             attachedToPlayer = true;
@@ -409,7 +413,7 @@ namespace Blink.Classes
                 {
                     throwing = false;
                     isInUse = false;
-                    //attachedToPlayer = false;
+                    attachedToPlayer = false;
                     spearOwner.hasSpear = false;
                     spearOwner.setSpear(null);
                     setOwner(null);
@@ -510,8 +514,8 @@ namespace Blink.Classes
         {
             gravityEffect = 0;
             setOwner(p);
-            Width = spear.Width;
-            Height = spear.Height;
+            //Width = spear.Width;
+            //Height = spear.Height;
             velocity.X = 0;
             velocity.Y = 0;
             spearOrientation = 0;
@@ -519,15 +523,19 @@ namespace Blink.Classes
             throwing = false;
             attachedToPlayer = true;
             atRest = true;
-            spear = spearOwner.getPlayerRect();
+            spear.X = spearOwner.getPlayerRect().X;
+            spear.Y = spearOwner.getPlayerRect().Y;
+            spearOwner.setSpear(this);
         }
 
         internal void dropSpear()
         {
-            spear = spearOwner.getPlayerRect();
+            spear.X = spearOwner.getPlayerRect().X+spearOwner.getPlayerRect().Width/2;
+            spear.Y = spearOwner.getPlayerRect().Y;
             spearOwner.setSpear(null);
             spearOwner = null;
             spearOrientation = 2;
+            correctHitBox();
             attachedToPlayer = false;
             isInUse = false;
             throwing = false;
