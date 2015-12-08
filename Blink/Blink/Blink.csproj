@@ -75,6 +75,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\audio\sfx\Player_Blink.wav" />
+    <Content Include="Content\audio\sfx\Player_Death.wav" />
+    <Content Include="Content\audio\sfx\Player_Jump.wav" />
+    <Content Include="Content\audio\sfx\Silent.wav" />
+    <Content Include="Content\audio\sfx\Spear_Attack.wav" />
+    <Content Include="Content\audio\sfx\Spear_Player_Hit.wav" />
+    <Content Include="Content\audio\sfx\Spear_Throw.wav" />
+    <Content Include="Content\audio\sfx\Spear_Wall_Hit.wav" />
     <Content Include="Content\bar.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -242,5 +250,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\CharData\" />
+    <Folder Include="Content\audio\music\" />
   </ItemGroup>
 </Project>

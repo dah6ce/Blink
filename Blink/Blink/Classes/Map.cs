@@ -97,7 +97,7 @@ namespace Blink.Classes
 
 
         //There are still a couple of issues with collisions, but they're hard to reproduce. They should eventually get ironed out.
-        public Boolean[] collides(Vector2 pos, Vector2 oPos, int down, int right, Vector2 charSize)
+        public Boolean[] collides(Vector2 pos, Vector2 oPos, int down, int right, Vector2 charSize, Boolean blinked, float hitReduce)
         {
             this.charSize = charSize;
             Vector2 newPos = new Vector2();
@@ -106,27 +106,27 @@ namespace Blink.Classes
             //convert positions to respective tile locations, taking into account movement direction
             if (right == 1)
             {
-                newPos.X = (float)Math.Floor((pos.X + charSize.X) / tileSize);
+                newPos.X = (float)Math.Floor((pos.X + charSize.X - hitReduce) / tileSize);
             }
             else
-                newPos.X = (float)Math.Floor(pos.X / tileSize);
+                newPos.X = (float)Math.Floor((pos.X + hitReduce) / tileSize);
             if(down == 1)
-                newPos.Y = (float)Math.Floor((pos.Y + charSize.Y) / tileSize);
+                newPos.Y = (float)Math.Floor((pos.Y + charSize.Y - hitReduce) / tileSize);
             else
-                newPos.Y = (float)Math.Floor(pos.Y / tileSize);
+                newPos.Y = (float)Math.Floor((pos.Y + hitReduce) / tileSize);
 
             newPos.X = loopCorrection(newPos.X, mapSize.X);
             newPos.Y = loopCorrection(newPos.Y, mapSize.Y);
             
-            oldPos.X = (float)Math.Floor(oPos.X / tileSize);
-            oldPos.Y = (float)Math.Floor(oPos.Y / tileSize);
+            oldPos.X = (float)Math.Floor((oPos.X+hitReduce) / tileSize);
+            oldPos.Y = (float)Math.Floor((oPos.Y+hitReduce) / tileSize);
 
             oldPos.X = loopCorrection(oldPos.X, mapSize.X);
             oldPos.Y = loopCorrection(oldPos.Y, mapSize.Y);
             
-            float oldRight = (float)Math.Floor((oPos.X + (charSize.X-1)) / tileSize);
+            float oldRight = (float)Math.Floor((oPos.X + (charSize.X-1-hitReduce)) / tileSize);
             oldRight = loopCorrection(oldRight, mapSize.X);
-            float oldBot = (float)Math.Floor((oPos.Y + (charSize.Y-1)) / tileSize);
+            float oldBot = (float)Math.Floor((oPos.Y + (charSize.Y-1-hitReduce)) / tileSize);
             oldBot = loopCorrection(oldBot, mapSize.Y);
 
             //Middle...ish of hitbox in the horizontal direction
@@ -142,11 +142,27 @@ namespace Blink.Classes
 
             //All values under 10 are blocks that can be passed through
             if (collisionMap[(int)newPos.X, (int)oldPos.Y] >= 10 || collisionMap[(int)newPos.X, (int)oldBot] >= 10 || collisionMap[(int)newPos.X, (int)oldVMid] >= 10)
-                collisions[0] = true;
+                if(!blinked)
+                   collisions[0] = true;
+                else if ((collisionMap[(int)newPos.X, (int)oldPos.Y] < 20 && collisionMap[(int)newPos.X, (int)oldPos.Y] >= 10) || 
+                    (collisionMap[(int)newPos.X, (int)oldBot] < 20 && collisionMap[(int)newPos.X, (int)oldBot] >= 10) || 
+                    (collisionMap[(int)newPos.X, (int)oldVMid] < 20 && collisionMap[(int)newPos.X, (int)oldVMid] >= 10))
+                    collisions[0] = true;
             if (collisionMap[(int)oldPos.X, (int)newPos.Y] >= 10 || collisionMap[(int)oldRight, (int)newPos.Y] >= 10 || collisionMap[(int)oldHMid, (int)newPos.Y] >= 10)
-                collisions[1] = true;
+                if(!blinked)
+                    collisions[1] = true;
+                else if ((collisionMap[(int)oldPos.X, (int)newPos.Y] < 20 && collisionMap[(int)oldPos.X, (int)newPos.Y] >= 10) || 
+                    (collisionMap[(int)oldRight, (int)newPos.Y] < 20 && collisionMap[(int)oldRight, (int)newPos.Y] >= 10) || 
+                    (collisionMap[(int)oldHMid, (int)newPos.Y] < 20 && collisionMap[(int)oldHMid, (int)newPos.Y] >= 10))
+                    collisions[1] = true;
             if (!collisions[0] && !collisions[1] && collisionMap[(int)newPos.X, (int)newPos.Y] >= 10)
-                collisions[2] = true;
+                if(!blinked)
+                    collisions[2] = true;
+                else if (!collisions[0] && !collisions[1] && collisionMap[(int)newPos.X, (int)newPos.Y] < 20)
+                    collisions[2] = true;
+
+
+
             return (collisions);
 
         }
