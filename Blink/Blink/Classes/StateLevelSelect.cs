@@ -37,7 +37,7 @@ namespace Blink.GUI
         List<string> mapNames = new List<string>();
         //Storage for large map images
         List<Texture2D> mapImages = new List<Texture2D>();
-        List<mapThumb> mapThumbs = new List<mapThumb>();
+        List<ImageButton> mapThumbs = new List<ImageButton>();
 
         Texture2D selectedOverlay;
 
@@ -91,7 +91,7 @@ namespace Blink.GUI
                 Texture2D mapImage = Content.Load<Texture2D>("MapData/"+mapName + "Color");
                 mapImages.Add(mapImage);
                 Texture2D mapThumbtext = Content.Load<Texture2D>("MapData/"+mapName + "Thumb");
-                mapThumb thumb = new mapThumb(mapThumbtext, new Vector2(), mapName);
+                ImageButton thumb = new ImageButton(mapThumbtext, new Vector2(), mapName);
                 thumb.selectionOverlay = selectedOverlay;
                 mapThumbs.Add(thumb);
             }
@@ -110,11 +110,11 @@ namespace Blink.GUI
             
         }
 
-        private void positionThumbs(List<mapThumb> thumbs)
+        private void positionThumbs(List<ImageButton> thumbs)
         {
             for(int i = 0; i < thumbs.Count; i++)
             {
-                mapThumb thumb = thumbs[i];
+                ImageButton thumb = thumbs[i];
                 thumb.setPosition(new Vector2(200 * (i % THUMBROWSIZE), (float)Math.Floor((i / 8f)) * 120 + 600));
             }
         }
@@ -197,7 +197,7 @@ namespace Blink.GUI
         {
             //title.Draw(sb);
             sb.Draw(mapImages[selected], new Vector2(0,0));
-            foreach (mapThumb thumb in mapThumbs)
+            foreach (ImageButton thumb in mapThumbs)
                 thumb.Draw(sb);
             //sb.Draw(selectedOverlay, new Vector2(200 * (selected % THUMBROWSIZE), (float)Math.Floor((selected / 8f)) * 120 + 600), Color.Gold);
         }
