@@ -24,6 +24,7 @@ namespace Blink
         GameState mainMenu;
         GameState levelMenu;
         GameState game;
+		GameState creditsMenu;
 
         public Game1()
         {
@@ -61,8 +62,10 @@ namespace Blink
             Vector2 screenSize = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.Right, GraphicsDevice.Viewport.TitleSafeArea.Bottom);
             game = new StateGame(screenSize);
             levelMenu = new StateLevelSelect(screenSize, "Map Select", new string[] { "Start", "Start", "Quit" }, game);
-            mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit" }, new GameState[] { levelMenu, new StateQuit() });
-            ((StateGame)game).levelSelect = levelMenu;
+			creditsMenu = new StateCredits(screenSize, "Credits", new string[] { "Menu" });
+			mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit", "Credits" }, new GameState[] { levelMenu, new StateQuit(), creditsMenu });
+			((StateGame)game).levelSelect = levelMenu;
+			((StateCredits)creditsMenu).getMenu(mainMenu);
 
             currState = mainMenu;
             currState.Initialize();
