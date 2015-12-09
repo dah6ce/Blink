@@ -23,7 +23,6 @@ namespace Blink.GUI
 
         GameState nextState;
         StateGame game;
-        StateCharacterSelect charSelect;
 
         bool lastMoveLeft;
         bool lastMoveRight;
@@ -41,10 +40,9 @@ namespace Blink.GUI
 
         Label title;
 
-        public StateLevelSelect(Vector2 screenSize, String title, StateGame g, StateCharacterSelect charSel)
+        public StateLevelSelect(Vector2 screenSize, String title, StateGame g)
         {
             this.game = g;
-            this.charSelect = charSel;
             this.screenSize = screenSize;
             this.titleString = title;
         }
@@ -184,7 +182,7 @@ namespace Blink.GUI
             {
                 selectedMap = mapNames[selected];
                 game.setMap(selectedMap);
-                nextState = charSelect;
+                nextState = game;
             }
 
             lastAccept = accept;

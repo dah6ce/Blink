@@ -423,6 +423,8 @@ namespace Blink
 
 		public GameState GetTransition() 
 		{
+            if (returnState != null)
+                AudioManager.TriggerExit();
 			return returnState;
 		}
 

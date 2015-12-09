@@ -86,6 +86,13 @@ namespace Blink
                 case State.battle:
                     break;
                 case State.exitFade:
+                    menuLayer1.Volume = (float)(1.0 - timer / FADE_TIME);
+                    battleMusic.Volume = (float)(timer / FADE_TIME);
+                    if (timer == 0)
+                    {
+                        state = State.menu1;
+                        battleMusic.Stop();
+                    }
                     break;
             }
         }
@@ -98,13 +105,24 @@ namespace Blink
         }
 
         public static void TriggerBattle() {
-            if (state != State.battle)
+            if (state != State.menu2)
                 return;
             
             state = State.battleFade;
             timer = FADE_TIME;
             battleMusic.Volume = 0.0f;
             battleMusic.Play();
+        }
+
+        public static void TriggerExit() {
+            if (state != State.battle)
+                return;
+
+            state = State.exitFade;
+            timer = FADE_TIME;
+            menuLayer1.Volume = 0.0f;
+            menuLayer1.Play();
+            menuLayer2.Play();
         }
             
     }

@@ -18,10 +18,8 @@ namespace Blink.GUI
         int selected;
         IEnumerable<string> chars;
 
-        String titleString;
-
         GameState nextState;
-        GameState game;
+        StateGame game;
 
         bool lastMoveLeft;
         bool lastMoveRight;
@@ -35,11 +33,10 @@ namespace Blink.GUI
 
         Texture2D selectedOverlay;
 
-        public StateCharacterSelect(Vector2 screenSize, String title, GameState g)
+        public StateCharacterSelect(Vector2 screenSize, StateGame g)
         {
             this.game = g;
             this.screenSize = screenSize;
-            this.titleString = title;
         }
 
         public void Initialize()
@@ -172,7 +169,7 @@ namespace Blink.GUI
             }
             if (accept && !lastAccept)
             {
-                nextState = game;
+                nextState = new StateLevelSelect(screenSize, "", game);
             }
 
             lastAccept = accept;
