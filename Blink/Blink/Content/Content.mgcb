@@ -13,21 +13,51 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin menu2.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:menu2.wav
-
-#begin menu1.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:menu1.wav
-
 #begin crowd.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:crowd.wav
+
+#begin audio/sfx/Spear_Wall_Hit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/sfx/Spear_Wall_Hit.wav
+
+#begin audio/sfx/Spear_Throw.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/sfx/Spear_Throw.wav
+
+#begin audio/sfx/Spear_Player_Hit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/sfx/Spear_Player_Hit.wav
+
+#begin audio/sfx/Spear_Attack.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/sfx/Spear_Attack.wav
+
+#begin audio/sfx/Player_Jump.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/sfx/Player_Jump.wav
+
+#begin audio/sfx/Player_Death.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/sfx/Player_Death.wav
+
+#begin audio/sfx/Player_Blink.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/sfx/Player_Blink.wav
 
