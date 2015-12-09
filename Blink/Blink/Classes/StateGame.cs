@@ -62,7 +62,7 @@ namespace Blink
 		bool[] oldStartState = new bool[4];
 		bool paused;
 		int playerPaused;
-        int activePlayers = 4;
+        int activePlayers = 0;
 		SpriteFont font;
         List<Animation> animations;
 
@@ -114,21 +114,29 @@ namespace Blink
 		public void LoadContent(ContentManager Content)
 		{
 			Vector2 negPos = new Vector2(-100, -100);
-            
-            if (playersInGame[0])
-            players[0] = player1;
+            activePlayers = 0;
+            if (playersInGame[0]) { 
+                players[0] = player1;
+                activePlayers++;
+            }
             else
                 player1.active = false;
-            if (playersInGame[1])
-            players[1] = player2;
+            if (playersInGame[1]) { 
+                players[1] = player2;
+                activePlayers++;
+            }
             else
                 player2.active = false;
-            if (playersInGame[2])
-            players[2] = player3;
+            if (playersInGame[2]) { 
+                players[2] = player3;
+                activePlayers++;
+            }
             else
                 player3.active = false;
-            if (playersInGame[3])
-            players[3] = player4;
+            if (playersInGame[3]) { 
+                players[3] = player4;
+                activePlayers++;
+            }
             else
                 player4.active = false;
 
@@ -497,15 +505,20 @@ namespace Blink
 
         public void detectEndOfGame()
         {
-                for (int i = 0; i < players.Length; i++)
+            for (int i = 0; i < players.Length; i++)
+            {
+                if(players[i] != null)
                 {
+
                      if(players[i].score >= winScore())
                     {
                         roundReset = 5;
                         ultimateWin = i + 1;
 
+
                     }
                 }
+            }
         }
         public int winScore()
         {
