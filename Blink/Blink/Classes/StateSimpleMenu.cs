@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
-
+using Blink.Classes;
 
 namespace Blink.GUI
 {
@@ -20,7 +20,7 @@ namespace Blink.GUI
 
         String titleString;
         String[] optionsStrings;
-        String selectedMap;
+        mapSet selectedMap;
         GameState[] triggers;
 
         GameState nextState;
@@ -30,9 +30,10 @@ namespace Blink.GUI
         bool lastAccept;
         bool prematureEnter;
 
-
+        
         //Storage list for all our map names
-        List<string> mapNames = new List<string>();
+        Dictionary<string,mapSet> mapNames = new Dictionary<string, mapSet>();
+        List<mapSet> mapSets = new List<mapSet>();
 
         public StateSimpleMenu(Vector2 screenSize, String title, String[] options, GameState[] triggers)
         {
@@ -60,22 +61,7 @@ namespace Blink.GUI
         public void LoadContent(ContentManager Content)
         {
 
-
-            //Gets a list of all the .map files in our mapdata folder
-            #if WINDOWS
-            maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "\\Content\\MapData", "*.map");
-            #elif LINUX
-            maps = Directory.EnumerateFiles(Environment.CurrentDirectory + "/Content/MapData", "*.map");
-            #endif
-
-            //For each map file, slice off the path to store just the map's name.
-            foreach (string path in maps)
-            {
-                string mapName = path.Remove(0, Environment.CurrentDirectory.Length + "\\Content\\MapData".Length);
-                mapName = mapName.Replace(".map", "");
-                mapNames.Add(mapName);
-
-            }
+            
 
 
             Vector2 pos = new Vector2(screenSize.X / 2, 50);
@@ -160,7 +146,7 @@ namespace Blink.GUI
             {
                 if (titleString == "Map Select" && selected != triggers.Length - 1)
                 {
-                    selectedMap = mapNames[selected];
+                    selectedMap = mapSets[selected];
                 }
                 nextState = triggers[selected];
             }
@@ -183,7 +169,7 @@ namespace Blink.GUI
             return nextState;
         }
 
-        public string getSelectedMap()
+        public mapSet getSelectedMap()
         {
             return selectedMap;
         }

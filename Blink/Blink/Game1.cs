@@ -66,12 +66,13 @@ namespace Blink
             game = new StateGame(screenSize);
             levelMenu = new StateLevelSelect(screenSize, "Map Select", new string[] { "Start", "Start", "Quit" }, game);
 			creditsMenu = new StateCredits(screenSize, "Credits", new string[] { "Menu" });
-			charMenu = new StateCharacterSelect(screenSize, "Character Select", levelMenu, game); 
+			charMenu = new StateCharacterSelect(screenSize, "Character Select", levelMenu, game);
             mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit", "Credits" }, new GameState[] { charMenu, new StateQuit(), creditsMenu });
             winScreen = new StateWin(screenSize);
-			((StateGame)game).levelSelect = levelMenu;
+            ((StateGame)game).levelSelect = levelMenu;
             ((StateGame)game).Win = winScreen;
 			((StateCredits)creditsMenu).getMenu(mainMenu);
+            ((StateLevelSelect)levelMenu).prevState = charMenu;
             ((StateWin)winScreen).levelSelect = levelMenu;
             currState = mainMenu;
             currState.Initialize();
@@ -108,10 +109,10 @@ namespace Blink
             {
                 //Set map
                 if(newState == game)
-                    ((StateGame)game).setMap(((StateLevelSelect)levelMenu).getSelectedMap());
+                    ((StateGame)game).setMaps(((StateLevelSelect)levelMenu).getSelectedMap());
                 if (newState == winScreen)
                 {
-                    ((StateWin)winScreen).setMap(((StateLevelSelect)levelMenu).getSelectedMap());
+                    ((StateWin)winScreen).setMap(((StateLevelSelect)levelMenu).getSelectedMap().pickMap());
                     ((StateWin)winScreen).setPlayers(((StateGame)game).players);
                 }
 

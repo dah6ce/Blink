@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
+using Blink.Classes;
 
 
 namespace Blink.GUI
@@ -12,7 +13,7 @@ namespace Blink.GUI
 
     public class StateLevelSelect : GameState
     {
-        const int THUMBROWSIZE = 8;
+        const int THUMBROWSIZE = 5;
 
         Vector2 screenSize;
         int selected;
@@ -22,9 +23,10 @@ namespace Blink.GUI
 
         String titleString;
         String[] optionsStrings;
-        String selectedMap;
+        mapSet selectedMap;
 
         GameState nextState;
+        public GameState prevState;
         GameState game;
 
         bool lastMoveLeft;
@@ -34,10 +36,13 @@ namespace Blink.GUI
 
 
         //Storage list for all our map names
-        List<string> mapNames = new List<string>();
+        Dictionary<string, mapSet> mapNames = new Dictionary<string, mapSet>();
+        List<mapSet> mapSets = new List<mapSet>();
         //Storage for large map images
         List<Texture2D> mapImages = new List<Texture2D>();
         List<ImageButton> mapThumbs = new List<ImageButton>();
+
+        Texture2D menuOverlay;
 
         Texture2D selectedOverlay;
 
@@ -57,6 +62,8 @@ namespace Blink.GUI
             this.selected = 0;
             this.nextState = null;
 
+            AudioManager.TriggerLevelSelect();
+
             KeyboardState keyState = Keyboard.GetState();
             GamePadState padState = GamePad.GetState(PlayerIndex.One);
             if (keyState.IsKeyDown(Keys.Enter))
@@ -69,11 +76,14 @@ namespace Blink.GUI
         {
             if (mapNames.Count > 0)
             {
-                this.mapThumbs[selected].select();
+                foreach (mapSet ms in mapSets)
+                    ms.unselect();
+                this.mapSets[selected].select();
                 return;
             }
 
-            selectedOverlay = Content.Load<Texture2D>("select");
+            selectedOverlay = Content.Load<Texture2D>("MenuData/mapcursor");
+            menuOverlay = Content.Load<Texture2D>("MenuData/mapselect");
 
             //Gets a list of all the .map files in our mapdata folder, Platform specific paths
             #if WINDOWS
@@ -87,22 +97,38 @@ namespace Blink.GUI
             {
                 string mapName = path.Remove(0, Environment.CurrentDirectory.Length + "\\Content\\MapData\\".Length);
                 mapName = mapName.Replace(".map", "");
-                mapNames.Add(mapName);
-                Texture2D mapImage = Content.Load<Texture2D>("MapData/"+mapName + "Color");
-                mapImages.Add(mapImage);
-                Texture2D mapThumbtext = Content.Load<Texture2D>("MapData/"+mapName + "Thumb");
-                ImageButton thumb = new ImageButton(mapThumbtext, new Vector2(), mapName);
-                thumb.selectionOverlay = selectedOverlay;
-                mapThumbs.Add(thumb);
+                string mapGroup = mapName.Split('_')[0];
+                if (!mapNames.ContainsKey(mapGroup))
+                {
+                    mapNames.Add(mapGroup, new mapSet(mapGroup));
+                    mapNames[mapGroup].setBackground(Content.Load<Texture2D>("MapData/" + mapGroup + "_background"));
+                    mapNames[mapGroup].setColumn(mapSets.Count);
+                    mapSets.Add(mapNames[mapGroup]);
+                }
+                mapSet group;
+                mapNames.TryGetValue(mapGroup, out group);
+                group.addMap(mapName);
+
+                //Texture2D mapImage = Content.Load<Texture2D>("MapData/"+mapName + "Color");
+                //mapImages.Add(mapImage);
+                
+                
             }
 
-            positionThumbs(mapThumbs);
+            //Get thumbnails
+            foreach(mapSet set in mapSets)
+            {
+                set.getRandomThumbs(Content);
+            }
+            
+
+            //positionThumbs(mapThumbs);
 
             Vector2 pos = new Vector2(screenSize.X / 2, 50);
             title = new Label(titleString, Content.Load<SpriteFont>("miramo"), pos, new Vector2(0.5f, 0));
             pos.Y += 50;
 
-            mapThumbs[0].select();
+            mapSets[0].select();
         }
 
         public void UnloadContent()
@@ -150,40 +176,39 @@ namespace Blink.GUI
             }
             if (padState.IsButtonDown(Buttons.A))
                 accept = true;
+            if (padState.IsButtonDown(Buttons.B))
+            {
+                nextState = prevState;
+            }
 
 
             if (moveLeft && !lastMoveLeft)
             {
-                mapThumbs[selected].unselect();
+                mapSets[selected].unselect();
                 selected--;
                 if (selected % THUMBROWSIZE == 7)
                     selected += THUMBROWSIZE;
                 else if(selected < 0)
                 {
-                    if (mapThumbs.Count > 8)
-                        selected = 7;
-                    else
-                    {
-                        selected = mapThumbs.Count - 1;
-                    }
+                    selected += mapSets.Count;
                 }
-                mapThumbs[selected].select();
+                mapSets[selected].select();
             }
             if (moveRight && !lastMoveRight)
             {
-                mapThumbs[selected].unselect();
+                mapSets[selected].unselect();
                 selected++;
-                if (selected % THUMBROWSIZE == 0)
-                    selected -= THUMBROWSIZE;
-                else if(selected >= mapThumbs.Count)
+                //if (selected % THUMBROWSIZE == 0)
+                //    selected -= THUMBROWSIZE;
+                if(selected >= mapSets.Count)
                 {
-                    selected -= (selected % THUMBROWSIZE);
+                    selected = 0;//-= (selected % THUMBROWSIZE);
                 }
-                mapThumbs[selected].select();
+                mapSets[selected].select();
             }
             if (accept && !lastAccept)
             {
-                selectedMap = mapNames[selected];
+                selectedMap = mapSets[selected];
                 nextState = game;
             }
 
@@ -196,9 +221,21 @@ namespace Blink.GUI
         public void Draw(SpriteBatch sb)
         {
             //title.Draw(sb);
-            sb.Draw(mapImages[selected], new Vector2(0,0));
-            foreach (ImageButton thumb in mapThumbs)
-                thumb.Draw(sb);
+            //sb.Draw(mapImages[selected], new Vector2(0,0));
+            sb.Draw(mapSets[selected].getBackground(), new Vector2(0, 0), Color.White);
+            foreach (mapSet set in mapSets)
+            {
+                Texture2D[] thumbnails = set.Thumbs();
+                for(int i = 0; i < 5; i++)
+                {
+                    sb.Draw(thumbnails[i], new Rectangle(set.getColumn() * 215 + 262, i * 95 + 468,223,100), Color.White);
+                }
+                if (set.isSelected())
+                {
+                    sb.Draw(selectedOverlay, new Vector2(set.getColumn() * 215 + 262, 491), Color.Gold);
+                }
+            }
+            sb.Draw(menuOverlay, new Vector2(0, 0), Color.White);
             //sb.Draw(selectedOverlay, new Vector2(200 * (selected % THUMBROWSIZE), (float)Math.Floor((selected / 8f)) * 120 + 600), Color.Gold);
         }
 
@@ -207,7 +244,7 @@ namespace Blink.GUI
             return nextState;
         }
 
-        public string getSelectedMap()
+        public mapSet getSelectedMap()
         {
             return selectedMap;
         }

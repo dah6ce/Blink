@@ -168,3 +168,9 @@
 /processorParam:Quality=Best
 /build:audio/music/menu2.wav
 
+#begin audio/music/Drum_Loop.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/music/Drum_Loop.wav
+

@@ -81,7 +81,7 @@ namespace Blink
             {
                 if (players[i] != null)
                 {
-                    players[i].reset();
+                    players[i].reset(map1);
                     
                 }
                 ranking.Add(players[i]);

@@ -53,11 +53,11 @@ namespace Blink.GUI
 
         public void Initialize()
         {
-            for(int i = 0; i < 4; i++) { 
-                if (this.charThumbs.Count > 0)
-                    this.charThumbs[selected[i]].unselect();
-                this.selected[i] = 0;
-            }
+            //for(int i = 0; i < 4; i++) { 
+                //if (this.charThumbs.Count > 0)
+                //    this.charThumbs[selected[i]].unselect();
+                //this.selected[i] = 0;
+            //}
             this.nextState = null;
             AudioManager.TriggerCharacterSelect();
             KeyboardState keyState = Keyboard.GetState();
@@ -72,9 +72,13 @@ namespace Blink.GUI
         {
             if (charNames.Count > 0)
             {
-                for (int i = 0; i < 4; i++)
-                    this.charThumbs[selected[i]].select();
-                
+                for (int i = 0; i < 4; i++) { 
+                    this.charThumbs[selected[i]].unlock();
+                    //this.connected[i] = false;
+                    //this.selected[i] = 0;
+                    this.locked[i] = false;
+                }
+
                 return;
             }
 
@@ -158,6 +162,7 @@ namespace Blink.GUI
                 {
                     this.connected[player] = true;
                     charThumbs[0].hover(player);
+                    selected[player] = 0;
                 }
                 else
                 {
@@ -190,6 +195,9 @@ namespace Blink.GUI
             }
             else if (pad.IsButtonUp(Buttons.Start))
                 startButtons[player] = false;
+
+            if (!connected[player])
+                return;
 
             //B button functions
             if (pad.IsButtonDown(Buttons.B) && !back[player])
