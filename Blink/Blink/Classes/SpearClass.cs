@@ -236,6 +236,7 @@ namespace Blink.Classes
                         if (player.getPlayerRect().Intersects(this.spear))
                         {
                             player.setDead(true, this.spearOwner, "SPEAR");
+                            Hit_Player_Sound.Play();
                         }
                         else if(this.spear.X <= 0)
                         {
@@ -243,6 +244,7 @@ namespace Blink.Classes
                             if (player.getPlayerRect().Intersects(tempRect))
                             {
                                 player.setDead(true, this.spearOwner, "SPEAR");
+                                Hit_Player_Sound.Play();
                             }
                         }
                         else if(this.spear.X >= SCREENSIZE.X - this.spear.Width)
@@ -251,9 +253,9 @@ namespace Blink.Classes
                             if (player.getPlayerRect().Intersects(tempRect))
                             {
                                 player.setDead(true, this.spearOwner, "SPEAR");
+                                Hit_Player_Sound.Play();
                             }
                         }
-                        Hit_Player_Sound.Play();
                     }
                 }
             }

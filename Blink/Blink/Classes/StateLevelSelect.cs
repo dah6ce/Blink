@@ -57,6 +57,8 @@ namespace Blink.GUI
             this.selected = 0;
             this.nextState = null;
 
+            AudioManager.TriggerLevelSelect();
+
             KeyboardState keyState = Keyboard.GetState();
             GamePadState padState = GamePad.GetState(PlayerIndex.One);
             if (keyState.IsKeyDown(Keys.Enter))

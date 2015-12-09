@@ -14,7 +14,7 @@ namespace Blink.Classes
         //private int curFriction = 12, airFriction = 1;
         private int JUMP = 22, TILEWIDTH = 32, MARGIN = 0;
         private float GRAVITY = 1.6f, TERMINAL_V = 30, SPEED = 1.2f, GROUNDSPEED = 1.2f, ICESPEED = 0.4f, ACC_CAP = 15;
-        private float STUNTIME = 3f, BLINKCOOL = 0.2f, MAXBLINKJUICE = 6f, DEATHTIMER = 5f, BLINKMULTI = 1.5f, TRAILTIMER = 0.075f;
+        private float STUNTIME = 3f, BLINKCOOL = .5f, MAXBLINKJUICE = 6f, DEATHTIMER = 5f, BLINKMULTI = 1.5f, TRAILTIMER = 0.075f;
         private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
 
         //debug variables
@@ -38,6 +38,7 @@ namespace Blink.Classes
         public SoundEffectInstance Death_Sound;
         public SoundEffectInstance Jump_Sound;
         public SoundEffectInstance Blink_Sound;
+        public SoundEffectInstance Unblink_Sound;
 
         private Vector2 offset;
 
@@ -116,6 +117,7 @@ namespace Blink.Classes
                         {
                             blinked = false;
                             curMultiplier = 1f;
+                            Unblink_Sound.Play();
                             blinkCoolDown = BLINKCOOL;
                             stunTimer = STUNTIME;
                             deathTimer = -2;
@@ -134,7 +136,7 @@ namespace Blink.Classes
                     {
                         setDead(true, null, "EXPIRE");
                         blinked = false;
-                        Blink_Sound.Play();
+                        Unblink_Sound.Play();
                         curMultiplier = 1f;
                     }
                 }
@@ -168,17 +170,19 @@ namespace Blink.Classes
                 if (!blocked)
                     blocked = inWall();
 
-                if (!blocked) {
-                    if (!blinked && blinkCoolDown <= 0 && blinkJuice > 1 && !dead)
+                if (!blocked && blinkCoolDown <= 0) {
+                    if (!blinked && blinkJuice > 1 && !dead)
                     {
                         blinked = true;
                         Blink_Sound.Play();
                         curMultiplier = BLINKMULTI;
+                        blinkJuice -= 1;
+                        //blinkCoolDown = BLINKCOOL / 2f;
                     }
-                    else
+                    else if(blinked)
                     {
                         blinked = false;
-                        Blink_Sound.Play();
+                        Unblink_Sound.Play();
                         curMultiplier = 1f;
                         blinkCoolDown = BLINKCOOL;
                     }

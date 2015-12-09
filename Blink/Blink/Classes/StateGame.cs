@@ -162,20 +162,21 @@ namespace Blink
                 if (p != null)
                 {
 
-                p.deadText = Content.Load<Texture2D>("spriteDead");
+                    p.deadText = Content.Load<Texture2D>("spriteDead");
 
-                p.Death_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Death").CreateInstance();
+                    p.Death_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Death").CreateInstance();
 
-                p.Jump_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Jump").CreateInstance();
+                    p.Jump_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Jump").CreateInstance();
             
-                p.Blink_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Blink").CreateInstance();
+                    p.Blink_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Blink").CreateInstance();
 
+                    p.Unblink_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Blink").CreateInstance();
 
-                p.dustEffect = dust;
+                    p.dustEffect = dust;
 
-                p.dustPoof = dustPoof;
+                    p.dustPoof = dustPoof;
 
-                p.aniList = animations;
+                    p.aniList = animations;
 
                 }
             }

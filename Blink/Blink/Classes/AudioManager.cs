@@ -20,7 +20,8 @@ namespace Blink
             menu2,
             battleFade,
             battle,
-            exitFade
+            exitFade,
+            returnFade
         }
 
         static State state;
@@ -31,7 +32,7 @@ namespace Blink
             menuLayer1 = Content.Load<SoundEffect>("audio/music/menu1").CreateInstance();
             menuLayer2 = Content.Load<SoundEffect>("audio/music/menu2").CreateInstance();
             // PLACEHOLDER
-            battleMusic = Content.Load<SoundEffect>("audio/music/menu1").CreateInstance();
+            battleMusic = Content.Load<SoundEffect>("audio/music/Drum_Loop").CreateInstance();
         }
 
         public static void Initialize() {
@@ -87,18 +88,42 @@ namespace Blink
                     break;
                 case State.exitFade:
                     break;
+                case State.returnFade:
+                    menuLayer1.Volume = (float)(1.0 - timer / FADE_TIME);
+                    menuLayer2.Volume = (float)(1.0 - timer / FADE_TIME);
+                    battleMusic.Volume = (float)(timer / FADE_TIME);
+                    if (timer == 0)
+                    {
+                        state = State.menu2;
+                        battleMusic.Stop();
+                    }
+                    break;
             }
         }
 
         public static void TriggerCharacterSelect() {
-            if (state != State.menu1)
-                return;
-            state = State.menuFade;
-            timer = FADE_TIME;
+            if (state == State.menu1)
+            {
+                state = State.menuFade;
+                timer = FADE_TIME;
+            }
+        }
+
+        public static void TriggerLevelSelect()
+        {
+            if (state == State.battle || state == State.battleFade)
+            {
+                state = State.returnFade;
+                timer = FADE_TIME;
+                menuLayer1.Volume = 0.0f;
+                menuLayer2.Volume = 0.0f;
+                menuLayer1.Play();
+                menuLayer2.Play();
+            }
         }
 
         public static void TriggerBattle() {
-            if (state != State.battle)
+            if (state != State.menu2)
                 return;
             
             state = State.battleFade;
