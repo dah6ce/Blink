@@ -36,6 +36,9 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Classes\AudioManager.cs" />
+    <Compile Include="Classes\ImageButton.cs" />
+    <Compile Include="Classes\StateCharacterSelect.cs" />
     <Compile Include="Classes\StateCredits.cs" />
     <Compile Include="Classes\Animation.cs" />
     <Compile Include="Classes\DeathEventArgs.cs" />
@@ -43,7 +46,6 @@
     <Compile Include="Classes\PlayerClass.cs" />
     <Compile Include="Classes\SpearClass.cs" />
     <Compile Include="Classes\StateLevelSelect.cs" />
-    <Compile Include="Classes\mapThumb.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,15 +65,61 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\audio\sfx\Player_Blink.wav" />
-    <Content Include="Content\audio\sfx\Player_Death.wav" />
-    <Content Include="Content\audio\sfx\Player_Jump.wav" />
-    <Content Include="Content\audio\sfx\Silent.wav" />
-    <Content Include="Content\audio\sfx\Spear_Attack.wav" />
-    <Content Include="Content\audio\sfx\Spear_Player_Hit.wav" />
-    <Content Include="Content\audio\sfx\Spear_Throw.wav" />
-    <Content Include="Content\audio\sfx\Spear_Wall_Hit.wav" />
+    <Content Include="Content\audio\music\menu1.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\music\menu2.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\sfx\Player_Blink.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\sfx\Player_Death.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\sfx\Player_Jump.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\sfx\Silent.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\sfx\Spear_Attack.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\sfx\Spear_Player_Hit.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\sfx\Spear_Throw.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\sfx\Spear_Wall_Hit.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\bar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\CharData\roth_black.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\CharData\roth_og.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\CharData\roth_red.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\CharData\roth_white.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\CharData\Sprites\roth_black.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\CharData\Sprites\roth_og.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\CharData\Sprites\roth_red.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\CharData\Sprites\roth_white.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\credits.png">
@@ -131,16 +179,19 @@
     <Content Include="Content\MapData\SpaceThumb.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ROTH-BLACK-SPEARLESS.png">
+    <Content Include="Content\MenuData\characterselect.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ROTH-OG-SPEARLESS.png">
+    <Content Include="Content\MenuData\S1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ROTH-RED-SPEARLESS.png">
+    <Content Include="Content\MenuData\S2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ROTH-SILVER-SPEARLESS.png">
+    <Content Include="Content\MenuData\S3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\MenuData\S4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\select.png">
@@ -171,6 +222,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\BMarmy.TTF" />
+    <None Include="Content\CharData\roth_black.char">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\CharData\roth_og.char">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\CharData\roth_red.char">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\CharData\roth_white.char">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\MapData\coliseum.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -212,7 +275,5 @@
     </None>
     <None Include="Content\Miramo.ttf" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\audio\music\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

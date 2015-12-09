@@ -434,18 +434,19 @@ namespace Blink
 				
                 else
                 {
-				sb.DrawString(font, "SCORES", temp, Color.White);
+				    sb.DrawString(font, "SCORES", temp, Color.White);
 
-				temp.Y += 32;
+				    temp.Y += 32;
                     for (int i = 0; i < players.Length; i++)
-				{
-                    if(players[i] != null)
-                    {
-					sb.DrawString(font, "P" + (i + 1) + ": " + players[i].score, temp, Color.White);
-					temp.Y += 32;
-				}
-			}
-		}
+				    {
+                            if (players[i] != null)
+                            {
+                                sb.DrawString(font, "P" + (i + 1) + ": " + players[i].score, temp, Color.White);
+                                temp.Y += 32;
+                            }
+				    }
+			    }
+		    }
 		}
 
 		public GameState GetTransition() 
