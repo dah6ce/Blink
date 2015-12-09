@@ -59,8 +59,8 @@ namespace Blink
         public void Update(GameTime gameTime)
         {
             KeyboardState keyState = Keyboard.GetState();
-            //GamePadState faker = new GamePadState();
-            if (keyState.IsKeyDown(Keys.Enter))
+            GamePadState faker = new GamePadState();
+            if (keyState.IsKeyDown(Keys.Enter) || faker.IsButtonDown(Buttons.Start))
             {
                 nextState = levelSelect;
                 return;
