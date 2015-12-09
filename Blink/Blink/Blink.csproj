@@ -44,6 +44,7 @@
     <Compile Include="Classes\SpearClass.cs" />
     <Compile Include="Classes\StateLevelSelect.cs" />
     <Compile Include="Classes\mapThumb.cs" />
+    <Compile Include="Classes\StateWin.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

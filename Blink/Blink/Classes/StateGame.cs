@@ -37,6 +37,7 @@ namespace Blink
         SpearClass[] spears = new SpearClass[4];
 
         public GameState levelSelect;
+        public GameState Win;
         GameState returnState;
 
         SoundEffectInstance p1Death;
@@ -356,7 +357,7 @@ namespace Blink
                 {
                     if (ultimateWin > 0)
                     {
-                        returnState = levelSelect;
+                        returnState = Win;
                         return;
                     }
                     else
@@ -476,7 +477,7 @@ namespace Blink
         }
         public int winScore()
         {
-            if (activePlayers == 4) return 10;
+            if (activePlayers == 4) return 1;
             if (activePlayers == 3) return 7;
             if (activePlayers == 2) return 5;
             return 10;
@@ -493,6 +494,11 @@ namespace Blink
             spear2.reset(players[1]);
             spear3.reset(players[2]);
             spear4.reset(players[3]);
+        }
+
+         public PlayerClass[] getPlayers()
+        {
+            return players;
         }
 	}
 }
