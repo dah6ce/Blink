@@ -418,7 +418,7 @@ namespace Blink.Classes
                 Rectangle inter = Rectangle.Intersect(spearOwner.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
                 if (inter.Width == 0 && inter.Height == 0)
                 {
-                    throwing = false;
+                    //throwing = false;
                     isInUse = false;
                     attachedToPlayer = false;
                     spearOwner.hasSpear = false;
