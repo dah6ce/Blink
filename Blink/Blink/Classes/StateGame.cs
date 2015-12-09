@@ -36,6 +36,9 @@ namespace Blink
         PlayerClass[] players = new PlayerClass[4];
         SpearClass[] spears = new SpearClass[4];
 
+        bool[] playersInGame = { false, false, false, false };
+        string[] playerTexts = { "", "", "", "" };
+
         public GameState levelSelect;
         public GameState Win;
         GameState returnState;
@@ -60,7 +63,7 @@ namespace Blink
 		bool[] oldStartState = new bool[4];
 		bool paused;
 		int playerPaused;
-        int activePlayers = 4;
+        int activePlayers = 0;
 		SpriteFont font;
         List<Animation> animations;
 
@@ -99,20 +102,44 @@ namespace Blink
 			currPlayer = PlayerKeys.Player1;
 			paused = false;
 			playerPaused = 0;
+            AudioManager.TriggerBattle();
             
 		}
 
+        public void informGame(bool[] playersConnected, string[] playerChars)
+        {
+            playersInGame = playersConnected;
+            playerTexts = playerChars;
+        }
+
 		public void LoadContent(ContentManager Content)
 		{
-			Vector2 player1Pos = new Vector2(96, 96);
-			Vector2 player2Pos = new Vector2(1400, 96);
-			Vector2 player3Pos = new Vector2(400, 96);
-			Vector2 player4Pos = new Vector2(1120, 96);
-            
-            players[0] = player1;
-            players[1] = player2;
-            players[2] = player3;
-            players[3] = player4;
+			Vector2 negPos = new Vector2(-100, -100);
+            activePlayers = 0;
+            if (playersInGame[0]) { 
+                players[0] = player1;
+                activePlayers++;
+            }
+            else
+                player1.active = false;
+            if (playersInGame[1]) { 
+                players[1] = player2;
+                activePlayers++;
+            }
+            else
+                player2.active = false;
+            if (playersInGame[2]) { 
+                players[2] = player3;
+                activePlayers++;
+            }
+            else
+                player3.active = false;
+            if (playersInGame[3]) { 
+                players[3] = player4;
+                activePlayers++;
+            }
+            else
+                player4.active = false;
 
 
             Vector2 offset = new Vector2(-4, -4);
@@ -120,15 +147,22 @@ namespace Blink
             Texture2D dust = Content.Load<Texture2D>("Dust_Trail");
             Texture2D dustPoof = Content.Load<Texture2D>("Dust_Poof");
 
-            player1.Initialize(Content.Load<Texture2D>("ROTH-OG-SPEARLESS"), player1Pos, screenSize, map1, players, offset, bar);
-            player2.Initialize(Content.Load<Texture2D>("ROTH-RED-SPEARLESS"), player2Pos, screenSize, map1, players, offset, bar);
-            player3.Initialize(Content.Load<Texture2D>("ROTH-SILVER-SPEARLESS"), player3Pos, screenSize, map1, players, offset, bar);
-            player4.Initialize(Content.Load<Texture2D>("ROTH-BLACK-SPEARLESS"), player4Pos, screenSize, map1, players, offset, bar);
+            for(int i = 0; i < 4; i++)
+            {
+                if (players[i] != null && players[i].active)
+                {
+                    players[i].Initialize(Content.Load<Texture2D>(playerTexts[i]), negPos, screenSize, map1, players, offset, bar);
+                }
+            }
+            
 
 
             //Setup for common player resources
             foreach (PlayerClass p in players)
             {
+                if (p != null)
+                {
+
                 p.deadText = Content.Load<Texture2D>("spriteDead");
 
                 p.Death_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Death").CreateInstance();
@@ -143,6 +177,8 @@ namespace Blink
                 p.dustPoof = dustPoof;
 
                 p.aniList = animations;
+
+                }
             }
 
             
@@ -192,7 +228,7 @@ namespace Blink
 		{
 			KeyboardState currState = Keyboard.GetState();
 
-
+            
 			if(paused)
 			{
 				if (currState.IsKeyDown(Keys.P) && currState != oldState && playerPaused == (int)currPlayer)
@@ -362,9 +398,9 @@ namespace Blink
                     }
                     else
                     {
-                        resetMap();
-                    }
+                    resetMap();
 		        }
+            }
             }
 
             //Update animations
@@ -404,19 +440,22 @@ namespace Blink
                     temp.X -= 150;
                     sb.DrawString(font, "P" + (ultimateWin) + " Has Won The Game!!!!", temp, Color.White);
                 }
-
+				
                 else
                 {
-                    sb.DrawString(font, "SCORES", temp, Color.White);
+				    sb.DrawString(font, "SCORES", temp, Color.White);
 
-                    temp.Y += 32;
+				    temp.Y += 32;
                     for (int i = 0; i < players.Length; i++)
-                    {
-                        sb.DrawString(font, "P" + (i + 1) + ": " + players[i].score, temp, Color.White);
-                        temp.Y += 32;
-                    }
-                }
-			}
+				    {
+                            if (players[i] != null)
+                            {
+                                sb.DrawString(font, "P" + (i + 1) + ": " + players[i].score, temp, Color.White);
+                                temp.Y += 32;
+                            }
+				    }
+			    }
+		    }
 		}
 
 		public GameState GetTransition() 
@@ -437,6 +476,7 @@ namespace Blink
             PlayerClass victor = null;
             foreach (PlayerClass p in players)
             {
+                if(p != null) { 
                 if (victor == null && !p.isDead())
                 {
                     victor = p;
@@ -447,6 +487,7 @@ namespace Blink
                     victor = null;
                     break;
                 }
+            }
             }
 
             if (victor != null || (victor == null && !survivor))
@@ -465,15 +506,20 @@ namespace Blink
 
         public void detectEndOfGame()
         {
-                for (int i = 0; i < players.Length; i++)
+            for (int i = 0; i < players.Length; i++)
+            {
+                if(players[i] != null)
                 {
+
                      if(players[i].score >= winScore())
                     {
                         roundReset = 5;
                         ultimateWin = i + 1;
 
+
                     }
                 }
+            }
         }
         public int winScore()
         {
@@ -487,6 +533,7 @@ namespace Blink
             map1.reset();
             foreach(PlayerClass p in players)
             {
+                if(p != null)
                 p.reset();
             }
             ultimateWin = -1;

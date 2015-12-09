@@ -30,7 +30,7 @@ namespace Blink.Classes
             
             for(int player = 0; player < 4; player++)
             {
-                if(playerStarts[player] != null)
+                if(playerStarts[player] != null && players[player] != null && players[player].active)
                     players[player].setPos(playerStarts[player]);
             }
         }
@@ -39,7 +39,7 @@ namespace Blink.Classes
         {
             for (int player = 0; player < 4; player++)
             {
-                if (playerStarts[player] != null)
+                if (playerStarts[player] != null && players[player] != null && players[player].active)
                     players[player].setPos(playerStarts[player]);
             }
         }

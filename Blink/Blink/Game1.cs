@@ -22,6 +22,7 @@ namespace Blink
         SpriteBatch spriteBatch;
         GameState currState;
         GameState mainMenu;
+        GameState charMenu;
         GameState levelMenu;
         GameState game;
 		GameState creditsMenu;
@@ -48,6 +49,7 @@ namespace Blink
 
 
             base.Initialize();
+            AudioManager.Initialize();  
         }
 
         /// <summary>
@@ -64,15 +66,16 @@ namespace Blink
             game = new StateGame(screenSize);
             levelMenu = new StateLevelSelect(screenSize, "Map Select", new string[] { "Start", "Start", "Quit" }, game);
 			creditsMenu = new StateCredits(screenSize, "Credits", new string[] { "Menu" });
-			mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit", "Credits" }, new GameState[] { levelMenu, new StateQuit(), creditsMenu });
+			charMenu = new StateCharacterSelect(screenSize, "Character Select", levelMenu, game); 
+            mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit", "Credits" }, new GameState[] { charMenu, new StateQuit(), creditsMenu });
             winScreen = new StateWin(screenSize);
-            ((StateGame)game).Win = winScreen;
-            ((StateGame)game).levelSelect = levelMenu;
+			((StateGame)game).levelSelect = levelMenu;
 			((StateCredits)creditsMenu).getMenu(mainMenu);
 
             currState = mainMenu;
             currState.Initialize();
             currState.LoadContent(Content);
+            AudioManager.LoadContent(Content);
 
         }
 
@@ -96,6 +99,7 @@ namespace Blink
                 Exit();
 
             currState.Update(gameTime);
+            AudioManager.Update(gameTime);
 
             // Handle GameState transitions
             GameState newState = currState.GetTransition();

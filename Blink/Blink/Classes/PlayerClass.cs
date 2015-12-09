@@ -71,6 +71,11 @@ namespace Blink.Classes
             deathTimer = -2;
         }
 
+        public void setTexture(Texture2D newSprite)
+        {
+            playerText = newSprite;
+        }
+
         public void setSpear(SpearClass spr)
         {
             spear = spr;
@@ -82,6 +87,8 @@ namespace Blink.Classes
 
         public void Update(KeyboardState input, GamePadState padState, GameTime gameTime)
         {
+            if (!active)
+                return;
             //debug stuff goes here
             if ((input.IsKeyDown(Keys.LeftShift)))
                 this.bounce = !this.bounce;
@@ -281,7 +288,7 @@ namespace Blink.Classes
             Boolean inAPlayer = false;
             foreach (PlayerClass p in players)
             {
-                if (p != this && p.playerRect.Intersects(this.playerRect) && p.blinked != blinked)
+                if (p != null && p != this && p.playerRect.Intersects(this.playerRect) && p.blinked != blinked)
                     inAPlayer = true;
             }
 
@@ -478,7 +485,7 @@ namespace Blink.Classes
                 counter += 1;
                 //Make sure we're not checking self collision, or dead players
                 Boolean collided;
-                if (p != this && !p.dead && !alreadyChecked && blinked == p.blinked)
+                if (p != null && p != this && !p.dead && !alreadyChecked && blinked == p.blinked)
                 {
                     collided = doCollisions(playerRect, oldPos, p.playerRect, p.oldPos, p);
 
@@ -671,6 +678,8 @@ namespace Blink.Classes
 
         public void Draw(SpriteBatch sB)
         {
+            if (!active)
+                return;
 			if(blinked && velocity.X == 0 && velocity.Y == 0)
 			{
                 return;

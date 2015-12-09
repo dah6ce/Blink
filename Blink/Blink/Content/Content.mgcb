@@ -69,50 +69,6 @@
 /processorParam:TextureFormat=Color
 /build:Dust_Trail.png
 
-#begin ROTH-BLACK-SPEARLESS.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:TextureFormat=Color
-/build:ROTH-BLACK-SPEARLESS.png
-
-#begin ROTH-OG-SPEARLESS.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:TextureFormat=Color
-/build:ROTH-OG-SPEARLESS.png
-
-#begin ROTH-RED-SPEARLESS.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:TextureFormat=Color
-/build:ROTH-RED-SPEARLESS.png
-
-#begin ROTH-SILVER-SPEARLESS.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:TextureFormat=Color
-/build:ROTH-SILVER-SPEARLESS.png
-
 #begin select.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -199,4 +155,16 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:audio/sfx/Spear_Wall_Hit.wav
+
+#begin audio/music/menu1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/music/menu1.wav
+
+#begin audio/music/menu2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/music/menu2.wav
 
