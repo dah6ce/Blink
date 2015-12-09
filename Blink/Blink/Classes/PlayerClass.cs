@@ -8,7 +8,7 @@ using Blink.Classes;
 
 namespace Blink.Classes
 {
-     class PlayerClass
+       class PlayerClass
     {
         //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
         //private int curFriction = 12, airFriction = 1;
@@ -29,6 +29,7 @@ namespace Blink.Classes
         private PlayerClass[] players;
         Rectangle playerRect = new Rectangle(0, 0, 32, 64);
         public String title;
+        public int winAssign = 0;
         private SpearClass spear;
         private int directionFacing = 0; //0 for left, 1 for right
         public Boolean hasSpear = true;
@@ -780,6 +781,12 @@ namespace Blink.Classes
             blinked = false;
             curMultiplier = 1f;
             blinkJuice = MAXBLINKJUICE;
+        }
+
+        internal void jumpForJoy()
+        {
+            velocity.Y -= JUMP * curMultiplier;
+            atRest = false;
         }
     }
 }

@@ -70,8 +70,9 @@ namespace Blink
             mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit", "Credits" }, new GameState[] { charMenu, new StateQuit(), creditsMenu });
             winScreen = new StateWin(screenSize);
 			((StateGame)game).levelSelect = levelMenu;
+            ((StateGame)game).Win = winScreen;
 			((StateCredits)creditsMenu).getMenu(mainMenu);
-
+            ((StateWin)winScreen).levelSelect = levelMenu;
             currState = mainMenu;
             currState.Initialize();
             currState.LoadContent(Content);
@@ -111,7 +112,7 @@ namespace Blink
                 if (newState == winScreen)
                 {
                     ((StateWin)winScreen).setMap(((StateLevelSelect)levelMenu).getSelectedMap());
-                    ((StateWin)winScreen).getPlayers(((StateGame)game).getPlayers());
+                    ((StateWin)winScreen).setPlayers(((StateGame)game).players);
                 }
 
                 //State unload/load

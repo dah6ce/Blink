@@ -33,7 +33,7 @@ namespace Blink
 		PlayerClass player3;
 		PlayerClass player4;
         int ultimateWin = -1;
-        PlayerClass[] players = new PlayerClass[4];
+        internal PlayerClass[] players = new PlayerClass[4];
         SpearClass[] spears = new SpearClass[4];
 
         bool[] playersInGame = { false, false, false, false };
@@ -434,15 +434,7 @@ namespace Blink
 			}
 			if (roundReset > 0)
 			{
-                Vector2 temp = new Vector2(screenSize.X / 2 - font.MeasureString("SCORES").X / 2, 300);
-                if (ultimateWin > 0)
-                {
-                    temp.X -= 150;
-                    sb.DrawString(font, "P" + (ultimateWin) + " Has Won The Game!!!!", temp, Color.White);
-                }
-				
-                else
-                {
+                Vector2 temp = new Vector2(screenSize.X / 2 - font.MeasureString("SCORES").X / 2, 300);                
 				    sb.DrawString(font, "SCORES", temp, Color.White);
 
 				    temp.Y += 32;
@@ -454,7 +446,7 @@ namespace Blink
                                 temp.Y += 32;
                             }
 				    }
-			    }
+			    
 		    }
 		}
 
@@ -523,10 +515,10 @@ namespace Blink
         }
         public int winScore()
         {
-            if (activePlayers == 4) return 1;
+            if (activePlayers == 4) return 10;
             if (activePlayers == 3) return 7;
             if (activePlayers == 2) return 5;
-            return 10;
+            return 5;
         }
         private void resetMap()
         {
@@ -541,11 +533,6 @@ namespace Blink
             spear2.reset(players[1]);
             spear3.reset(players[2]);
             spear4.reset(players[3]);
-        }
-
-         public PlayerClass[] getPlayers()
-        {
-            return players;
         }
 	}
 }

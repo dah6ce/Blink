@@ -11,7 +11,7 @@ using Blink.Classes;
 
 namespace Blink.Classes
 {
-    class SpearClass
+     class SpearClass
     {
 	    
         public Texture2D spearText;
