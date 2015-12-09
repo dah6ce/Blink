@@ -22,6 +22,7 @@ namespace Blink
         SpriteBatch spriteBatch;
         GameState currState;
         GameState mainMenu;
+        GameState charMenu;
         GameState levelMenu;
         GameState game;
 
@@ -44,8 +45,9 @@ namespace Blink
         protected override void Initialize()
         {
 
-
+            
             base.Initialize();
+            AudioManager.Initialize();  
         }
 
         /// <summary>
@@ -61,12 +63,14 @@ namespace Blink
             Vector2 screenSize = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.Right, GraphicsDevice.Viewport.TitleSafeArea.Bottom);
             game = new StateGame(screenSize);
             levelMenu = new StateLevelSelect(screenSize, "Map Select", new string[] { "Start", "Start", "Quit" }, game);
-            mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit" }, new GameState[] { levelMenu, new StateQuit() });
+            charMenu = new StateCharacterSelect(screenSize, "Character Select", levelMenu, game);
+            mainMenu = new StateSimpleMenu(screenSize, "Blink", new string[] { "Start", "Quit" }, new GameState[] { charMenu, new StateQuit() });
             ((StateGame)game).levelSelect = levelMenu;
 
             currState = mainMenu;
             currState.Initialize();
             currState.LoadContent(Content);
+            AudioManager.LoadContent(Content);
 
         }
 
@@ -90,6 +94,7 @@ namespace Blink
                 Exit();
 
             currState.Update(gameTime);
+            AudioManager.Update(gameTime);
 
             // Handle GameState transitions
             GameState newState = currState.GetTransition();

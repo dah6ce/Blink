@@ -231,7 +231,7 @@ namespace Blink.Classes
                 PlayerClass[] players = spearOwner.getPlayers();
                 foreach (PlayerClass player in players)
                 {
-                    if (!player.Equals(spearOwner) && !player.dead && player.blinked == spearOwner.blinked)
+                    if (player != null && !player.Equals(spearOwner) && !player.dead && player.blinked == spearOwner.blinked)
                     {
                         if (player.getPlayerRect().Intersects(this.spear))
                         {
@@ -261,30 +261,31 @@ namespace Blink.Classes
             {
                 foreach (PlayerClass p in players)
                 {
-                 
-                    if (!attachedToPlayer && !throwing)
-                    {
-                        Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), spear);//new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
-                        if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing && !p.dead)
+                    if(p != null) { 
+                        if (!attachedToPlayer && !throwing)
                         {
-                            gravityEffect = 0;
-                            attachedToPlayer = true;
-                            setOwner(p);
-                            spearOwner.setSpear(this);
-                            isInUse = false;
-                            throwing = false;
-                            p.hasSpear = true;
+                            Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), spear);//new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
+                            if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing && !p.dead)
+                            {
+                                gravityEffect = 0;
+                                attachedToPlayer = true;
+                                setOwner(p);
+                                spearOwner.setSpear(this);
+                                isInUse = false;
+                                throwing = false;
+                                p.hasSpear = true;
+                            }
+                        }
+                        if (!atRest && thrownBy != null && p.blinked == thrownBy.blinked)
+                        {
+                            Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
+                            if (inter.Width > 0 && inter.Height > 0 && spearOwner != p && !p.dead)
+                            {
+                                p.setDead(true, thrownBy, "SPEAR");
+                                Hit_Player_Sound.Play();
+                            }
                         }
                     }
-                    if (!atRest && thrownBy != null && p.blinked == thrownBy.blinked)
-                    {
-                        Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
-                        if (inter.Width > 0 && inter.Height > 0 && spearOwner != p && !p.dead)
-                        {
-                            p.setDead(true, thrownBy, "SPEAR");
-                            Hit_Player_Sound.Play();
-                }
-            }
                 }
             }
 
@@ -512,6 +513,8 @@ namespace Blink.Classes
 
         public void reset(PlayerClass p)
         {
+            if (p == null)
+                return;
             gravityEffect = 0;
             setOwner(p);
             //Width = spear.Width;
