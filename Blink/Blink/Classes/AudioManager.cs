@@ -30,8 +30,7 @@ namespace Blink
         public static void LoadContent(ContentManager Content) {
             menuLayer1 = Content.Load<SoundEffect>("menu1").CreateInstance();
             menuLayer2 = Content.Load<SoundEffect>("menu2").CreateInstance();
-            // PLACEHOLDER
-            battleMusic = Content.Load<SoundEffect>("menu1").CreateInstance();
+            battleMusic = Content.Load<SoundEffect>("crowd").CreateInstance();
         }
 
         public static void Initialize() {

@@ -25,3 +25,9 @@
 /processorParam:Quality=Best
 /build:menu1.wav
 
+#begin crowd.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:crowd.wav
+
