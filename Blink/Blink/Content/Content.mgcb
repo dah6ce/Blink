@@ -147,6 +147,17 @@
 /build:spriteDead.png
 
 
+#begin credits.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:TextureFormat=Color
+/build:credits.png
+
 #begin audio/sfx/Player_Blink.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

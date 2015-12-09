@@ -54,6 +54,7 @@ namespace Blink.GUI
             {
                 prematureEnter = true;
             }
+
         }
 
         public void LoadContent(ContentManager Content)
@@ -91,9 +92,21 @@ namespace Blink.GUI
         }
 
         public void UnloadContent()
-        {
+		{
 
-        }
+		}
+		public void reset()
+		{
+			this.selected = 0;
+			this.nextState = null;
+			lastMoveDown = false;
+			lastAccept = false;
+			lastAccept = false;
+
+			buttons[2].UnSelect();
+			buttons[0].Select();
+			Console.WriteLine("test");
+		}
 
         public void Update(GameTime gameTime)
         {

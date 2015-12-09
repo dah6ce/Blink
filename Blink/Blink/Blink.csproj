@@ -36,6 +36,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Classes\StateCredits.cs" />
     <Compile Include="Classes\Animation.cs" />
     <Compile Include="Classes\DeathEventArgs.cs" />
     <Compile Include="Classes\Map.cs" />
@@ -71,6 +72,9 @@
     <Content Include="Content\audio\sfx\Spear_Throw.wav" />
     <Content Include="Content\audio\sfx\Spear_Wall_Hit.wav" />
     <Content Include="Content\bar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\credits.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Dust_Poof.png">
