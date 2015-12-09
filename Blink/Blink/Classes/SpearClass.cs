@@ -313,8 +313,12 @@ namespace Blink.Classes
             //    hitBox = new Vector2(spear.Width, spear.Height);
             //else
             //    hitBox = new Vector2(spear.Height, spear.Width);
+            Boolean[] collisions;
+            if (thrownBy != null)
+                collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, new Vector2(spear.Width,spear.Height), thrownBy.blinked, 0f);
+            else
+                collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, new Vector2(spear.Width, spear.Height), false, 0f);
 
-            Boolean[] collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, new Vector2(spear.Width,spear.Height), false, 0f);
             if (collisions[0] || collisions[1] || collisions[2])
         {
                 spear.X = (int)testX;
@@ -513,7 +517,7 @@ namespace Blink.Classes
             }
         }
 
-        public void reset(PlayerClass p)
+        public void reset(PlayerClass p, Map newMap)
         {
             if (p == null)
                 return;
@@ -531,6 +535,7 @@ namespace Blink.Classes
             spear.X = spearOwner.getPlayerRect().X;
             spear.Y = spearOwner.getPlayerRect().Y;
             spearOwner.setSpear(this);
+            this.m = newMap;
         }
 
         internal void dropSpear()

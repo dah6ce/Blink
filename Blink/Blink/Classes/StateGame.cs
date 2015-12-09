@@ -47,6 +47,7 @@ namespace Blink
         SoundEffectInstance p3Death;
         SoundEffectInstance p4Death;
 
+        Random mapPicker = new Random();
 
         PlayerKeys currPlayer;
 		KeyboardState oldState;
@@ -54,11 +55,12 @@ namespace Blink
 		KeyboardState player2State;
 		KeyboardState player3State;
 		KeyboardState player4State;
-        string mapName = "map1";
+        mapSet maps;
         float roundReset = -1;
         float timeElapsed;
         public static GameTime gameTime = new GameTime();
-		Map map1;
+		Map[] mapObs = new Map[5];
+        int currentMap = 0;
 		bool[] oldStartState = new bool[4];
 		bool paused;
 		int playerPaused;
@@ -66,9 +68,9 @@ namespace Blink
 		SpriteFont font;
         List<Animation> animations;
 
-        public void setMap(string map)
+        public void setMaps(mapSet map)
         {
-            mapName = map;
+            maps = map;
         }
 
 		public StateGame(Vector2 screenSize)
@@ -96,8 +98,7 @@ namespace Blink
             player2.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
             player3.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
             player4.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
-
-			map1 = new Map();
+            
 			currPlayer = PlayerKeys.Player1;
 			paused = false;
 			playerPaused = 0;
@@ -150,7 +151,7 @@ namespace Blink
             {
                 if (players[i] != null && players[i].active)
                 {
-                    players[i].Initialize(Content.Load<Texture2D>(playerTexts[i]), negPos, screenSize, map1, players, offset, bar);
+                    players[i].Initialize(Content.Load<Texture2D>(playerTexts[i]), negPos, screenSize, null, players, offset, bar);
                 }
             }
             
@@ -182,10 +183,10 @@ namespace Blink
             }
 
             
-            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
-            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
-            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
-            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, map1, players);
+            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
+            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
+            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
+            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
 
             spears[0] = spear1;
             spears[1] = spear2;
@@ -206,9 +207,12 @@ namespace Blink
 
             }
 
-            StreamReader mapData;
-            mapData = File.OpenText("Content/MapData/"+mapName+".map");
-            map1.Initialize(Content.Load<Texture2D>("MapData/"+mapName+"Color"), mapData.ReadToEnd(), 32, 50, 30, players);
+            StreamReader[] mapData = new StreamReader[5];
+            for(int i = 0; i < 5; i++) { 
+                mapData[i] = File.OpenText("Content/MapData/"+maps.Maps()[i]+".map");
+                mapObs[i] = new Map();
+                mapObs[i].Initialize(Content.Load<Texture2D>("MapData/"+maps.Maps()[i]+"Color"), mapData[i].ReadToEnd(), 32, 50, 30, players);
+            }
             font = Content.Load<SpriteFont>("miramo30");
 
             resetMap();
@@ -412,7 +416,7 @@ namespace Blink
 
 		public void Draw(SpriteBatch sb)
 		{
-			map1.Draw(sb);
+			mapObs[currentMap].Draw(sb);
 			player1.Draw(sb);
 			player2.Draw(sb);
 			player3.Draw(sb);
@@ -530,17 +534,18 @@ namespace Blink
         }
         private void resetMap()
         {
-            map1.reset();
+            currentMap = (int)Math.Floor((double)mapPicker.Next(5));
+            mapObs[currentMap].reset();
             foreach(PlayerClass p in players)
             {
                 if(p != null)
-                p.reset();
+                p.reset(mapObs[currentMap]);
             }
             ultimateWin = -1;
-            spear1.reset(players[0]);
-            spear2.reset(players[1]);
-            spear3.reset(players[2]);
-            spear4.reset(players[3]);
+            spear1.reset(players[0],mapObs[currentMap]);
+            spear2.reset(players[1], mapObs[currentMap]);
+            spear3.reset(players[2], mapObs[currentMap]);
+            spear4.reset(players[3], mapObs[currentMap]);
         }
 	}
 }

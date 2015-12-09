@@ -772,7 +772,7 @@ namespace Blink.Classes
             return curMultiplier;
         }
 
-        public void reset()
+        public void reset(Map map)
         {
             dead = false;
             victory = false;
@@ -784,6 +784,7 @@ namespace Blink.Classes
             blinked = false;
             curMultiplier = 1f;
             blinkJuice = MAXBLINKJUICE;
+            arena = map;
         }
     }
 }
