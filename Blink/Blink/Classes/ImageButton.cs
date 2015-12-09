@@ -107,15 +107,16 @@ namespace Blink.GUI
 
         public void unlock()
         {
-            if (usesMultiSelect)
-            {
+            // if (usesMultiSelect)
+            // {
+            selected = false;
                 for (int i = 0; i < 4; i++)
                 {
                     //multiSelect[i] = false;
                     //unhover(i);
                     locks[i] = false;
                 }
-            }
+            //}
         }
         
         public void select()

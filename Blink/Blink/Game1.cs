@@ -112,7 +112,7 @@ namespace Blink
                     ((StateGame)game).setMaps(((StateLevelSelect)levelMenu).getSelectedMap());
                 if (newState == winScreen)
                 {
-                    ((StateWin)winScreen).setMap(((StateLevelSelect)levelMenu).getSelectedMap().pickMap());
+                    ((StateWin)winScreen).setMap(((StateLevelSelect)levelMenu).getSelectedMap().getName()+"/victory");
                     ((StateWin)winScreen).setPlayers(((StateGame)game).players);
                 }
 

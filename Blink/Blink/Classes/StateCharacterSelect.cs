@@ -77,6 +77,8 @@ namespace Blink.GUI
                     //this.connected[i] = false;
                     //this.selected[i] = 0;
                     this.locked[i] = false;
+                    back[i] = true;
+
                 }
 
                 return;

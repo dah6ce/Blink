@@ -23,6 +23,11 @@ namespace Blink.Classes
             mapNames = new List<string>();
             picker = new Random();
         }
+
+        public string getName()
+        {
+            return setName;
+        }
         
         public void setBackground(Texture2D b)
         {
