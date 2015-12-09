@@ -32,6 +32,7 @@ namespace Blink
 		PlayerClass player2;
 		PlayerClass player3;
 		PlayerClass player4;
+        int ultimateWin = -1;
         PlayerClass[] players = new PlayerClass[4];
         SpearClass[] spears = new SpearClass[4];
 
@@ -58,6 +59,7 @@ namespace Blink
 		bool[] oldStartState = new bool[4];
 		bool paused;
 		int playerPaused;
+        int activePlayers = 4;
 		SpriteFont font;
         List<Animation> animations;
 
@@ -189,7 +191,6 @@ namespace Blink
 		{
 			KeyboardState currState = Keyboard.GetState();
 
-            
 
 			if(paused)
 			{
@@ -353,7 +354,15 @@ namespace Blink
                 roundReset -= timeElapsed;
                 if(roundReset < 0)
                 {
-                    resetMap();
+                    if (ultimateWin > 0)
+                    {
+                        returnState = levelSelect;
+                        return;
+                    }
+                    else
+                    {
+                        resetMap();
+                    }
 		        }
             }
 
@@ -388,16 +397,24 @@ namespace Blink
 			}
 			if (roundReset > 0)
 			{
-				
-				Vector2 temp = new Vector2(screenSize.X / 2 - font.MeasureString("SCORES").X/2, 300);
-				sb.DrawString(font, "SCORES", temp, Color.White);
+                Vector2 temp = new Vector2(screenSize.X / 2 - font.MeasureString("SCORES").X / 2, 300);
+                if (ultimateWin > 0)
+                {
+                    temp.X -= 150;
+                    sb.DrawString(font, "P" + (ultimateWin) + " Has Won The Game!!!!", temp, Color.White);
+                }
 
-				temp.Y += 32;
-				for (int i = 0; i < players.Length; i ++)
-				{
-					sb.DrawString(font, "P" + (i + 1) + ": " + players[i].score, temp, Color.White);
-					temp.Y += 32;
-				}
+                else
+                {
+                    sb.DrawString(font, "SCORES", temp, Color.White);
+
+                    temp.Y += 32;
+                    for (int i = 0; i < players.Length; i++)
+                    {
+                        sb.DrawString(font, "P" + (i + 1) + ": " + players[i].score, temp, Color.White);
+                        temp.Y += 32;
+                    }
+                }
 			}
 		}
 
@@ -442,8 +459,28 @@ namespace Blink
             if(victor != null)
                 victor.winner();
             roundReset = 3;
+            detectEndOfGame();
         }
 
+        public void detectEndOfGame()
+        {
+                for (int i = 0; i < players.Length; i++)
+                {
+                     if(players[i].score >= winScore())
+                    {
+                        roundReset = 5;
+                        ultimateWin = i + 1;
+
+                    }
+                }
+        }
+        public int winScore()
+        {
+            if (activePlayers == 4) return 10;
+            if (activePlayers == 3) return 7;
+            if (activePlayers == 2) return 5;
+            return 10;
+        }
         private void resetMap()
         {
             map1.reset();
@@ -451,7 +488,7 @@ namespace Blink
             {
                 p.reset();
             }
-
+            ultimateWin = -1;
             spear1.reset(players[0]);
             spear2.reset(players[1]);
             spear3.reset(players[2]);
