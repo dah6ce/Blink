@@ -60,7 +60,8 @@ namespace Blink.GUI
 
         public void LoadContent(ContentManager Content)
         {
-
+            if (buttons.Count > 0)
+                return;
             
 
 

@@ -90,10 +90,10 @@ namespace Blink
 
             animations = new List<Animation>();
 
-            player1.title = "p1";
-            player2.title = "p2";
-            player3.title = "p3";
-            player4.title = "p4";
+            player1.title = "P1";
+            player2.title = "P2";
+            player3.title = "P3";
+            player4.title = "P4";
 
             player1.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
             player2.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
