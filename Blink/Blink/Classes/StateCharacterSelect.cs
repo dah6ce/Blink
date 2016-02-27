@@ -111,10 +111,6 @@ namespace Blink.GUI
             }
 
             positionThumbs(charThumbs);
-
-            Vector2 pos = new Vector2(screenSize.X / 2, 50);
-            pos.Y += 50;
-            
         }
 
         public void UnloadContent()
@@ -127,7 +123,7 @@ namespace Blink.GUI
             for(int i = 0; i < thumbs.Count; i++)
             {
                 ImageButton thumb = thumbs[i];
-                thumb.setPosition(new Vector2(200 * (i % THUMBROWSIZE) + 601, (float)Math.Floor((i / (float)THUMBROWSIZE)) * 200 + 278));
+                thumb.setPosition(new Vector2(200 * (i % THUMBROWSIZE) + 601, (i / THUMBROWSIZE) * 200 + 278));
             }
         }
 
@@ -157,7 +153,6 @@ namespace Blink.GUI
             //Start button functions
             if (pad.IsButtonDown(Buttons.Start) && !startButtons[player])
             {
-                
 
                 //Player X has entered the game!
                 if (!this.connected[player])
@@ -192,9 +187,8 @@ namespace Blink.GUI
                     }
                 }
                 startButtons[player] = true;
-
-                
             }
+
             else if (pad.IsButtonUp(Buttons.Start))
                 startButtons[player] = false;
 
@@ -222,9 +216,12 @@ namespace Blink.GUI
             else if (pad.IsButtonUp(Buttons.B))
                 back[player] = false;
 
-            if (!locked[player])
+            if (locked[player])
             {
-
+                //control player
+            }
+            else 
+            {
                 //Right button functions
                 if ((pad.IsButtonDown(Buttons.LeftThumbstickRight) || pad.IsButtonDown(Buttons.DPadRight)) && !right[player])
                 {
@@ -311,7 +308,7 @@ namespace Blink.GUI
             sb.Draw(background, new Vector2(0,0), Color.White);
             foreach (ImageButton thumb in charThumbs)
                 thumb.Draw(sb);
-            //sb.Draw(selectedOverlay, new Vector2(200 * (selected % THUMBROWSIZE), (float)Math.Floor((selected / 8f)) * 120 + 600), Color.Gold);
+            //sb.Draw(selectedOverlay, new Vector2(200 * (selected % THUMBROWSIZE), (selected / 8) * 120 + 600), Color.Gold);
         }
 
         public GameState GetTransition()
