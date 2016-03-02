@@ -489,7 +489,7 @@ namespace Blink.Classes
             }
             else if (isInUse && spearOwner != null)
             {
-                Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y);
+                /*Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y);
                 switch (spearOrientation) { 
                     case 0:
                         RotationAngle = 0;
@@ -513,7 +513,8 @@ namespace Blink.Classes
                         break;
                 }
                 sB.Draw(drawnText, screenPos, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
-                
+                */
+                Vector2 dir = spearOwner.spearVector;
             }
         }
 

@@ -32,6 +32,7 @@ namespace Blink.Classes
         public int winAssign = 0;
         private SpearClass spear;
         private int directionFacing = 0; //0 for left, 1 for right
+        public Vector2 spearVector;
         public Boolean hasSpear = true;
         public Boolean blinked = false, blinkKeyDown = false;
         private float blinkJuice, blinkCoolDown, stunTimer, deathTimer, curMultiplier, dustTimer;
@@ -196,24 +197,27 @@ namespace Blink.Classes
             }
 
 
-            
+
 
 
             //Horizontal movement
-            if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP*curMultiplier && !dead && !victory && stunTimer <= 0)
-            {
-                velocity.X += SPEED*curMultiplier;
-                if (velocity.X < -SPEED)
-                    velocity.X += SPEED * curMultiplier / 2;
+            if (!(padState.IsButtonDown(Buttons.X))) {
+                if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP * curMultiplier && !dead && !victory && stunTimer <= 0)
+                {
+                    velocity.X += SPEED * curMultiplier;
+                    if (velocity.X < -SPEED)
+                        velocity.X += SPEED * curMultiplier / 2;
+                }
+                else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP * curMultiplier && !dead && !victory && stunTimer <= 0)
+                {
+                    velocity.X -= SPEED * curMultiplier;
+                    if (velocity.X > SPEED)
+                        velocity.X -= SPEED * curMultiplier / 2;
+                }
             }
-            else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP*curMultiplier && !dead && !victory && stunTimer <= 0)
-            {
-                velocity.X -= SPEED * curMultiplier;
-                if (velocity.X > SPEED)
-                    velocity.X -= SPEED * curMultiplier / 2;
-            }
+
             //Friction
-            else if (velocity.X != 0)
+            if (velocity.X != 0 && !padState.IsButtonDown(Buttons.LeftThumbstickRight) && !padState.IsButtonDown(Buttons.LeftThumbstickLeft))
             {
                 float fric = curFriction;
                 if (!atRest)
