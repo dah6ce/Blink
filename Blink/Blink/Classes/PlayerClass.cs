@@ -92,7 +92,7 @@ namespace Blink.Classes
             if (!active)
                 return;
             //debug stuff goes here
-            if ((input.IsKeyDown(Keys.LeftShift)))
+            if ((input.IsKeyDown(Keys.Q)))
                 this.bounce = !this.bounce;
 
             if (blinked)

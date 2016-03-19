@@ -31,7 +31,7 @@ namespace Blink.Classes
         //      7       6        5
         public PlayerClass spearOwner; 
         public Map m;
-        public readonly Keys THROW_KEY = Keys.Q, ATTACK_KEY = Keys.Space;
+        public readonly Keys THROW_KEY = Keys.Z, ATTACK_KEY = Keys.X;
         public readonly Buttons THROW_BUTTON = Buttons.RightShoulder, ATTACK_BUTTON = Buttons.X;
         public Boolean throwDown = false;
 
