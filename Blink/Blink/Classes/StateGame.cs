@@ -363,15 +363,15 @@ namespace Blink
                         sp.Update(player1State, GamePad.GetState(PlayerIndex.One));
                     }
 
-                    if (sp.spearOwner == player2)
+                    else if (sp.spearOwner == player2)
                     {
                         sp.Update(player2State, GamePad.GetState(PlayerIndex.Two));
                     }
-                    if (sp.spearOwner == player3)
+                    else if (sp.spearOwner == player3)
                     {
                         sp.Update(player3State, GamePad.GetState(PlayerIndex.Three));
                     }
-                    if (sp.spearOwner == player4)
+                    else if (sp.spearOwner == player4)
                     {
                         sp.Update(player4State, GamePad.GetState(PlayerIndex.Four));
                     }

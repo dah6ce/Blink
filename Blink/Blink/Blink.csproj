@@ -58,6 +58,7 @@
     <Compile Include="Classes\Button.cs" />
     <Compile Include="Classes\Label.cs" />
     <Compile Include="Classes\StateQuit.cs" />
+    <Compile Include="Utilities\VectorMath.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

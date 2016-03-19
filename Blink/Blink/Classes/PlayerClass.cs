@@ -215,6 +215,10 @@ namespace Blink.Classes
                         velocity.X -= SPEED * curMultiplier / 2;
                 }
             }
+            else
+            {
+                spearVector = padState.ThumbSticks.Left;
+            }
 
             //Friction
             if (velocity.X != 0 && !padState.IsButtonDown(Buttons.LeftThumbstickRight) && !padState.IsButtonDown(Buttons.LeftThumbstickLeft))

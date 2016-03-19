@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Blink.Classes;
+using Blink.Utilities;
 
 namespace Blink.Classes
 {
@@ -20,6 +21,8 @@ namespace Blink.Classes
         public float gravityEffect;
         //private int JUMP = 30, TILEWIDTH = 32, MARGIN = 0;
         public int spearOrientation, Width , Height;
+        private float orientation;
+        private Vector2 spearVector;
         private float GRAVITY = 1.6f, TERMINAL_V = 30/*, SPEED = 1.2f, GROUNDSPEED = 1.2f, ICESPEED = 0.4f, ACC_CAP = 16*/;
         //private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
         PlayerClass thrownBy = null;
@@ -89,15 +92,6 @@ namespace Blink.Classes
             {
                 coolDown -= 1;
             }
-            //REMOVE LATER - Refresh mehtod (ctrl-r): restore all players to life for testing (dont do this while you're ontop of a dead character or things will break)
-            if (input.IsKeyDown(Keys.LeftControl) && input.IsKeyDown(Keys.R))
-            {
-                PlayerClass[] players = spearOwner.getPlayers();
-                foreach (PlayerClass player in players)
-                {
-                    player.setDead(false,null,"wtf");
-                }
-            }
             //Spear throw
             if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && attachedToPlayer && !spearOwner.dead && !isInUse && coolDown <= 0 && !throwDown)
             {
@@ -128,10 +122,10 @@ namespace Blink.Classes
 
 
             //Holding spear attacks
-            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && !attackDown && attachedToPlayer && !spearOwner.dead && !isInUse && coolDown <= 0)
+            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && attachedToPlayer && !spearOwner.dead && !isInUse && coolDown <= 0)
             {
                 attackDown = true;
-                isInUse = true;
+                /*isInUse = true;
                 if (spearOwner.getDirectionFacing() == 0)
                 {
                     spearOrientation = 0;
@@ -148,10 +142,18 @@ namespace Blink.Classes
                 {
                     spearOrientation = 6;
                 }
-                Stab_Sound.Play();
+                Stab_Sound.Play();*/
+                Vector2 stickDir = spearOwner.spearVector;
+                if (stickDir.Length() >= .95f)
+                {
+                    orientation = VectorMath.rotationFromVector(stickDir);
+                    spearVector = stickDir;
+                }
             }
-            else if ((input.IsKeyUp(ATTACK_KEY) && padState.IsButtonUp(ATTACK_BUTTON)))
+            else if ((input.IsKeyUp(ATTACK_KEY) && padState.IsButtonUp(ATTACK_BUTTON)) && attackDown)
+            {
                 attackDown = false;
+            }
 
             //Set the spear rectangle to fit the current orientation of the spear;
             if (isInUse)
@@ -467,7 +469,7 @@ namespace Blink.Classes
                 sB.Draw(drawnText, screenPos, null ,  Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
             }
 
-            else if (!isInUse && spearOwner!=null)
+            else if (!isInUse && spearOwner!=null && !attackDown)
             {
                 if (spearOwner.blinked)
                     return;
@@ -487,7 +489,7 @@ namespace Blink.Classes
                 else
                     sB.Draw(drawnText, screenPos, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
             }
-            else if (isInUse && spearOwner != null)
+            else if (attackDown && spearOwner != null)
             {
                 /*Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y);
                 switch (spearOrientation) { 
@@ -514,7 +516,17 @@ namespace Blink.Classes
                 }
                 sB.Draw(drawnText, screenPos, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
                 */
-                Vector2 dir = spearOwner.spearVector;
+
+                //if (attackDown)
+                //{
+                RotationAngle = orientation;
+                Vector2 normDir = spearVector;
+                normDir.X *= 10;
+                normDir.Y *= 10;
+                normDir.Normalize();
+                Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().Center.X-(normDir.X*32), spearOwner.getPlayerRect().Center.Y+(normDir.Y*32));
+                //}
+                sB.Draw(drawnText, screenPos, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
             }
         }
 
