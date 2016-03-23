@@ -17,6 +17,7 @@ namespace Blink.Classes
         Vector2 mapSize;
         PlayerClass[] players = new PlayerClass[4];
         Vector2[] playerStarts = new Vector2[4];
+        List<Powerup> powerupList = new List<Powerup>();
 
         int MARGIN = 0;
 
@@ -81,6 +82,38 @@ namespace Blink.Classes
                     {
                         playerStarts[int.Parse(blocks[p]) - 1] = new Vector2(x * 32, y * 32);
                     }
+                    /*
+                    p1 spearCatch,
+                    p2 shield,
+                    p3 bombSpear,
+                    p4 backupSpear,
+                    p5 unblinker
+                    */
+                    if (blocks[p] == "p1" || blocks[p] == "p2" || blocks[p] == "p3" || blocks[p] == "p4" || blocks[p] == "p5")
+                    {
+                        PowerupEnum.powerUpEnum powerType = PowerupEnum.powerUpEnum.spearCatch;
+                        switch(blocks[p])
+                        {
+                            case "p1":
+                                powerType = PowerupEnum.powerUpEnum.spearCatch;
+                                break;
+                            case "p2":
+                                powerType = PowerupEnum.powerUpEnum.shield;
+                                break;
+                            case "p3":
+                                powerType = PowerupEnum.powerUpEnum.bombSpear;
+                                break;
+                            case "p4":
+                                powerType = PowerupEnum.powerUpEnum.backupSpear;
+                                break;
+                            case "p5":
+                                powerType = PowerupEnum.powerUpEnum.unblinker;
+                                break;
+                                
+                        }
+                        Powerup item = new Powerup(powerType, new Rectangle(x * 32, y * 32, 32, 32));
+                        powerupList.Add(item);
+                    }
                     else
                         collisionMap[x, y] = int.Parse(blocks[p]);
                     y += 1;
@@ -95,6 +128,29 @@ namespace Blink.Classes
             sB.Draw(mapTexture, new Vector2(0, MARGIN), Color.White);
         }
 
+        public int collidePowerup(Rectangle p)
+        {
+            //check if player rectangle p collides with powerup
+            for(int i = 0; i < powerupList.Count; i++)
+            {
+                if(powerupList[i].hitbox.Intersects(p))
+                {
+                    return i;
+                }
+            }
+            // Didn't collide with any power ups
+            return -1;
+        }
+        public PowerupEnum.powerUpEnum checkPowerup(Rectangle r)
+        {
+            int c = collidePowerup(r);
+            if (c != -1)
+            {
+                powerupList.RemoveAt(c);
+                return powerupList[c].type;
+            }
+            return PowerupEnum.powerUpEnum.none;
+        }
 
         //There are still a couple of issues with collisions, but they're hard to reproduce. They should eventually get ironed out.
         public Boolean[] collides(Vector2 pos, Vector2 oPos, int down, int right, Vector2 charSize, Boolean blinked, float hitReduce)
