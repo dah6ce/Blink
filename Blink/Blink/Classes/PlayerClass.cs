@@ -17,6 +17,7 @@ namespace Blink.Classes
         private float STUNTIME = 3f, BLINKCOOL = .5f, MAXBLINKJUICE = 6f, DEATHTIMER = 5f, BLINKMULTI = 1.5f, TRAILTIMER = 0.075f;
         private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
 
+
         //debug variables
         private Boolean bounce = false;
 
@@ -34,6 +35,8 @@ namespace Blink.Classes
         private int directionFacing = 0; //0 for left, 1 for right
         public Boolean hasSpear = true;
         public Boolean blinked = false, blinkKeyDown = false;
+        public Boolean blinkBlocked = false;
+        public float blockTime = 0;
         private float blinkJuice, blinkCoolDown, stunTimer, deathTimer, curMultiplier, dustTimer;
 
         public SoundEffectInstance Death_Sound;
@@ -95,6 +98,47 @@ namespace Blink.Classes
             }
         }
 
+        public void unblinkEveryone(float time)
+        {
+            foreach(PlayerClass p in players)
+            {
+                if(p.blinked)
+                {
+                    //If they're blinked, un blink them
+                    p.blink();
+                }
+                p.blinkBlocked = true;
+                blockTime = time;
+            }
+        }
+        //toggles blink/unblink
+        private void blink()
+        {
+            blinkKeyDown = true;
+
+            Boolean blocked = inPlayer();
+            if (!blocked)
+                blocked = inWall();
+
+            if (!blocked && blinkCoolDown <= 0)
+            {
+                if (!blinked && blinkJuice > 1 && !dead)
+                {
+                    blinked = true;
+                    Blink_Sound.Play();
+                    curMultiplier = BLINKMULTI;
+                    blinkJuice -= 1;
+                    //blinkCoolDown = BLINKCOOL / 2f;
+                }
+                else if (blinked)
+                {
+                    blinked = false;
+                    Unblink_Sound.Play();
+                    curMultiplier = 1f;
+                    blinkCoolDown = BLINKCOOL;
+                }
+            }
+        }
         public void Update(KeyboardState input, GamePadState padState, GameTime gameTime)
         {
             if (!active)
@@ -102,7 +146,13 @@ namespace Blink.Classes
             //debug stuff goes here
             if ((input.IsKeyDown(Keys.Q)))
                 this.bounce = !this.bounce;
-
+            if(blinkBlocked)
+            {
+                if((float)gameTime.ElapsedGameTime.TotalSeconds - blockTime > DEATHTIMER)
+                {
+                    blinkBlocked = false;
+                }
+            }
             if (blinked)
             {
                 if (velocity.X != 0 && atRest)
@@ -171,31 +221,9 @@ namespace Blink.Classes
             }
 
             //Blink
-            if ((input.IsKeyDown(Keys.LeftAlt) || padState.IsButtonDown(Buttons.LeftShoulder)) && !blinkKeyDown)
+            if ((input.IsKeyDown(Keys.LeftAlt) || padState.IsButtonDown(Buttons.LeftShoulder)) && !blinkKeyDown && !blinkBlocked)
             {
-                blinkKeyDown = true;
-
-                Boolean blocked = inPlayer();
-                if (!blocked)
-                    blocked = inWall();
-
-                if (!blocked && blinkCoolDown <= 0) {
-                    if (!blinked && blinkJuice > 1 && !dead)
-                    {
-                        blinked = true;
-                        Blink_Sound.Play();
-                        curMultiplier = BLINKMULTI;
-                        blinkJuice -= 1;
-                        //blinkCoolDown = BLINKCOOL / 2f;
-                    }
-                    else if(blinked)
-                    {
-                        blinked = false;
-                        Unblink_Sound.Play();
-                        curMultiplier = 1f;
-                        blinkCoolDown = BLINKCOOL;
-                    }
-                }
+                blink();
                 
             }
             else if (blinkKeyDown && (input.IsKeyUp(Keys.LeftAlt) && padState.IsButtonUp(Buttons.LeftShoulder)))
@@ -222,14 +250,11 @@ namespace Blink.Classes
                         backupSpear = true;
                         break;
                     case PowerupEnum.powerUpEnum.unblinker:
-                        //not implemented
+                        unblinkEveryone((float)gameTime.ElapsedGameTime.TotalSeconds);
                         break;
                 }
                 inventory = PowerupEnum.powerUpEnum.none;
             }
-
-            
-
 
             //Horizontal movement
             if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP*curMultiplier && !dead && !victory && stunTimer <= 0)

@@ -126,6 +126,9 @@ namespace Blink.Classes
         public void Draw(SpriteBatch sB)
         {
             sB.Draw(mapTexture, new Vector2(0, MARGIN), Color.White);
+            foreach(Powerup p in powerupList) {
+               //DRAW ME
+            }
         }
 
         private int collidePowerup(Rectangle p)
