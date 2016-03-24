@@ -235,8 +235,15 @@ namespace Blink.Classes
                     {
                         if (player.getPlayerRect().Intersects(this.spear))
                         {
-                            player.setDead(true, this.spearOwner, "SPEAR");
-                            Hit_Player_Sound.Play();
+                            if (player.shield)
+                            {
+                                player.shield = false;
+                            }
+                            else
+                            {
+                                player.setDead(true, this.spearOwner, "SPEAR");
+                                Hit_Player_Sound.Play();
+                            }
                         }
                         else if(this.spear.X <= 0)
                         {
@@ -283,8 +290,29 @@ namespace Blink.Classes
                             Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
                             if (inter.Width > 0 && inter.Height > 0 && spearOwner != p && !p.dead)
                             {
-                                p.setDead(true, thrownBy, "SPEAR");
-                                Hit_Player_Sound.Play();
+                                if (p.shield)
+                                {
+                                    p.shield = false;
+                                }
+                                //ask david about how this should work
+                                else if (p.spearCatch && !p.hasSpear)
+                                {
+                                    p.spearCatch = false;
+                                    //pickup spear
+                                    gravityEffect = 0;
+                                    attachedToPlayer = true;
+                                    setOwner(p);
+                                    spearOwner.setSpear(this);
+                                    isInUse = false;
+                                    throwing = false;
+                                    p.hasSpear = true;
+                                }
+                                else
+                                {
+                                    p.setDead(true, thrownBy, "SPEAR");
+                                    Hit_Player_Sound.Play();
+                                }
+
                             }
                         }
                     }

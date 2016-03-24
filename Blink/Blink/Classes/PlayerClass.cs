@@ -8,7 +8,7 @@ using Blink.Classes;
 
 namespace Blink.Classes
 {
-       class PlayerClass
+    class PlayerClass
     {
         //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
         //private int curFriction = 12, airFriction = 1;
@@ -49,8 +49,15 @@ namespace Blink.Classes
         public delegate void PlayerKilledHandler(object sender, DeathEventArgs e);
         public event PlayerKilledHandler onPlayerKilled;
 
-		public int score = 0;
+        public int score = 0;
+
         private PowerupEnum.powerUpEnum inventory = PowerupEnum.powerUpEnum.none;
+        //Track Active effects of powerups
+        public Boolean spearCatch { get; set; } = false;
+        public Boolean shield { get; set; } = false;
+        public Boolean bombSpear { get; set; } = false;
+        public Boolean backupSpear { get; set; } = false;
+        //don't need one for unblinker
 
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p, Vector2 off, Texture2D bar)
         {
@@ -201,14 +208,21 @@ namespace Blink.Classes
                 switch(inventory)
                 {
                     case PowerupEnum.powerUpEnum.spearCatch:
+                        spearCatch = true;
                         break;
                     case PowerupEnum.powerUpEnum.shield:
+                        shield = true;
                         break;
                     case PowerupEnum.powerUpEnum.bombSpear:
+                        //not implemented
+                        bombSpear = true;
                         break;
                     case PowerupEnum.powerUpEnum.backupSpear:
+                        //not fully implemented
+                        backupSpear = true;
                         break;
                     case PowerupEnum.powerUpEnum.unblinker:
+                        //not implemented
                         break;
                 }
                 inventory = PowerupEnum.powerUpEnum.none;
@@ -296,6 +310,14 @@ namespace Blink.Classes
             if (inventory == PowerupEnum.powerUpEnum.none)
             {
                inventory = arena.checkPowerup(playerRect);
+            }
+            //give spear if not holding one and player has backupspear effect
+            if(backupSpear && !hasSpear)
+            {
+                //Does nothing
+                //not sure how to make a new spear...
+                //SpearClass s = new SpearClass(this, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
+                backupSpear = false;
             }
             //Gravity
             if (!atRest && velocity.Y < TERMINAL_V)
