@@ -224,11 +224,7 @@ namespace Blink.GUI
         private void updateSelection(GamePadState pad, KeyboardState keys, int player)
         {
             //Start button functions
-<<<<<<< HEAD
-            if (pad.IsButtonDown(Buttons.Start) && !startButtons[player] )
-=======
             if ((pad.IsButtonDown(Buttons.Start) || keys.IsKeyDown(Keys.Enter)) && !startButtons[player])
->>>>>>> origin/master
             {
 
                 //Player X has entered the game!
@@ -369,10 +365,10 @@ namespace Blink.GUI
                     keys.IsKeyUp(Keys.Down))
                     down[player] = false;
             }
-            else
+            /*else
             {
                 //INSERT PLAY GAME CONTROLS HERE
-            }
+            }*/
         }
 
         public void startMatch()
