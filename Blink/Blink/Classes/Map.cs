@@ -128,7 +128,7 @@ namespace Blink.Classes
             sB.Draw(mapTexture, new Vector2(0, MARGIN), Color.White);
         }
 
-        public int collidePowerup(Rectangle p)
+        private int collidePowerup(Rectangle p)
         {
             //check if player rectangle p collides with powerup
             for(int i = 0; i < powerupList.Count; i++)

@@ -50,6 +50,7 @@ namespace Blink.Classes
         public event PlayerKilledHandler onPlayerKilled;
 
 		public int score = 0;
+        private PowerupEnum.powerUpEnum inventory = PowerupEnum.powerUpEnum.none;
 
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p, Vector2 off, Texture2D bar)
         {
@@ -194,7 +195,24 @@ namespace Blink.Classes
             {
                 blinkKeyDown = false;
             }
-
+            // Use Powerup
+            if (inventory != PowerupEnum.powerUpEnum.none && padState.IsButtonDown(Buttons.Y) && !dead) {
+                //Use powerup here !
+                switch(inventory)
+                {
+                    case PowerupEnum.powerUpEnum.spearCatch:
+                        break;
+                    case PowerupEnum.powerUpEnum.shield:
+                        break;
+                    case PowerupEnum.powerUpEnum.bombSpear:
+                        break;
+                    case PowerupEnum.powerUpEnum.backupSpear:
+                        break;
+                    case PowerupEnum.powerUpEnum.unblinker:
+                        break;
+                }
+                inventory = PowerupEnum.powerUpEnum.none;
+            }
 
             
 
@@ -272,10 +290,13 @@ namespace Blink.Classes
 
 
             applyMove(velocity.X < 0, velocity.Y < 0);
-
+            
             blockDataUpdate();
-            
-            
+            // Look for power up
+            if (inventory == PowerupEnum.powerUpEnum.none)
+            {
+               inventory = arena.checkPowerup(playerRect);
+            }
             //Gravity
             if (!atRest && velocity.Y < TERMINAL_V)
                 velocity.Y += GRAVITY;
