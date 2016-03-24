@@ -24,12 +24,14 @@ namespace Blink.Utilities
             return distVector;
         }
 
+
+        //This function gives rotation from a vector pointing straight up, so adjust accordingly.
         public static float rotationFromVector(Vector2 vect)
         {
             float angle = (float)Math.Atan(vect.X / vect.Y);
             angle = (vect.Y < 0 ? (float)(Math.PI) + angle : angle);
 
-            return angle-(float)(Math.PI*0.5f);
+            return angle;
         }
 
         public static float angleBetweenVectors(Vector2 a, Vector2 b)

@@ -125,28 +125,10 @@ namespace Blink.Classes
             if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && attachedToPlayer && !spearOwner.dead && !isInUse && coolDown <= 0)
             {
                 attackDown = true;
-                /*isInUse = true;
-                if (spearOwner.getDirectionFacing() == 0)
-                {
-                    spearOrientation = 0;
-                }
-                else if (spearOwner.getDirectionFacing() == 1)
-                {
-                    spearOrientation = 4;
-                }
-                if (input.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.LeftThumbstickUp))
-                {
-                    spearOrientation = 2;
-                }
-                else if (input.IsKeyDown(Keys.Down) || padState.IsButtonDown(Buttons.LeftThumbstickDown))
-                {
-                    spearOrientation = 6;
-                }
-                Stab_Sound.Play();*/
                 Vector2 stickDir = spearOwner.spearVector;
                 if (stickDir.Length() >= .95f)
                 {
-                    orientation = VectorMath.rotationFromVector(stickDir);
+                    orientation = VectorMath.rotationFromVector(stickDir) - (float)(Math.PI * 0.5f); //90 degree adjustment is to account for spear's initial rotation
                     spearVector = stickDir;
                 }
             }
@@ -155,40 +137,7 @@ namespace Blink.Classes
                 attackDown = false;
             }
 
-            //Set the spear rectangle to fit the current orientation of the spear;
-            if (isInUse)
-            {
-                int temp;
-                switch (spearOrientation)
-                {
-                    case 0:
-                        spear.X = spearOwner.getPlayerRect().X - spear.Width + spearOwner.getPlayerRect().Width;
-                        spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
-                        spear.Width = Width;
-                        spear.Height = Height;
-                        break;
-                    case 2:
-                        spear.X = spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width / 2;
-                        spear.Y = spearOwner.getPlayerRect().Y - 3*spearOwner.getPlayerRect().Height / 4;
-                        temp = spear.Width;
-                        spear.Width = Height;
-                        spear.Height = Width;
-                        break;
-                    case 4:
-                        spear.X = spearOwner.getPlayerRect().X;
-                        spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
-                        spear.Width = Width;
-                        spear.Height = Height;
-                        break;
-                    case 6:
-                        spear.X = spearOwner.getPlayerRect().X + spearOwner.getPlayerRect().Width / 2;
-                        spear.Y = spearOwner.getPlayerRect().Y + 3*spearOwner.getPlayerRect().Height / 4;
-                        temp = spear.Width;
-                        spear.Width = Height;
-                        spear.Height = Width;
-                        break;
-                }
-            }
+            
             playerCollision();
             if(!attachedToPlayer && !atRest)
             {
@@ -209,10 +158,10 @@ namespace Blink.Classes
             oldState = newState;
         }
 
-        //Change spear hitbox
+        //Change spear hitbox - SHOULD NO LONGER BE NECESSARY
         private void correctHitBox()
         {
-            if (spearOrientation == 0 || spearOrientation == 4)
+            /*if (spearOrientation == 0 || spearOrientation == 4)
             {
                 spear.Width = Width;
                 spear.Height = Height;
@@ -222,7 +171,7 @@ namespace Blink.Classes
             {
                 spear.Width = Height;
                 spear.Height = Width;
-            }
+            }*/
         }
 
         //Check to see if the spear is colliding with a player
@@ -235,15 +184,17 @@ namespace Blink.Classes
                 {
                     if (player != null && !player.Equals(spearOwner) && !player.dead && player.blinked == spearOwner.blinked)
                     {
-                        if (player.getPlayerRect().Intersects(this.spear))
+                        if (VectorMath.rectCollision(player.getPlayerRect(), 0, this.spear, orientation))//player.getPlayerRect().Intersects(this.spear))
                         {
                             player.setDead(true, this.spearOwner, "SPEAR");
                             Hit_Player_Sound.Play();
                         }
-                        else if(this.spear.X <= 0)
+
+                        //Wrap-around collisions
+                        if(this.spear.X <= 0)
                         {
                             Rectangle tempRect = new Rectangle((int)(spear.X + SCREENSIZE.X), (int)spear.Y, spear.Width, spear.Height);
-                            if (player.getPlayerRect().Intersects(tempRect))
+                            if (VectorMath.rectCollision(player.getPlayerRect(), 0, tempRect, orientation))//player.getPlayerRect().Intersects(tempRect))
                             {
                                 player.setDead(true, this.spearOwner, "SPEAR");
                                 Hit_Player_Sound.Play();
@@ -252,7 +203,7 @@ namespace Blink.Classes
                         else if(this.spear.X >= SCREENSIZE.X - this.spear.Width)
                         {
                             Rectangle tempRect = new Rectangle((int)(spear.X - SCREENSIZE.X), (int)spear.Y, spear.Width, spear.Height);
-                            if (player.getPlayerRect().Intersects(tempRect))
+                            if (VectorMath.rectCollision(player.getPlayerRect(), 0, tempRect, orientation))//player.getPlayerRect().Intersects(tempRect))
                             {
                                 player.setDead(true, this.spearOwner, "SPEAR");
                                 Hit_Player_Sound.Play();
