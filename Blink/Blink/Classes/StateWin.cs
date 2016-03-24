@@ -144,7 +144,7 @@ namespace Blink
             {
                 if (rank[i] != null && rank[i].score != -100)
                 {
-                    sb.DrawString(font, "P" + (i + 1) + ": " + rank[i].score, temp, Color.White);
+                    sb.DrawString(font, (rank[i].title) + ": " + rank[i].score, temp, Color.White);
                     temp.Y += 32;
                 }
             }

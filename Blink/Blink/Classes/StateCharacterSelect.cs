@@ -175,10 +175,6 @@ namespace Blink.GUI
             }
 
             positionThumbs(charThumbs);
-
-            Vector2 pos = new Vector2(screenSize.X / 2, 50);
-            pos.Y += 50;
-            
         }
 
         public void UnloadContent()
@@ -191,22 +187,23 @@ namespace Blink.GUI
             for(int i = 0; i < thumbs.Count; i++)
             {
                 ImageButton thumb = thumbs[i];
-                thumb.setPosition(new Vector2(200 * (i % THUMBROWSIZE) + 601, (float)Math.Floor((i / (float)THUMBROWSIZE)) * 200 + 278));
+                thumb.setPosition(new Vector2(200 * (i % THUMBROWSIZE) + 601, (i / THUMBROWSIZE) * 200 + 278));
             }
         }
 
         public void Update(GameTime gameTime)
         {
             KeyboardState keyState = Keyboard.GetState();
+            //KeyboardState nullKey = new KeyboardState();
             GamePadState padState_1 = GamePad.GetState(PlayerIndex.One);
             GamePadState padState_2 = GamePad.GetState(PlayerIndex.Two);
             GamePadState padState_3 = GamePad.GetState(PlayerIndex.Three);
             GamePadState padState_4 = GamePad.GetState(PlayerIndex.Four);
 
-            updateSelection(padState_1, 0);
-            updateSelection(padState_2, 1);
-            updateSelection(padState_3, 2);
-            updateSelection(padState_4, 3);
+            updateSelection(padState_1, keyState, 0);
+            updateSelection(padState_2, keyState, 1);
+            updateSelection(padState_3, keyState, 2);
+            updateSelection(padState_4, keyState, 3);
 
             var player1State = Keyboard.GetState();
             var player2State = Keyboard.GetState();
@@ -222,16 +219,17 @@ namespace Blink.GUI
             {
                 prematureEnter = false;
             }
-            
-
         }
 
-        private void updateSelection(GamePadState pad, int player)
+        private void updateSelection(GamePadState pad, KeyboardState keys, int player)
         {
             //Start button functions
+<<<<<<< HEAD
             if (pad.IsButtonDown(Buttons.Start) && !startButtons[player] )
+=======
+            if ((pad.IsButtonDown(Buttons.Start) || keys.IsKeyDown(Keys.Enter)) && !startButtons[player])
+>>>>>>> origin/master
             {
-                
 
                 //Player X has entered the game!
                 if (!this.connected[player])
@@ -266,17 +264,16 @@ namespace Blink.GUI
                     }
                 }
                 startButtons[player] = true;
-
-                
             }
-            else if (pad.IsButtonUp(Buttons.Start))
+
+            else if (pad.IsButtonUp(Buttons.Start) && keys.IsKeyUp(Keys.Enter))
                 startButtons[player] = false;
 
             if (!connected[player])
                 return;
 
             //B button functions
-            if (pad.IsButtonDown(Buttons.B) && !back[player])
+            if ((pad.IsButtonDown(Buttons.B) || keys.IsKeyDown(Keys.Back)) && !back[player])
             {
                 //Unlock character selection
                 if (locked[player])
@@ -293,14 +290,18 @@ namespace Blink.GUI
                 back[player] = true;
                 
             }
-            else if (pad.IsButtonUp(Buttons.B))
+            else if (pad.IsButtonUp(Buttons.B) && keys.IsKeyUp(Keys.Back))
                 back[player] = false;
 
-            if (!locked[player])
+            if (locked[player])
             {
-
+                //control player
+            }
+            else 
+            {
                 //Right button functions
-                if ((pad.IsButtonDown(Buttons.LeftThumbstickRight) || pad.IsButtonDown(Buttons.DPadRight)) && !right[player])
+                if ((pad.IsButtonDown(Buttons.LeftThumbstickRight) || pad.IsButtonDown(Buttons.DPadRight) ||
+                    keys.IsKeyDown(Keys.Right)) && !right[player])
                 {
                     charThumbs[selected[player]].unhover(player);
                     selected[player]++;
@@ -311,11 +312,13 @@ namespace Blink.GUI
                     charThumbs[selected[player]].hover(player);
                     right[player] = true;
                 }
-                else if ((pad.IsButtonUp(Buttons.LeftThumbstickRight) && pad.IsButtonUp(Buttons.DPadRight)))
+                else if (pad.IsButtonUp(Buttons.LeftThumbstickRight) && pad.IsButtonUp(Buttons.DPadRight) &&
+                    keys.IsKeyUp(Keys.Right))
                     right[player] = false;
 
                 //Left button functions
-                if ((pad.IsButtonDown(Buttons.LeftThumbstickLeft) || pad.IsButtonDown(Buttons.DPadLeft)) && !left[player])
+                if ((pad.IsButtonDown(Buttons.LeftThumbstickLeft) || pad.IsButtonDown(Buttons.DPadLeft) ||
+                    keys.IsKeyDown(Keys.Left)) && !left[player])
                 {
                     charThumbs[selected[player]].unhover(player);
                     selected[player]--;
@@ -326,11 +329,13 @@ namespace Blink.GUI
                     charThumbs[selected[player]].hover(player);
                     left[player] = true;
                 }
-                else if ((pad.IsButtonUp(Buttons.LeftThumbstickLeft) && pad.IsButtonUp(Buttons.DPadLeft)))
+                else if (pad.IsButtonUp(Buttons.LeftThumbstickLeft) && pad.IsButtonUp(Buttons.DPadLeft) &&
+                    keys.IsKeyUp(Keys.Left))
                     left[player] = false;
 
                 //Up button functions
-                if ((pad.IsButtonDown(Buttons.LeftThumbstickUp) || pad.IsButtonDown(Buttons.DPadUp)) && !up[player])
+                if ((pad.IsButtonDown(Buttons.LeftThumbstickUp) || pad.IsButtonDown(Buttons.DPadUp) ||
+                    keys.IsKeyDown(Keys.Up)) && !up[player])
                 {
                     charThumbs[selected[player]].unhover(player);
                     selected[player] -= THUMBROWSIZE;
@@ -343,11 +348,13 @@ namespace Blink.GUI
                     charThumbs[selected[player]].hover(player);
                     up[player] = true;
                 }
-                else if ((pad.IsButtonUp(Buttons.LeftThumbstickUp) && pad.IsButtonUp(Buttons.DPadUp)))
+                else if (pad.IsButtonUp(Buttons.LeftThumbstickUp) && pad.IsButtonUp(Buttons.DPadUp) &&
+                    keys.IsKeyUp(Keys.Up))
                     up[player] = false;
 
                 //Down button functions
-                if ((pad.IsButtonDown(Buttons.LeftThumbstickDown) || pad.IsButtonDown(Buttons.DPadDown)) && !down[player])
+                if ((pad.IsButtonDown(Buttons.LeftThumbstickDown) || pad.IsButtonDown(Buttons.DPadDown) ||
+                    keys.IsKeyDown(Keys.Down)) && !down[player])
                 {
                     charThumbs[selected[player]].unhover(player);
                     selected[player] += THUMBROWSIZE;
@@ -358,9 +365,9 @@ namespace Blink.GUI
                     charThumbs[selected[player]].hover(player);
                     down[player] = true;
                 }
-                else if ((pad.IsButtonUp(Buttons.LeftThumbstickDown) && pad.IsButtonUp(Buttons.DPadDown)))
+                else if (pad.IsButtonUp(Buttons.LeftThumbstickDown) && pad.IsButtonUp(Buttons.DPadDown) &&
+                    keys.IsKeyUp(Keys.Down))
                     down[player] = false;
-
             }
             else
             {

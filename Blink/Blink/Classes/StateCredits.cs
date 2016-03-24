@@ -70,11 +70,11 @@ namespace Blink
 		{
 			GamePadState padState = GamePad.GetState(PlayerIndex.One);
 			KeyboardState keyState = Keyboard.GetState();
-			if(prematureEnter && keyState.IsKeyUp(Keys.Enter))
+			if(prematureEnter && keyState.IsKeyUp(Keys.Enter) && padState.IsButtonUp(Buttons.Start))
 			{
 				prematureEnter = false;
 			}
-			if (!prematureEnter && (keyState.IsKeyDown(Keys.Enter) || padState.IsButtonDown(Buttons.A)))
+			if (!prematureEnter && (keyState.IsKeyDown(Keys.Enter) || padState.IsButtonDown(Buttons.Start)))
 			{
 				((StateSimpleMenu)menu).reset();
 				nextState = menu;

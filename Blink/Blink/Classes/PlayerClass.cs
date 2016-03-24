@@ -13,7 +13,7 @@ namespace Blink.Classes
         //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
         //private int curFriction = 12, airFriction = 1;
         private int JUMP = 22, TILEWIDTH = 32, MARGIN = 0;
-        private float GRAVITY = 1.6f, TERMINAL_V = 30, SPEED = 1.2f, GROUNDSPEED = 1.2f, ICESPEED = 0.4f, ACC_CAP = 15;
+        private float GRAVITY = 1.6f, TERMINAL_V = 30, SPEED = 0.75f, GROUNDSPEED = 0.75f, ICESPEED = 0.4f, ACC_CAP = 15;
         private float STUNTIME = 3f, BLINKCOOL = .5f, MAXBLINKJUICE = 6f, DEATHTIMER = 5f, BLINKMULTI = 1.5f, TRAILTIMER = 0.075f;
         private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
 
@@ -92,7 +92,7 @@ namespace Blink.Classes
             if (!active)
                 return;
             //debug stuff goes here
-            if ((input.IsKeyDown(Keys.LeftShift)))
+            if ((input.IsKeyDown(Keys.Q)))
                 this.bounce = !this.bounce;
 
             if (blinked)
