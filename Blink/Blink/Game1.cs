@@ -18,7 +18,7 @@ namespace Blink
     {
         public static bool running;
 
-        GraphicsDeviceManager graphics;
+        public GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         GameState currState;
         GameState mainMenu;
