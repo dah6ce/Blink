@@ -29,6 +29,8 @@ namespace Blink
         PlayerClass player4;
         PlayerClass dummy;
         SpriteFont font;
+        Texture2D scores_bg;
+        int activePlayers = 0;
       
         public StateWin(Vector2 screenSize)
         {
@@ -82,7 +84,7 @@ namespace Blink
                 if (players[i] != null)
                 {
                     players[i].reset(map1);
-                    
+                    activePlayers++;
                 }
                 ranking.Add(players[i]);
             }
@@ -120,6 +122,7 @@ namespace Blink
             rank = rankp.ToArray();
             StreamReader mapData;
             mapData = File.OpenText("Content/MapData/" + mapName + ".map");
+            scores_bg = Content.Load<Texture2D>("scores");
             map1.Initialize(Content.Load<Texture2D>("MapData/" + mapName + "Color"), mapData.ReadToEnd(), 32, 50, 30, rank);
             font = Content.Load<SpriteFont>("miramo30");
         }
@@ -136,7 +139,8 @@ namespace Blink
             }
 
 
-            Vector2 temp = new Vector2(screenSize.X / 2 - font.MeasureString("SCORES").X / 2, 300);
+            Vector2 temp = new Vector2(screenSize.X / 2 - font.MeasureString("SCORES").X / 2, 300 - (((int)font.MeasureString("SCORES").Y) * activePlayers));
+            sb.Draw(scores_bg, new Rectangle((int)temp.X - 15, (int)temp.Y - 10, (int)font.MeasureString("SCORES").X + 30, (int)font.MeasureString("SCORES").Y * (activePlayers + 1)), Color.White);
             sb.DrawString(font, "SCORES", temp, Color.White);
 
             temp.Y += 32;
