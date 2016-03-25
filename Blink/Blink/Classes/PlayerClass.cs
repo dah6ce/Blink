@@ -95,7 +95,7 @@ namespace Blink.Classes
             if (!active)
                 return;
             //debug stuff goes here
-            if ((input.IsKeyDown(Keys.LeftShift)))
+            if ((input.IsKeyDown(Keys.Q)))
                 this.bounce = !this.bounce;
 
             if (blinked)
@@ -205,19 +205,19 @@ namespace Blink.Classes
             
             //Are we aiming?
             if ((!(padState.IsButtonDown(Buttons.B)) && !(padState.IsButtonDown(Buttons.X))) || !hasSpear) {
-                //Horizontal movement
+            //Horizontal movement
                 if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP * curMultiplier && !dead && !victory && stunTimer <= 0)
-                {
+            {
                     velocity.X += SPEED * curMultiplier;
-                    if (velocity.X < -SPEED)
-                        velocity.X += SPEED * curMultiplier / 2;
-                }
+                if (velocity.X < -SPEED)
+                    velocity.X += SPEED * curMultiplier / 2;
+            }
                 else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP * curMultiplier && !dead && !victory && stunTimer <= 0)
-                {
-                    velocity.X -= SPEED * curMultiplier;
-                    if (velocity.X > SPEED)
-                        velocity.X -= SPEED * curMultiplier / 2;
-                }
+            {
+                velocity.X -= SPEED * curMultiplier;
+                if (velocity.X > SPEED)
+                    velocity.X -= SPEED * curMultiplier / 2;
+            }
 
                 //Initiating a melee attack!
                 if (attackKeyDown && spear != null)

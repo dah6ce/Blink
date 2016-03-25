@@ -33,7 +33,7 @@ namespace Blink.Classes
         //      7       6        5
         public PlayerClass spearOwner; 
         public Map m;
-        public readonly Keys THROW_KEY = Keys.Q, ATTACK_KEY = Keys.Space;
+        public readonly Keys THROW_KEY = Keys.Z, ATTACK_KEY = Keys.X;
         public readonly Buttons THROW_BUTTON = Buttons.X, ATTACK_BUTTON = Buttons.B;
         public Boolean throwDown = false;
 
@@ -125,21 +125,21 @@ namespace Blink.Classes
             if(spearOwner != null) { 
                 Vector2 stickDir = spearOwner.spearVector;
                 if (stickDir.Length() >= .85f)
-                {
+            {
                     orientation = VectorMath.rotationFromVector(stickDir) + (float)(Math.PI * 0.5f); //90 degree adjustment is to account for spear's initial rotation
                     spearVector = stickDir;
                 }
-            }
+                }
             //Holding spear attacks
             if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON) || padState.IsButtonDown(THROW_BUTTON)) && attachedToPlayer && !spearOwner.dead && !isInUse && coolDown <= 0)
-            {
+                {
                 attackDown = true;
                 
-            }
+                }
             else if ((input.IsKeyUp(ATTACK_KEY) && padState.IsButtonUp(ATTACK_BUTTON)) && attackDown)
-            {
+                {
                 attackDown = false;
-            }
+                }
             
             if(attachedToPlayer && !isInUse) { 
                 spear.Location = spearOwner.getPlayerRect().Center;
@@ -150,7 +150,7 @@ namespace Blink.Classes
 
             if (!attachedToPlayer)
             {
-                playerCollision();
+            playerCollision();
             }
             if (!atRest)
             {
@@ -182,7 +182,7 @@ namespace Blink.Classes
                 spear.Width = Height;
                 spear.Height = Width;
             }*/
-        }
+            }
 
         public void meleeCheck()
         {
@@ -314,10 +314,10 @@ namespace Blink.Classes
                                 }
                                     
                                 setOwner(null);
-                            }
                         }
                     }
                 }
+            }
             }
 
         }
@@ -475,18 +475,18 @@ namespace Blink.Classes
             {
                 spear.X += (int)SCREENSIZE.X;
             }
-            
+
 
             if (spear.Y < spear.Width)
             {
                 spear.Y += (int)SCREENSIZE.Y;
             }
-
+            
             velocity.Y += GRAVITY / 10f;
 
             if(thrownBy != null) { 
-                spear.X += (int)(velocity.X * thrownBy.getMulti());
-                spear.Y += (int)(velocity.Y * thrownBy.getMulti());
+            spear.X += (int)(velocity.X * thrownBy.getMulti());
+            spear.Y += (int)(velocity.Y * thrownBy.getMulti());
             }
             else
             {
@@ -606,7 +606,7 @@ namespace Blink.Classes
                 }
                 sB.Draw(drawnText, screenPos, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
                 */
-
+                
                 //if (attackDown)
                 //{
                 RotationAngle = orientation + (float)Math.PI;
