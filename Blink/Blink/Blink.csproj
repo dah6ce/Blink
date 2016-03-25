@@ -47,6 +47,7 @@
     <Compile Include="Classes\PlayerClass.cs" />
     <Compile Include="Classes\SpearClass.cs" />
     <Compile Include="Classes\StateLevelSelect.cs" />
+    <Compile Include="Classes\StateMainMenu.cs" />
     <Compile Include="Classes\StateWin.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />

@@ -1,26 +1,21 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
-using Blink.Classes;
 
 namespace Blink.GUI
 {
-
-    public class StateSimpleMenu : GameState
+    class StateMainMenu : GameState
     {
-        protected Vector2 screenSize;
+        Vector2 screenSize;
         int selected;
-        protected List<TextButton> buttons;
-        IEnumerable<string> maps;
-        Label title;
+        List<TextButton> buttons;
 
-        String titleString;
         String[] optionsStrings;
-        mapSet selectedMap;
         GameState[] triggers;
 
         GameState nextState;
@@ -30,16 +25,11 @@ namespace Blink.GUI
         bool lastAccept;
         bool prematureEnter;
 
-        
-        //Storage list for all our map names
-        Dictionary<string,mapSet> mapNames = new Dictionary<string, mapSet>();
-        List<mapSet> mapSets = new List<mapSet>();
+        Texture2D bg;
 
-        public StateSimpleMenu(Vector2 screenSize, String title, String[] options, GameState[] triggers)
+        public StateMainMenu(Vector2 screenSize, GameState[] triggers)
         {
             this.screenSize = screenSize;
-            this.titleString = title;
-            this.optionsStrings = options;
             this.buttons = new List<TextButton>();
             this.triggers = triggers;
         }
@@ -60,41 +50,42 @@ namespace Blink.GUI
 
         public void LoadContent(ContentManager Content)
         {
-            if (buttons.Count > 0)
-                return;
-            
-
-
-            Vector2 pos = new Vector2(screenSize.X / 2, 50);
-            title = new Label(titleString, Content.Load<SpriteFont>("miramo"), pos, new Vector2(0.5f, 0));
-            pos.Y += 50;
-            foreach (String s in optionsStrings)
-            {
-                pos.Y += 50;
-                buttons.Add(new TextButton(s, Content.Load<SpriteFont>("miramo"), pos, Content.Load<Texture2D>("buttonUp"),
-                    Content.Load<Texture2D>("buttonDown"), new Vector2(0.5f, 0)));
-            }
-
+            float x = screenSize.X / 2;
+            float y = screenSize.Y - 180;
+            bg = Content.Load<Texture2D>("MenuData/title");
+            buttons.Add(new TextButton("Start", Content.Load<SpriteFont>("miramo"), new Vector2(x - 200, y),
+                Content.Load<Texture2D>("buttonUp"), Content.Load<Texture2D>("buttonDown"), new Vector2(0.5f, 0)));
+            buttons.Add(new TextButton("Credits", Content.Load<SpriteFont>("miramo"), new Vector2(x, y),
+                Content.Load<Texture2D>("buttonUp"), Content.Load<Texture2D>("buttonDown"), new Vector2(0.5f, 0)));
+            buttons.Add(new TextButton("Quit", Content.Load<SpriteFont>("miramo"), new Vector2(x + 200, y),
+                Content.Load<Texture2D>("buttonUp"), Content.Load<Texture2D>("buttonDown"), new Vector2(0.5f, 0)));
             buttons[0].Select();
         }
 
         public void UnloadContent()
-		{
+        {
+        }
 
-		}
-		public void reset()
-		{
-			this.selected = 0;
-			this.nextState = null;
-			lastMoveDown = false;
-			lastAccept = false;
-			lastAccept = false;
+        public void Draw(SpriteBatch sb)
+        {
+            sb.Draw(bg, new Rectangle(0, 0, (int)screenSize.X, (int)screenSize.Y), Color.White);
+            foreach (TextButton b in buttons)
+                b.Draw(sb);
+        }
 
-			buttons[1].UnSelect();
+        public void reset()
+        {
+            this.selected = 0;
+            this.nextState = null;
+            lastMoveDown = false;
+            lastAccept = false;
+            lastAccept = false;
+
+            buttons[1].UnSelect();
             buttons[2].UnSelect();
             buttons[0].Select();
-			Console.WriteLine("test");
-		}
+            Console.WriteLine("test");
+        }
 
         public void Update(GameTime gameTime)
         {
@@ -110,9 +101,9 @@ namespace Blink.GUI
                 prematureEnter = false;
             }
 
-            if (keyState.IsKeyDown(Keys.Up))
+            if (keyState.IsKeyDown(Keys.Left))
                 moveUp = true;
-            if (keyState.IsKeyDown(Keys.Down))
+            if (keyState.IsKeyDown(Keys.Right))
                 moveDown = true;
             if (keyState.IsKeyDown(Keys.Enter) && prematureEnter == false)
                 accept = true;
@@ -120,9 +111,9 @@ namespace Blink.GUI
             Vector2 thumbDir = padState.ThumbSticks.Left.ToPoint().ToVector2();
             if (thumbDir.Length() > .01)
             {
-                if (thumbDir.Y > thumbDir.X)
+                if (thumbDir.X > thumbDir.Y)
                     moveUp = true;
-                if (thumbDir.Y < thumbDir.X)
+                if (thumbDir.X < thumbDir.Y)
                     moveDown = true;
             }
             if (padState.IsButtonDown(Buttons.A))
@@ -134,7 +125,7 @@ namespace Blink.GUI
                 buttons[selected].UnSelect();
                 selected--;
                 // Need extra step because mod of a negative is negative
-                selected = (selected+buttons.Count) % buttons.Count;
+                selected = (selected + buttons.Count) % buttons.Count;
                 buttons[selected].Select();
             }
             if (moveDown && !lastMoveDown)
@@ -146,10 +137,6 @@ namespace Blink.GUI
             }
             if (accept && !lastAccept)
             {
-                if (titleString == "Map Select" && selected != triggers.Length - 1)
-                {
-                    selectedMap = mapSets[selected];
-                }
                 nextState = triggers[selected];
             }
 
@@ -159,22 +146,9 @@ namespace Blink.GUI
 
         }
 
-        public void Draw(SpriteBatch sb)
-        {
-            title.Draw(sb);
-            foreach (TextButton b in buttons)
-                b.Draw(sb);
-        }
-
         public GameState GetTransition()
         {
             return nextState;
         }
-
-        public mapSet getSelectedMap()
-        {
-            return selectedMap;
-        }
     }
 }
-
