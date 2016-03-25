@@ -12,9 +12,9 @@ namespace Blink.GUI
 
     public class StateSimpleMenu : GameState
     {
-        Vector2 screenSize;
+        protected Vector2 screenSize;
         int selected;
-        List<TextButton> buttons;
+        protected List<TextButton> buttons;
         IEnumerable<string> maps;
         Label title;
 
@@ -90,8 +90,9 @@ namespace Blink.GUI
 			lastAccept = false;
 			lastAccept = false;
 
-			buttons[2].UnSelect();
-			buttons[0].Select();
+			buttons[1].UnSelect();
+            buttons[2].UnSelect();
+            buttons[0].Select();
 			Console.WriteLine("test");
 		}
 
