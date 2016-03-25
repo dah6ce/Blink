@@ -35,6 +35,7 @@ namespace Blink
         int ultimateWin = -1;
         internal PlayerClass[] players = new PlayerClass[4];
         SpearClass[] spears = new SpearClass[4];
+        Texture2D control_diagram;
 
         bool[] playersInGame = { false, false, false, false };
         string[] playerTexts = { "", "", "", "" };
@@ -99,7 +100,7 @@ namespace Blink
             player2.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
             player3.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
             player4.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
-            
+
 			currPlayer = PlayerKeys.Player1;
 			paused = false;
 			playerPaused = 0;
@@ -147,6 +148,7 @@ namespace Blink
             Texture2D bar = Content.Load<Texture2D>("bar");
             Texture2D dust = Content.Load<Texture2D>("Dust_Trail");
             Texture2D dustPoof = Content.Load<Texture2D>("Dust_Poof");
+            control_diagram = Content.Load<Texture2D>("controller");
 
             for(int i = 0; i < 4; i++)
             {
@@ -435,8 +437,9 @@ namespace Blink
 			if (paused)
 			{
                 string pauseMessage = "P" + (playerPaused + 1) + " paused";
-                sb.DrawString(font, pauseMessage, new Vector2(screenSize.X / 2 - font.MeasureString(pauseMessage).X/2, screenSize.Y / 2), Color.Black);
-			}
+                sb.Draw(control_diagram, new Rectangle((int)(screenSize.X / 2) - (int)(control_diagram.Width / 4), (int)(screenSize.Y / 2) - (int)(control_diagram.Height / 4), (int)(control_diagram.Width / 2), (int)(control_diagram.Height / 2)), Color.White);
+                sb.DrawString(font, pauseMessage, new Vector2(screenSize.X / 2 - font.MeasureString(pauseMessage).X / 2, (screenSize.Y / 2) + (int)(control_diagram.Height / 2)), Color.Black);
+            }
 			if (roundReset > 0)
 			{
                 Vector2 temp = new Vector2(screenSize.X / 2 - font.MeasureString("SCORES").X / 2, 300);                
