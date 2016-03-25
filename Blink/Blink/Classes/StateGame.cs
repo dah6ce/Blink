@@ -104,6 +104,8 @@ namespace Blink
 			paused = false;
 			playerPaused = 0;
             AudioManager.TriggerBattle();
+
+
             
 		}
 
@@ -163,7 +165,6 @@ namespace Blink
             {
                 if (p != null)
                 {
-
                     p.deadText = Content.Load<Texture2D>("spriteDead");
 
                     p.Death_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Death").CreateInstance();
