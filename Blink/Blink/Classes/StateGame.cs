@@ -40,6 +40,9 @@ namespace Blink
         bool[] playersInGame = { false, false, false, false };
         string[] playerTexts = { "", "", "", "" };
 
+        //Character frames
+        Rectangle[] frames = { new Rectangle(0, 0, 36, 68), new Rectangle(0, 0, 48, 68), new Rectangle(0, 0, 36, 68), new Rectangle(0, 0, 48, 68) };
+
         public GameState levelSelect;
         public GameState Win;
         GameState returnState;
@@ -109,7 +112,7 @@ namespace Blink
             
 		}
 
-        public void informGame(bool[] playersConnected, string[] playerChars)
+        public void informGame(bool[] playersConnected, string[] playerChars, int[] charNums)
         {
             playersInGame = playersConnected;
             playerTexts = playerChars;

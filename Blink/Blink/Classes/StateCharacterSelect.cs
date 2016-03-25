@@ -30,6 +30,7 @@ namespace Blink.GUI
         internal Blink.Classes.PlayerClass[] players = new Blink.Classes.PlayerClass[4];
         bool[] playersInGame = { false, false, false, false };
         string[] playerTexts = { "", "", "", "" };
+        int[] charNums = { -1, -1, -1, -1 };
         string default_charName;
 
         Vector2 screenSize;
@@ -397,7 +398,7 @@ namespace Blink.GUI
                     playerTexts[i] = "CharData/Sprites/"+charNames[selected[i]];
                 }
             }
-            ((StateGame)game).informGame(connected, playerTexts);
+            ((StateGame)game).informGame(connected, playerTexts, selected);
             nextState = levelState;
         }
 

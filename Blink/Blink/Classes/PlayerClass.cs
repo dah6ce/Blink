@@ -13,8 +13,8 @@ namespace Blink.Classes
     {
         //private int GRAVITY = 8, SPEED = 6, TERMINAL_V = 150, ACC_CAP = 80, JUMP = 150, TILEWIDTH = 16, MARGIN = 0;
         //private int curFriction = 12, airFriction = 1;
-        private int JUMP = 22, TILEWIDTH = 32, MARGIN = 0;
-        private float GRAVITY = 1.6f, TERMINAL_V = 30, SPEED = 0.75f, GROUNDSPEED = 0.75f, ICESPEED = 0.4f, ACC_CAP = 15;
+        private int JUMP = 15, TILEWIDTH = 32, MARGIN = 0;
+        private float GRAVITY = 0.8f, TERMINAL_V = 22.5f, SPEED = 0.75f, GROUNDSPEED = 0.375f, ICESPEED = 0.2f, ACC_CAP = 11.25f;
         private float STUNTIME = 3f, BLINKCOOL = .5f, MAXBLINKJUICE = 6f, DEATHTIMER = 5f, BLINKMULTI = 1.5f, TRAILTIMER = 0.075f;
         private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
 
@@ -25,6 +25,7 @@ namespace Blink.Classes
 
         Map arena;
         public Texture2D playerText, deadText, blinkRect;
+        private Rectangle frame = new Rectangle(0,0,36,68);
         public Vector2 velocity, SCREENSIZE, oldPos;
         public Boolean atRest = false, dead = false, victory = false;
         private PlayerClass[] players;
@@ -263,7 +264,7 @@ namespace Blink.Classes
 
 
             //Friction
-            if (velocity.X != 0 && !padState.IsButtonDown(Buttons.LeftThumbstickRight) && !padState.IsButtonDown(Buttons.LeftThumbstickLeft))
+            if (velocity.X != 0 && !padState.IsButtonDown(Buttons.LeftThumbstickRight) && !padState.IsButtonDown(Buttons.LeftThumbstickLeft) && !input.IsKeyDown(Keys.Left) && !input.IsKeyDown(Keys.Right))
             {
                 float fric = curFriction;
                 if (!atRest)
@@ -749,8 +750,7 @@ namespace Blink.Classes
 
             
             
-            //THIS HEIGHT AND WIDTH IS HARDCODED. CHANGE THIS COLIN YOU LAZY ASS
-            Rectangle frame = new Rectangle(0,0,36,68);
+            Rectangle frame = this.frame;
 
             int offX = (directionFacing == 0 ? (int)offset.X : (int)-offset.X);
             int offY = (int)offset.Y;
@@ -763,7 +763,7 @@ namespace Blink.Classes
                 sB.Draw(blinkRect, new Vector2(playerRect.X , playerRect.Y + offY - 12), barFrame, Color.Green);
             }
 
-            frame = getFrame(frame);
+            //frame = getFrame(frame);
 
             if (dead)
                 drawnText = deadText;
@@ -778,18 +778,21 @@ namespace Blink.Classes
 
             }
             else*/
-            sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn);
+            SpriteEffects flip = SpriteEffects.None;
+            if (directionFacing == 1)
+                flip = SpriteEffects.FlipHorizontally;
+            sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(), 1f, flip, 0f);
 
             //Drawing when the player is looping over
             if (playerRect.X < playerRect.Width)
-                sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn);
+                sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(), 1f, flip, 0f);
             else if (playerRect.X + playerRect.Width > SCREENSIZE.X)
-                sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X) + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn);
+                sB.Draw(drawnText, new Vector2(playerRect.X - (SCREENSIZE.X) + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(), 1f, flip, 0f);
 
             if (playerRect.Y < playerRect.Height)
-                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + SCREENSIZE.Y + MARGIN + offY), frame, colorDrawn);
+                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + SCREENSIZE.Y + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(), 1f, flip, 0f);
             else if (playerRect.Y + playerRect.Height > SCREENSIZE.Y)
-                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y - (SCREENSIZE.Y) + MARGIN + offY), frame, colorDrawn);
+                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y - (SCREENSIZE.Y) + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(), 1f, flip, 0f);
         }
 
 
@@ -831,6 +834,11 @@ namespace Blink.Classes
         public float getMulti()
         {
             return curMultiplier;
+        }
+
+        public void setRectange(Rectangle r)
+        {
+            this.frame = r;
         }
 
         public void reset(Map map)
