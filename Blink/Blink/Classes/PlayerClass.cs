@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using Blink.Classes;
+using Blink.Utilities;
 
 namespace Blink.Classes
 {
@@ -30,11 +31,12 @@ namespace Blink.Classes
         Rectangle playerRect = new Rectangle(0, 0, 32, 64);
         public String title;
         public int winAssign = 0;
-        private SpearClass spear;
+        public SpearClass spear;
         private int directionFacing = 0; //0 for left, 1 for right
-        public Vector2 spearVector;
+        public Vector2 spearVector = new Vector2(-1,0);
         public Boolean hasSpear = true;
-        public Boolean blinked = false, blinkKeyDown = false;
+        public int attackAnimationFrames = 2, throwAnimationFrames = 5, attackFrameWait = 0, attackType = 0; //0 for melee, 1 for ranged.
+        public Boolean blinked = false, blinkKeyDown = false, attackKeyDown = false, throwKeyDown = false;
         private float blinkJuice, blinkCoolDown, stunTimer, deathTimer, curMultiplier, dustTimer;
 
         public SoundEffectInstance Death_Sound;
@@ -197,11 +199,13 @@ namespace Blink.Classes
             }
 
 
-
-
-
-            //Horizontal movement
-            if (!(padState.IsButtonDown(Buttons.X))) {
+            //Implicit Aim
+            if (padState.ThumbSticks.Left.Length() > 0.85f)
+                spearVector = padState.ThumbSticks.Left;
+            
+            //Are we aiming?
+            if ((!(padState.IsButtonDown(Buttons.B)) && !(padState.IsButtonDown(Buttons.X))) || !hasSpear) {
+                //Horizontal movement
                 if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP * curMultiplier && !dead && !victory && stunTimer <= 0)
                 {
                     velocity.X += SPEED * curMultiplier;
@@ -214,11 +218,49 @@ namespace Blink.Classes
                     if (velocity.X > SPEED)
                         velocity.X -= SPEED * curMultiplier / 2;
                 }
+
+                //Initiating a melee attack!
+                if (attackKeyDown && spear != null)
+                {
+                    spear.isInUse = true;
+                    //animate attack
+                    attackFrameWait = attackAnimationFrames;
+                    attackType = 0;
+                    attackKeyDown = false;
+                }
+                //Initiating a thrown attack!
+                else if (throwKeyDown && spear != null)
+                {
+                    throwKeyDown = false;
+                    spear.setThrownBy(this);
+                    spear.throwSpear();
+                }
             }
             else
             {
-                spearVector = padState.ThumbSticks.Left;
+                if(padState.IsButtonDown(Buttons.B))
+                    attackKeyDown = true;
+                if (padState.IsButtonDown(Buttons.X))
+                    throwKeyDown = true;
+                if(padState.ThumbSticks.Left.Length() > 0.85f)
+                {
+                    directionFacing = VectorMath.rotationFromVector(spearVector) > Math.PI || VectorMath.rotationFromVector(spearVector) < 0 ? 0 : 1;
+                }
             }
+
+
+            //Is there an attack animation in progress?
+            if(attackFrameWait > 0)
+            {
+                attackFrameWait--;
+                //Melee?
+                if(attackType == 0)
+                {
+                    spear.meleeCheck();
+                }
+            }
+
+
 
             //Friction
             if (velocity.X != 0 && !padState.IsButtonDown(Buttons.LeftThumbstickRight) && !padState.IsButtonDown(Buttons.LeftThumbstickLeft))
@@ -726,6 +768,16 @@ namespace Blink.Classes
             if (dead)
                 drawnText = deadText;
 
+            /*if (attackKeyDown)
+            {
+                SpriteEffects flip = SpriteEffects.None;
+                if(VectorMath.rotationFromVector(spearVector) > Math.PI)
+                    flip = SpriteEffects.FlipHorizontally;
+                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(0, 0), 0f, flip, 0f);
+                
+
+            }
+            else*/
             sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn);
 
             //Drawing when the player is looping over

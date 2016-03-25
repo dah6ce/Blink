@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 using Blink.Classes;
 using Blink.Utilities;
 
@@ -19,12 +20,10 @@ namespace Blink.Classes
         public Rectangle spear;
         public Vector2 /*pos,*/ velocity, SCREENSIZE;
         public float gravityEffect;
-        //private int JUMP = 30, TILEWIDTH = 32, MARGIN = 0;
         public int spearOrientation, Width , Height;
         private float orientation;
         private Vector2 spearVector;
-        private float GRAVITY = 1.6f, TERMINAL_V = 30/*, SPEED = 1.2f, GROUNDSPEED = 1.2f, ICESPEED = 0.4f, ACC_CAP = 16*/;
-        //private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
+        private float GRAVITY = 1.6f, TERMINAL_V = 30, THROW_V = 30f;
         PlayerClass thrownBy = null;
         PlayerClass[] players;
         KeyboardState oldState;
@@ -35,12 +34,12 @@ namespace Blink.Classes
         public PlayerClass spearOwner; 
         public Map m;
         public readonly Keys THROW_KEY = Keys.Q, ATTACK_KEY = Keys.Space;
-        public readonly Buttons THROW_BUTTON = Buttons.RightShoulder, ATTACK_BUTTON = Buttons.X;
+        public readonly Buttons THROW_BUTTON = Buttons.X, ATTACK_BUTTON = Buttons.B;
         public Boolean throwDown = false;
 
 		public int inUseTimer = 10, coolDown = 10;
         //Attacking or being thrown sets this to true
-        public Boolean isInUse = false, atRest = true; // isInUse = if the spear is being used via throwing or attacking. atRest = spear not being used or on ground.
+        public Boolean isInUse = false, atRest = true, dropped = false; // isInUse = if the spear is being used via throwing or attacking. atRest = spear not being used or on ground.
         public Boolean attachedToPlayer = true, throwing = false, attackDown = false; //attachedToPlayer to player, being thrown, or attacking Downward.
 
         //Sound effects
@@ -93,7 +92,7 @@ namespace Blink.Classes
                 coolDown -= 1;
             }
             //Spear throw
-            if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && attachedToPlayer && !spearOwner.dead && !isInUse && coolDown <= 0 && !throwDown)
+            /*if ((input.IsKeyDown(THROW_KEY) || padState.IsButtonDown(THROW_BUTTON)) && attachedToPlayer && !spearOwner.dead && !isInUse && coolDown <= 0 && !throwDown)
             {
                 throwDown = true;
                 isInUse = true;
@@ -119,40 +118,51 @@ namespace Blink.Classes
 
             else if ((input.IsKeyUp(THROW_KEY) && padState.IsButtonUp(THROW_BUTTON)))
                 throwDown = false;
+                */
 
 
-            //Holding spear attacks
-            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON)) && attachedToPlayer && !spearOwner.dead && !isInUse && coolDown <= 0)
-            {
-                attackDown = true;
+            //Updating aim from player
+            if(spearOwner != null) { 
                 Vector2 stickDir = spearOwner.spearVector;
-                if (stickDir.Length() >= .95f)
+                if (stickDir.Length() >= .85f)
                 {
-                    orientation = VectorMath.rotationFromVector(stickDir) - (float)(Math.PI * 0.5f); //90 degree adjustment is to account for spear's initial rotation
+                    orientation = VectorMath.rotationFromVector(stickDir) + (float)(Math.PI * 0.5f); //90 degree adjustment is to account for spear's initial rotation
                     spearVector = stickDir;
                 }
+            }
+            //Holding spear attacks
+            if ((input.IsKeyDown(ATTACK_KEY) || padState.IsButtonDown(ATTACK_BUTTON) || padState.IsButtonDown(THROW_BUTTON)) && attachedToPlayer && !spearOwner.dead && !isInUse && coolDown <= 0)
+            {
+                attackDown = true;
+                
             }
             else if ((input.IsKeyUp(ATTACK_KEY) && padState.IsButtonUp(ATTACK_BUTTON)) && attackDown)
             {
                 attackDown = false;
             }
-
             
-            playerCollision();
-            if(!attachedToPlayer && !atRest)
+            if(attachedToPlayer && !isInUse) { 
+                spear.Location = spearOwner.getPlayerRect().Center;
+
+                spear.X -= 16;
+                spear.Y -= 8;
+            }
+
+            if (!attachedToPlayer)
             {
-                mapCollision();
+                playerCollision();
             }
             if (!atRest)
             {
-                if(thrownBy != null)
+                mapCollision();
+                //if (thrownBy != null)
                     throwUpdate();
-                if (Math.Abs(velocity.Y) + gravityEffect < TERMINAL_V)
+                /*if (Math.Abs(velocity.Y) + gravityEffect < TERMINAL_V)
                     if(thrownBy != null)
                         gravityEffect += GRAVITY / 10;
                     else
                         gravityEffect += GRAVITY;
-                spear.Y += (int)(velocity.Y + gravityEffect);
+                spear.Y += (int)(velocity.Y + gravityEffect);*/
             }
 
             oldState = newState;
@@ -174,6 +184,17 @@ namespace Blink.Classes
             }*/
         }
 
+        public void meleeCheck()
+        {
+            Vector2 move = new Vector2(spearVector.X, spearVector.Y);
+            move.Normalize();
+            move = move * (48/2);
+            this.spear.X += (int)move.X;
+            this.spear.Y -= (int)move.Y;
+            
+            playerCollision();
+        }
+
         //Check to see if the spear is colliding with a player
         private void playerCollision()
         {
@@ -184,17 +205,22 @@ namespace Blink.Classes
                 {
                     if (player != null && !player.Equals(spearOwner) && !player.dead && player.blinked == spearOwner.blinked)
                     {
-                        if (VectorMath.rectCollision(player.getPlayerRect(), 0, this.spear, orientation))//player.getPlayerRect().Intersects(this.spear))
+                        Rectangle adjustedRect = new Rectangle(spear.Location, spear.Size);
+                        adjustedRect.X -= 32;
+
+                        bool hit = VectorMath.rectCollision(adjustedRect, orientation, player.getPlayerRect(), 0, new Point(16, 8));
+                        
+                        if (hit)//player.getPlayerRect().Intersects(this.spear))
                         {
                             player.setDead(true, this.spearOwner, "SPEAR");
                             Hit_Player_Sound.Play();
                         }
 
                         //Wrap-around collisions
-                        if(this.spear.X <= 0)
+                        if(this.spear.X <= spear.Width)
                         {
                             Rectangle tempRect = new Rectangle((int)(spear.X + SCREENSIZE.X), (int)spear.Y, spear.Width, spear.Height);
-                            if (VectorMath.rectCollision(player.getPlayerRect(), 0, tempRect, orientation))//player.getPlayerRect().Intersects(tempRect))
+                            if (VectorMath.rectCollision(tempRect, orientation, player.getPlayerRect(), 0, new Point(16, 8)))//player.getPlayerRect().Intersects(tempRect))
                             {
                                 player.setDead(true, this.spearOwner, "SPEAR");
                                 Hit_Player_Sound.Play();
@@ -202,8 +228,8 @@ namespace Blink.Classes
                         }
                         else if(this.spear.X >= SCREENSIZE.X - this.spear.Width)
                         {
-                            Rectangle tempRect = new Rectangle((int)(spear.X - SCREENSIZE.X), (int)spear.Y, spear.Width, spear.Height);
-                            if (VectorMath.rectCollision(player.getPlayerRect(), 0, tempRect, orientation))//player.getPlayerRect().Intersects(tempRect))
+                            Rectangle tempRect = new Rectangle((int)(spear.X - SCREENSIZE.X - 32), (int)spear.Y, spear.Width, spear.Height);
+                            if (VectorMath.rectCollision(tempRect, orientation, player.getPlayerRect(), 0, new Point(16, 8)))//player.getPlayerRect().Intersects(tempRect))
                             {
                                 player.setDead(true, this.spearOwner, "SPEAR");
                                 Hit_Player_Sound.Play();
@@ -219,8 +245,26 @@ namespace Blink.Classes
                     if(p != null) { 
                         if (!attachedToPlayer && !throwing)
                         {
-                            Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), spear);//new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
-                            if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing && !p.dead)
+                            //Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), spear);//new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
+                            Rectangle adjustedRect = new Rectangle(spear.Location, spear.Size);
+                            adjustedRect.X -= 32;
+                            bool hit = VectorMath.rectCollision(adjustedRect, orientation+(float)(Math.PI/2), p.getPlayerRect(), 0, new Point(16, 8));
+
+                            if (!hit && spear.X > SCREENSIZE.X - spear.Width / 2)
+                            {
+                                Rectangle dupePos = new Rectangle((int)(adjustedRect.X - SCREENSIZE.X), adjustedRect.Y, adjustedRect.Width, adjustedRect.Height);
+                                hit = VectorMath.rectCollision(dupePos, orientation - (float)(Math.PI / 2), p.getPlayerRect(), 0, new Point(16, 8));
+
+                            }
+
+                            if (!hit && spear.Y > SCREENSIZE.Y - spear.Width / 2)
+                            {
+                                Rectangle dupePos = new Rectangle((int)(adjustedRect.X), (int)(adjustedRect.Y - SCREENSIZE.Y), adjustedRect.Width, adjustedRect.Height);
+                                hit = VectorMath.rectCollision(dupePos, orientation, p.getPlayerRect(), 0, new Point(16, 8));
+
+                            }
+
+                            if (hit && !p.hasSpear && !throwing && !p.dead)
                             {
                                 gravityEffect = 0;
                                 attachedToPlayer = true;
@@ -229,15 +273,47 @@ namespace Blink.Classes
                                 isInUse = false;
                                 throwing = false;
                                 p.hasSpear = true;
+                                dropped = false;
                             }
                         }
                         if (!atRest && thrownBy != null && p.blinked == thrownBy.blinked)
                         {
-                            Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
-                            if (inter.Width > 0 && inter.Height > 0 && spearOwner != p && !p.dead)
+                            Rectangle adjustedRect = new Rectangle(spear.Location, spear.Size);
+                            adjustedRect.X -= 32;
+                            bool hit = VectorMath.rectCollision(adjustedRect, orientation, p.getPlayerRect(), 0, new Point(16, 8));
+
+                            if (!hit && spear.X > SCREENSIZE.X - spear.Width / 2)
+                            {
+                                Rectangle dupePos = new Rectangle((int)(adjustedRect.X - SCREENSIZE.X), adjustedRect.Y, adjustedRect.Width, adjustedRect.Height);
+                                hit = VectorMath.rectCollision(dupePos, orientation - (float)(Math.PI / 2), p.getPlayerRect(), 0, new Point(16, 8));
+
+                            }
+
+                            if (!hit && spear.Y > SCREENSIZE.Y - spear.Width / 2)
+                            {
+                                Rectangle dupePos = new Rectangle((int)(adjustedRect.X), (int)(adjustedRect.Y - SCREENSIZE.Y), adjustedRect.Width, adjustedRect.Height);
+                                hit = VectorMath.rectCollision(dupePos, orientation, p.getPlayerRect(), 0, new Point(16, 8));
+
+                            }
+
+                            if (hit && spearOwner != p && !p.dead && !dropped)
                             {
                                 p.setDead(true, thrownBy, "SPEAR");
                                 Hit_Player_Sound.Play();
+                            }
+
+                            //When the spear first leaves the one who threw its hitbox, make it live.
+                            if(!hit && spearOwner != null && spearOwner == p)
+                            {
+                                isInUse = false;
+                                attachedToPlayer = false;
+                                if(spearOwner.spear == this)
+                                {
+                                    spearOwner.hasSpear = false;
+                                    spearOwner.setSpear(null);
+                                }
+                                    
+                                setOwner(null);
                             }
                         }
                     }
@@ -248,6 +324,63 @@ namespace Blink.Classes
 
         private void mapCollision()
         {
+            Rectangle correctedBox = new Rectangle(spear.Location, spear.Size);
+
+            correctedBox.X -= 32;
+
+            Vector2[] verts = VectorMath.rectVerts(correctedBox, orientation);
+
+            HashSet<int> xVals = new HashSet<int>();
+            HashSet<int> yVals = new HashSet<int>();
+            //gather values the spear might be passing through
+            foreach(Vector2 vertex in verts)
+            {
+                xVals.Add((int)Math.Floor(vertex.X));
+                yVals.Add((int)Math.Floor(vertex.Y));
+
+            }
+
+            //Using the dot product, find collidable rectangles and test.
+            bool colliding = false;
+            foreach(int x in xVals)
+            {
+                foreach(int y in yVals)
+                {
+                    int squareData = m.blockInfo(new Vector2(x, y));
+                    if(thrownBy == null && squareData >= 10)
+                    {
+                        Rectangle r = new Rectangle(x, y, 32, 32);
+                        if (VectorMath.rectCollision(correctedBox, orientation, r, 0))
+                        {
+                            velocity.X = 0;
+                            velocity.Y = 0;
+                            atRest = true;
+                            throwing = false;
+                            Hit_Wall_Sound.Play();
+                            colliding = true;
+                            break;
+                        }
+                    }//This is messy, I know.
+                    else if((squareData >= 10 && !thrownBy.blinked) || (squareData >= 10 && squareData < 20 && thrownBy.blinked))
+                    {
+                        Rectangle r = new Rectangle(x, y, 32, 32);
+                        if (VectorMath.rectCollision(correctedBox, orientation, r, 0))
+                        {
+                            velocity.X = 0;
+                            velocity.Y = 0;
+                            atRest = true;
+                            throwing = false;
+                            Hit_Wall_Sound.Play();
+                            colliding = true;
+                            break;
+                        }
+                    }
+                }
+                if (colliding)
+                    break;
+            }
+
+            /*
             float testX = spear.X + velocity.X;
             float testY = spear.Y + velocity.Y;
 
@@ -282,22 +415,31 @@ namespace Blink.Classes
                 throwing = false;
                 correctHitBox();
                 Hit_Wall_Sound.Play();
-        }
+        }*/
         }
 
         //Handle throw physics
-        private void throwSpear()
+        public void throwSpear()
         {
             Throw_Sound.Play();
-            attachedToPlayer = false;
-            throwing = true;
-            isInUse = false;
-            spearOwner.hasSpear = false;
-            velocity.X = spearOwner.velocity.X;
-            spear.X = spearOwner.getPlayerRect().X;
-            atRest = false;
+            this.attachedToPlayer = false;
+            this.throwing = true;
+            this.isInUse = false;
+            this.spearOwner.hasSpear = false;
+            //velocity.X = spearOwner.velocity.X;
 
-            switch (spearOrientation)
+            this.spear.X = spearOwner.getPlayerRect().X;
+            this.atRest = false;
+
+            Vector2 move = new Vector2(spearVector.X, spearVector.Y);
+            move *= THROW_V;
+            this.velocity.X = move.X;
+            this.velocity.Y = -move.Y;
+
+            spear.X += (int)(velocity.X * thrownBy.getMulti());
+            spear.Y += (int)(velocity.Y * thrownBy.getMulti());
+
+            /*switch (spearOrientation)
             {
                 case 0:
                     velocity.X = -20;
@@ -320,36 +462,44 @@ namespace Blink.Classes
                     spear.Y += (int)velocity.Y;
                     spear.Y = spearOwner.getPlayerRect().Y + spearOwner.getPlayerRect().Height / 2;
                     break;
-            }
+            }*/
 
-            correctHitBox();
+            //correctHitBox();
         }
 
         private void throwUpdate()
         {
-            if(spear.X > spear.Height) 
-            {
-                spear.X -= (int)SCREENSIZE.X;
-            }
+            
 
-            if (spear.X < spear.Height)
+            if (spear.X < spear.Width)
             {
                 spear.X += (int)SCREENSIZE.X;
             }
-
-            if (spear.Y > spear.Width)
-            {
-                spear.Y -= (int)SCREENSIZE.Y;
-            }
+            
 
             if (spear.Y < spear.Width)
             {
                 spear.Y += (int)SCREENSIZE.Y;
             }
-            
-            spear.X += (int)(velocity.X * thrownBy.getMulti());
-            spear.Y += (int)(velocity.Y * thrownBy.getMulti());
 
+            velocity.Y += GRAVITY / 10f;
+
+            if(thrownBy != null) { 
+                spear.X += (int)(velocity.X * thrownBy.getMulti());
+                spear.Y += (int)(velocity.Y * thrownBy.getMulti());
+            }
+            else
+            {
+                spear.X += (int)(velocity.X);
+                spear.Y += (int)(velocity.Y);
+            }
+
+            Vector2 dirVect = new Vector2(velocity.X, -velocity.Y);
+            if (!(dirVect.X == 0) && !(dirVect.Y == 0))
+            {
+                dirVect.Normalize();
+                orientation = VectorMath.rotationFromVector(dirVect)+ (float)(Math.PI / 2);
+            }
 
             /*if (Math.Abs(velocity.X) >= Math.Abs(velocity.Y))
             {
@@ -366,7 +516,7 @@ namespace Blink.Classes
                     spearOrientation = 2;
             }*/
 
-            if (spearOwner != null)
+            /*if (spearOwner != null)
             {
                 Rectangle inter = Rectangle.Intersect(spearOwner.getPlayerRect(), new Rectangle((int)spear.X, (int)spear.Y, spear.Width, spear.Height));
                 if (inter.Width == 0 && inter.Height == 0)
@@ -378,7 +528,7 @@ namespace Blink.Classes
                     spearOwner.setSpear(null);
                     setOwner(null);
                 }
-            }
+            }*/
         }
 
         public void Draw(SpriteBatch sB)
@@ -393,31 +543,20 @@ namespace Blink.Classes
                     return;
                 origin.X = 32;
                 Vector2 screenPos = new Vector2(spear.X, spear.Y);
-                RotationAngle = (float)(MathHelper.Pi * .5);
-                switch (spearOrientation)
-                {
-                    case 0:
-                        RotationAngle = 0;
-                        screenPos.X += 32;
-                        screenPos.Y += 8;
-                        break;
-                    case 2:
-                        RotationAngle = (float)(MathHelper.Pi / 2);
-                        screenPos.X += 8;
-                        screenPos.Y += 32;
-                        break;
-                    case 4:
-                        RotationAngle = (float)(MathHelper.Pi);
-                        screenPos.X += 32;
-                        screenPos.Y += 8;
-                        break;
-                    case 6:
-                        RotationAngle = (float)(3 * MathHelper.Pi / 2);
-                        screenPos.X += 8;
-                        screenPos.Y += 32;
-                        break;
+                Vector2 dirVect = new Vector2(velocity.X, -velocity.Y);
+                dirVect.Normalize();
+                RotationAngle = VectorMath.rotationFromVector(dirVect) + (float)(Math.PI/2);
+                sB.Draw(drawnText, screenPos, null ,  Color.White, orientation, origin, 1.0f, SpriteEffects.None, 0f);
+                Vector2 dupePos;
+                if(spear.X > SCREENSIZE.X - spear.Width / 2) {
+                    dupePos = new Vector2(screenPos.X-SCREENSIZE.X, screenPos.Y);
+                    sB.Draw(drawnText, dupePos, null, Color.White, orientation, origin, 1.0f, SpriteEffects.None, 0f);
                 }
-                sB.Draw(drawnText, screenPos, null ,  Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
+                if (spear.Y > SCREENSIZE.Y - spear.Width / 2)
+                {
+                    dupePos = new Vector2(screenPos.X , screenPos.Y - SCREENSIZE.Y);
+                    sB.Draw(drawnText, dupePos, null, Color.White, orientation, origin, 1.0f, SpriteEffects.None, 0f);
+                }
             }
 
             else if (!isInUse && spearOwner!=null && !attackDown)
@@ -440,7 +579,7 @@ namespace Blink.Classes
                 else
                     sB.Draw(drawnText, screenPos, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
             }
-            else if (attackDown && spearOwner != null)
+            else if ((attackDown || isInUse) && spearOwner != null)
             {
                 /*Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().X, spearOwner.getPlayerRect().Y);
                 switch (spearOrientation) { 
@@ -470,13 +609,14 @@ namespace Blink.Classes
 
                 //if (attackDown)
                 //{
-                RotationAngle = orientation;
+                RotationAngle = orientation + (float)Math.PI;
                 Vector2 normDir = spearVector;
                 normDir.X *= 10;
                 normDir.Y *= 10;
                 normDir.Normalize();
-                Vector2 screenPos = new Vector2(spearOwner.getPlayerRect().Center.X-(normDir.X*32), spearOwner.getPlayerRect().Center.Y+(normDir.Y*32));
+                Vector2 screenPos = new Vector2(spear.X+16, spear.Y+8);//new Vector2(spear.Location, spearOwner.getPlayerRect().Center.Y+(normDir.Y*32));
                 //}
+                origin = new Vector2(16, 8);
                 sB.Draw(drawnText, screenPos, null, Color.White, RotationAngle, origin, 1.0f, SpriteEffects.None, 0f);
             }
         }
@@ -508,11 +648,10 @@ namespace Blink.Classes
             spear.Y = spearOwner.getPlayerRect().Y;
             spearOwner.setSpear(null);
             spearOwner = null;
-            spearOrientation = 2;
-            correctHitBox();
             attachedToPlayer = false;
             isInUse = false;
             throwing = false;
+            dropped = true;
             atRest = false;
         }
 
@@ -523,6 +662,11 @@ namespace Blink.Classes
             {
                 spearOwner.hasSpear = true;
             }
+        }
+
+        public void setThrownBy(PlayerClass owner)
+        {
+            thrownBy = owner;
         }
     }
 }

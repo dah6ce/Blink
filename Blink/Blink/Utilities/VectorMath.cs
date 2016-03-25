@@ -50,7 +50,7 @@ namespace Blink.Utilities
 
         public static bool rectCollision(Rectangle a, float aRot, Rectangle b, float bRot, Point origin)
         {
-            Vector2[] aVerts = rectVerts(a, aRot, origin);
+            Vector2[] aVerts = rectVerts(a, aRot, origin + a.Center);
             Vector2[] bVerts = rectVerts(b, bRot);
 
 
@@ -67,10 +67,10 @@ namespace Blink.Utilities
         {
             
             Vector2[] points = new Vector2[4];
-            points[0] = new Vector2((float)(origin.X + (r.Left - origin.X) * Math.Cos(rRot) - (r.Top - origin.Y) * Math.Sin(rRot)), (float)(origin.Y + (r.Left - origin.X) * Math.Sin(rRot) + (r.Top - origin.Y) * Math.Cos(rRot)));
-            points[1] = new Vector2((float)(origin.X + (r.Right - origin.X) * Math.Cos(rRot) - (r.Top - origin.Y) * Math.Sin(rRot)), (float)(origin.Y + (r.Right - origin.X) * Math.Sin(rRot) + (r.Top - origin.Y) * Math.Cos(rRot)));
-            points[2] = new Vector2((float)(origin.X + (r.Right - origin.X) * Math.Cos(rRot) - (r.Bottom - origin.Y) * Math.Sin(rRot)), (float)(origin.Y + (r.Right - origin.X) * Math.Sin(rRot) + (r.Bottom - origin.Y) * Math.Cos(rRot)));
-            points[3] = new Vector2((float)(origin.X + (r.Left - origin.X) * Math.Cos(rRot) - (r.Bottom - origin.Y) * Math.Sin(rRot)), (float)(origin.Y + (r.Left - origin.X) * Math.Sin(rRot) + (r.Bottom - origin.Y) * Math.Cos(rRot)));
+            points[0] = new Vector2((float)(origin.X + ((r.Left - origin.X) * Math.Cos(rRot) - (r.Top - origin.Y) * Math.Sin(rRot))), (float)(origin.Y + ((r.Left - origin.X) * Math.Sin(rRot) + (r.Top - origin.Y) * Math.Cos(rRot))));
+            points[1] = new Vector2((float)(origin.X + ((r.Right - origin.X) * Math.Cos(rRot) - (r.Top - origin.Y) * Math.Sin(rRot))), (float)(origin.Y + ((r.Right - origin.X) * Math.Sin(rRot) + (r.Top - origin.Y) * Math.Cos(rRot))));
+            points[2] = new Vector2((float)(origin.X + ((r.Right - origin.X) * Math.Cos(rRot) - (r.Bottom - origin.Y) * Math.Sin(rRot))), (float)(origin.Y + ((r.Right - origin.X) * Math.Sin(rRot) + (r.Bottom - origin.Y) * Math.Cos(rRot))));
+            points[3] = new Vector2((float)(origin.X + ((r.Left - origin.X) * Math.Cos(rRot) - (r.Bottom - origin.Y) * Math.Sin(rRot))), (float)(origin.Y + ((r.Left - origin.X) * Math.Sin(rRot) + (r.Bottom - origin.Y) * Math.Cos(rRot))));
             return points;
         }
 
@@ -79,10 +79,10 @@ namespace Blink.Utilities
             
             Point origin = r.Center;
             Vector2[] points = new Vector2[4];
-            points[0] = new Vector2((float)(origin.X + (r.Left - origin.X) * Math.Cos(rRot) - (r.Top - origin.Y) * Math.Sin(rRot)), (float)(origin.Y + (r.Left - origin.X) * Math.Sin(rRot) + (r.Top - origin.Y) * Math.Cos(rRot)));
-            points[1] = new Vector2((float)(origin.X + (r.Right - origin.X) * Math.Cos(rRot) - (r.Top - origin.Y) * Math.Sin(rRot)), (float)(origin.Y + (r.Right - origin.X) * Math.Sin(rRot) + (r.Top - origin.Y) * Math.Cos(rRot)));
-            points[2] = new Vector2((float)(origin.X + (r.Right - origin.X) * Math.Cos(rRot) - (r.Bottom - origin.Y) * Math.Sin(rRot)), (float)(origin.Y + (r.Right - origin.X) * Math.Sin(rRot) + (r.Bottom - origin.Y) * Math.Cos(rRot)));
-            points[3] = new Vector2((float)(origin.X + (r.Left - origin.X) * Math.Cos(rRot) - (r.Bottom - origin.Y) * Math.Sin(rRot)), (float)(origin.Y + (r.Left - origin.X) * Math.Sin(rRot) + (r.Bottom - origin.Y) * Math.Cos(rRot)));
+            points[0] = new Vector2((float)(origin.X + ((r.Left - origin.X) * Math.Cos(rRot) - (r.Top - origin.Y) * Math.Sin(rRot))), (float)(origin.Y + ((r.Left - origin.X) * Math.Sin(rRot) + (r.Top - origin.Y) * Math.Cos(rRot))));
+            points[1] = new Vector2((float)(origin.X + ((r.Right - origin.X) * Math.Cos(rRot) - (r.Top - origin.Y) * Math.Sin(rRot))), (float)(origin.Y + ((r.Right - origin.X) * Math.Sin(rRot) + (r.Top - origin.Y) * Math.Cos(rRot))));
+            points[2] = new Vector2((float)(origin.X + ((r.Right - origin.X) * Math.Cos(rRot) - (r.Bottom - origin.Y) * Math.Sin(rRot))), (float)(origin.Y + ((r.Right - origin.X) * Math.Sin(rRot) + (r.Bottom - origin.Y) * Math.Cos(rRot))));
+            points[3] = new Vector2((float)(origin.X + ((r.Left - origin.X) * Math.Cos(rRot) - (r.Bottom - origin.Y) * Math.Sin(rRot))), (float)(origin.Y + ((r.Left - origin.X) * Math.Sin(rRot) + (r.Bottom - origin.Y) * Math.Cos(rRot))));
             return points;
         }
 
