@@ -9,10 +9,27 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Blink.GUI
 {
+    enum PlayerKeys
+    {
+        Player1,
+        Player2,
+        Player3,
+        Player4,
+        allPlayers
+
+    }
 
     public class StateCharacterSelect : GameState
     {
         const int THUMBROWSIZE = 2;
+
+        Blink.Classes.PlayerClass player1;
+        Blink.Classes.PlayerClass player2;
+        Blink.Classes.PlayerClass player3;
+        Blink.Classes.PlayerClass player4;
+        internal Blink.Classes.PlayerClass[] players = new Blink.Classes.PlayerClass[4];
+        bool[] playersInGame = { false, false, false, false };
+        string[] playerTexts = { "", "", "", "" };
 
         Vector2 screenSize;
         int[] selected = new int[4];
@@ -32,6 +49,7 @@ namespace Blink.GUI
         bool[] back = { false, false, false, false };
         bool lastAccept;
         bool prematureEnter;
+        int activePlayers = 0;
 
 
         //Storage list for all our char names
@@ -58,6 +76,10 @@ namespace Blink.GUI
                 //    this.charThumbs[selected[i]].unselect();
                 //this.selected[i] = 0;
             //}
+            player1 = new Blink.Classes.PlayerClass();
+            player2 = new Blink.Classes.PlayerClass();
+            player3 = new Blink.Classes.PlayerClass();
+            player4 = new Blink.Classes.PlayerClass();
             this.nextState = null;
             AudioManager.TriggerCharacterSelect();
             KeyboardState keyState = Keyboard.GetState();
@@ -84,10 +106,52 @@ namespace Blink.GUI
                 return;
             }
 
+            activePlayers = 0;
+            if (playersInGame[0])
+            {
+                players[0] = player1;
+                activePlayers++;
+            }
+            else
+                player1.active = false;
+            if (playersInGame[1])
+            {
+                players[1] = player2;
+                activePlayers++;
+            }
+            else
+                player2.active = false;
+            if (playersInGame[2])
+            {
+                players[2] = player3;
+                activePlayers++;
+            }
+            else
+                player3.active = false;
+            if (playersInGame[3])
+            {
+                players[3] = player4;
+                activePlayers++;
+            }
+            else
+                player4.active = false;
+
             for(int i = 0; i < 4; i++)
             {
                 playerSelect[i] = Content.Load<Texture2D>("MenuData/S" + (i + 1).ToString());
             }
+
+            Vector2 negPos = new Vector2(-100, -100);
+            Vector2 offset = new Vector2(-4, -4);
+            Texture2D bar = Content.Load<Texture2D>("bar");
+            for (int i = 0; i < 4; i++)
+            {
+                if (players[i] != null && players[i].active)
+                {
+                    players[i].Initialize(Content.Load<Texture2D>(playerTexts[i]), negPos, screenSize, null, players, offset, bar);
+                }
+            }
+
             background = Content.Load<Texture2D>("MenuData/characterselect");
 
             //Gets a list of all the .char files in our chardata folder, Platform specific paths
@@ -140,6 +204,16 @@ namespace Blink.GUI
             updateSelection(padState_2, keyState, 1);
             updateSelection(padState_3, keyState, 2);
             updateSelection(padState_4, keyState, 3);
+
+            var player1State = Keyboard.GetState();
+            var player2State = Keyboard.GetState();
+            var player3State = Keyboard.GetState();
+            var player4State = Keyboard.GetState();
+
+            player1.Update(player1State, GamePad.GetState(PlayerIndex.One), gameTime);
+            player2.Update(player2State, GamePad.GetState(PlayerIndex.Two), gameTime);
+            player3.Update(player3State, GamePad.GetState(PlayerIndex.Three), gameTime);
+            player4.Update(player4State, GamePad.GetState(PlayerIndex.Four), gameTime);
 
             if (keyState.IsKeyUp(Keys.Enter) && padState_1.IsButtonUp(Buttons.A))
             {
@@ -291,6 +365,10 @@ namespace Blink.GUI
                     keys.IsKeyUp(Keys.Down))
                     down[player] = false;
             }
+            /*else
+            {
+                //INSERT PLAY GAME CONTROLS HERE
+            }*/
         }
 
         public void startMatch()
@@ -314,7 +392,11 @@ namespace Blink.GUI
             sb.Draw(background, new Vector2(0,0), Color.White);
             foreach (ImageButton thumb in charThumbs)
                 thumb.Draw(sb);
-            //sb.Draw(selectedOverlay, new Vector2(200 * (selected % THUMBROWSIZE), (selected / 8) * 120 + 600), Color.Gold);
+            player1.Draw(sb);
+            player2.Draw(sb);
+            player3.Draw(sb);
+            player4.Draw(sb);
+            //sb.Draw(selectedOverlay, new Vector2(200 * (selected % THUMBROWSIZE), (float)Math.Floor((selected / 8f)) * 120 + 600), Color.Gold);
         }
 
         public GameState GetTransition()
