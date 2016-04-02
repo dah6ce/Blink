@@ -148,7 +148,7 @@ namespace Blink.Classes
                 this.bounce = !this.bounce;
             if(blinkBlocked)
             {
-                if((float)gameTime.ElapsedGameTime.TotalSeconds - blockTime > DEATHTIMER)
+                if((float)gameTime.TotalGameTime.TotalSeconds - blockTime > DEATHTIMER)
                 {
                     blinkBlocked = false;
                 }
@@ -242,7 +242,7 @@ namespace Blink.Classes
                         shield = true;
                         break;
                     case PowerupEnum.powerUpEnum.bombSpear:
-                        //not implemented
+                        //not fully
                         bombSpear = true;
                         break;
                     case PowerupEnum.powerUpEnum.backupSpear:
@@ -250,7 +250,7 @@ namespace Blink.Classes
                         backupSpear = true;
                         break;
                     case PowerupEnum.powerUpEnum.unblinker:
-                        unblinkEveryone((float)gameTime.ElapsedGameTime.TotalSeconds);
+                        unblinkEveryone((float)gameTime.TotalGameTime.TotalSeconds);
                         break;
                 }
                 inventory = PowerupEnum.powerUpEnum.none;

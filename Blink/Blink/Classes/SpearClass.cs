@@ -14,6 +14,7 @@ namespace Blink.Classes
      class SpearClass
     {
         private int EXPLODE_RADIUS = 512;
+        private Boolean bomb = false;
         public Texture2D spearText;
         public Rectangle spear;
         public Vector2 /*pos,*/ velocity, SCREENSIZE;
@@ -309,9 +310,10 @@ namespace Blink.Classes
                                 }
                                 else
                                 {
-                                    if(spearOwner != null && spearOwner.bombSpear)
+                                    if(bomb)
                                     {
                                         bombExplosion();
+                                        bomb = false;
                                     }
                                     p.setDead(true, thrownBy, "SPEAR");
                                     Hit_Player_Sound.Play();
@@ -361,7 +363,7 @@ namespace Blink.Classes
                 throwing = false;
                 correctHitBox();
                 Hit_Wall_Sound.Play();
-                if(spearOwner != null && spearOwner.bombSpear)
+                if(bomb)
                 {
                     bombExplosion();
                 }
@@ -374,7 +376,8 @@ namespace Blink.Classes
                 int x_dist = p.getPlayerRect().X - spear.X;
                 int y_dist = p.getPlayerRect().Y - spear.Y;
                 int dist = x_dist * x_dist + y_dist * y_dist;
-                if (dist < EXPLODE_RADIUS)
+                // if within radius
+                if (dist < EXPLODE_RADIUS*EXPLODE_RADIUS)
                 {
                     p.setDead(true, spearOwner, "BOMBSPEAR");
                 }
@@ -396,6 +399,7 @@ namespace Blink.Classes
             if(spearOwner.bombSpear)
             {
                 spearOwner.bombSpear = false;
+                bomb = true;
             }
 
             switch (spearOrientation)
