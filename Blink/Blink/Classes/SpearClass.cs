@@ -366,6 +366,7 @@ namespace Blink.Classes
                 if(bomb)
                 {
                     bombExplosion();
+                    bomb = false;
                 }
         }
         }
