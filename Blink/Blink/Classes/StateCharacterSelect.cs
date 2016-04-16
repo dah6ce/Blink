@@ -81,6 +81,8 @@ namespace Blink.GUI
             #elif LINUX
             chars = Directory.EnumerateFiles(Environment.CurrentDirectory + "/Content/CharData", "*.char");
             #endif
+            showLoadScreen = false;
+
             foreach(var path in chars){
             default_charName = path.Remove(0, Environment.CurrentDirectory.Length + "\\Content\\CharData\\".Length);
             default_charName = default_charName.Replace(".char", "");

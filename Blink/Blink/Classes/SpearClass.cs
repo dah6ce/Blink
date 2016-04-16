@@ -184,11 +184,15 @@ namespace Blink.Classes
             }*/
             }
 
-        public void meleeCheck()
+        public void meleeCheck(int frame)
         {
             Vector2 move = new Vector2(spearVector.X, spearVector.Y);
             move.Normalize();
-            move = move * (48/2);
+            move = move * (48/(frame));
+            spear.Location = spearOwner.getPlayerRect().Center;
+
+            spear.X -= 16;
+            spear.Y -= 8;
             this.spear.X += (int)move.X;
             this.spear.Y -= (int)move.Y;
             

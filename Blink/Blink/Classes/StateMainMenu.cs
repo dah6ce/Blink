@@ -112,9 +112,9 @@ namespace Blink.GUI
             if (thumbDir.Length() > .01)
             {
                 if (thumbDir.X > thumbDir.Y)
-                    moveUp = true;
-                if (thumbDir.X < thumbDir.Y)
                     moveDown = true;
+                if (thumbDir.X < thumbDir.Y)
+                    moveUp = true;
             }
             if (padState.IsButtonDown(Buttons.A))
                 accept = true;

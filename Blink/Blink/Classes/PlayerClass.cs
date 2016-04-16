@@ -36,7 +36,7 @@ namespace Blink.Classes
         private int directionFacing = 0; //0 for left, 1 for right
         public Vector2 spearVector = new Vector2(-1,0);
         public Boolean hasSpear = true;
-        public int attackAnimationFrames = 2, throwAnimationFrames = 5, attackFrameWait = 0, attackType = 0; //0 for melee, 1 for ranged.
+        public int attackAnimationFrames = 4, throwAnimationFrames = 5, attackFrameWait = 0, attackType = 0; //0 for melee, 1 for ranged.
         public Boolean blinked = false, blinkKeyDown = false, attackKeyDown = false, throwKeyDown = false;
         private float blinkJuice, blinkCoolDown, stunTimer, deathTimer, curMultiplier, dustTimer;
 
@@ -250,18 +250,7 @@ namespace Blink.Classes
             }
 
 
-            //Is there an attack animation in progress?
-            if(attackFrameWait > 0)
-            {
-                attackFrameWait--;
-                //Melee?
-                if(attackType == 0)
-                {
-                    spear.meleeCheck();
-                }
-            }
-
-
+            
 
             //Friction
             if (velocity.X != 0 && !padState.IsButtonDown(Buttons.LeftThumbstickRight) && !padState.IsButtonDown(Buttons.LeftThumbstickLeft) && !input.IsKeyDown(Keys.Left) && !input.IsKeyDown(Keys.Right))
@@ -323,6 +312,22 @@ namespace Blink.Classes
 
 
             applyMove(velocity.X < 0, velocity.Y < 0);
+
+            //Is there an attack animation in progress?
+            if (attackFrameWait > 0)
+            {
+                //Melee?
+                if (attackType == 0 && spear != null)
+                {
+                    spear.meleeCheck(attackFrameWait);
+                }
+                attackFrameWait--;
+            }
+            else
+                if (spear != null && spear.isInUse)
+                spear.isInUse = false;
+
+
 
             blockDataUpdate();
             
