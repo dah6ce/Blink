@@ -149,6 +149,7 @@ namespace Blink
             Texture2D bar = Content.Load<Texture2D>("bar");
             Texture2D dust = Content.Load<Texture2D>("Dust_Trail");
             Texture2D dustPoof = Content.Load<Texture2D>("Dust_Poof");
+            Texture2D powerup = Content.Load<Texture2D>("powerups");
 
             for(int i = 0; i < 4; i++)
             {
@@ -213,7 +214,7 @@ namespace Blink
             for(int i = 0; i < 5; i++) { 
                 mapData[i] = File.OpenText("Content/MapData/"+maps.Maps()[i]+".map");
                 mapObs[i] = new Map();
-                mapObs[i].Initialize(Content.Load<Texture2D>("MapData/"+maps.Maps()[i]+"Color"), mapData[i].ReadToEnd(), 32, 50, 30, players);
+                mapObs[i].Initialize(Content.Load<Texture2D>("MapData/"+maps.Maps()[i]+"Color"), mapData[i].ReadToEnd(), 32, 50, 30, players, powerup);
             }
             font = Content.Load<SpriteFont>("miramo30");
 

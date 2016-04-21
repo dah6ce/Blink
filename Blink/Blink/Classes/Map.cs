@@ -18,16 +18,23 @@ namespace Blink.Classes
         PlayerClass[] players = new PlayerClass[4];
         Vector2[] playerStarts = new Vector2[4];
         List<Powerup> powerupList = new List<Powerup>();
+        Texture2D powerup;
+        Rectangle bomb = new Rectangle(0, 0, 32, 32);
+        Rectangle spearcarch = new Rectangle(32, 0, 32, 32);
+        Rectangle backupspear = new Rectangle(64, 0, 32, 32);
+        Rectangle shield = new Rectangle(96, 0, 32, 32);
+        Rectangle unblinker = new Rectangle(128, 0, 32, 32);
 
         int MARGIN = 0;
 
-        public void Initialize(Texture2D mText, String cMap, int tS, int mX, int mY, PlayerClass[] p)
+        public void Initialize(Texture2D mText, String cMap, int tS, int mX, int mY, PlayerClass[] p, Texture2D power)
         {
             mapTexture = mText;
             mapSize = new Vector2(mX, mY);
             tileSize = tS;
             mapCollisions(cMap);
             players = p;
+            powerup = power;
             
             for(int player = 0; player < 4; player++)
             {
@@ -127,7 +134,27 @@ namespace Blink.Classes
         {
             sB.Draw(mapTexture, new Vector2(0, MARGIN), Color.White);
             foreach(Powerup p in powerupList) {
-               //DRAW ME
+               if(p.type == PowerupEnum.powerUpEnum.bombSpear)
+                {
+                    sB.Draw(powerup, p.hitbox, bomb, Color.White);
+                }
+               if(p.type == PowerupEnum.powerUpEnum.spearCatch)
+                {
+                    sB.Draw(powerup, p.hitbox, spearcarch, Color.White);
+                }
+               if(p.type == PowerupEnum.powerUpEnum.backupSpear)
+                {
+                    sB.Draw(powerup, p.hitbox, spearcarch, Color.White);
+                }
+               if(p.type == PowerupEnum.powerUpEnum.shield)
+                {
+                    sB.Draw(powerup, p.hitbox, shield, Color.White);
+                }
+               if(p.type == PowerupEnum.powerUpEnum.unblinker)
+                {
+                    sB.Draw(powerup, p.hitbox, unblinker, Color.White);
+                }
+
             }
         }
 
