@@ -96,24 +96,24 @@ namespace Blink.Classes
                     p4 backupSpear,
                     p5 unblinker
                     */
-                    if (blocks[p] == "p1" || blocks[p] == "p2" || blocks[p] == "p3" || blocks[p] == "p4" || blocks[p] == "p5")
+                    if (blocks[p] == "30" || blocks[p] == "31" || blocks[p] == "32" || blocks[p] == "33" || blocks[p] == "34")
                     {
                         PowerupEnum.powerUpEnum powerType = PowerupEnum.powerUpEnum.spearCatch;
                         switch(blocks[p])
                         {
-                            case "p1":
+                            case "30":
                                 powerType = PowerupEnum.powerUpEnum.spearCatch;
                                 break;
-                            case "p2":
+                            case "31":
                                 powerType = PowerupEnum.powerUpEnum.shield;
                                 break;
-                            case "p3":
+                            case "32":
                                 powerType = PowerupEnum.powerUpEnum.bombSpear;
                                 break;
-                            case "p4":
+                            case "33":
                                 powerType = PowerupEnum.powerUpEnum.backupSpear;
                                 break;
-                            case "p5":
+                            case "34":
                                 powerType = PowerupEnum.powerUpEnum.unblinker;
                                 break;
                                 
