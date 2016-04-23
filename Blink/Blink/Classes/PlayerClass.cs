@@ -231,7 +231,7 @@ namespace Blink.Classes
                 blinkKeyDown = false;
             }
             // Use Powerup
-            if (inventory != PowerupEnum.powerUpEnum.none && padState.IsButtonDown(Buttons.Y) && !dead) {
+            if (inventory != PowerupEnum.powerUpEnum.none && (padState.IsButtonDown(Buttons.Y) || input.IsKeyDown(Keys.C)) && !dead) {
                 //Use powerup here !
                 switch(inventory)
                 {
