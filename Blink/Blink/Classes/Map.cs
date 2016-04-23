@@ -176,8 +176,9 @@ namespace Blink.Classes
             int c = collidePowerup(r);
             if (c != -1)
             {
+                Powerup p = powerupList[c];
                 powerupList.RemoveAt(c);
-                return powerupList[c].type;
+                return p.type;
             }
             return PowerupEnum.powerUpEnum.none;
         }
