@@ -24,7 +24,7 @@ namespace Blink.Classes
         public Rectangle hitbox { get; }
         public Boolean visible { get; set; }
         public float spawnTime { get; set; }
-        private int timer;
+        public int timer { get; set; }
         public Powerup(Rectangle r)
         {
             Array types = Enum.GetValues(typeof(PowerupEnum.powerUpEnum));
