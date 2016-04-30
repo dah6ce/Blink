@@ -96,29 +96,9 @@ namespace Blink.Classes
                     p4 backupSpear,
                     p5 unblinker
                     */
-                    if (blocks[p] == "30" || blocks[p] == "31" || blocks[p] == "32" || blocks[p] == "33" || blocks[p] == "34")
-                    {
-                        PowerupEnum.powerUpEnum powerType = PowerupEnum.powerUpEnum.spearCatch;
-                        switch(blocks[p])
-                        {
-                            case "30":
-                                powerType = PowerupEnum.powerUpEnum.spearCatch;
-                                break;
-                            case "31":
-                                powerType = PowerupEnum.powerUpEnum.shield;
-                                break;
-                            case "32":
-                                powerType = PowerupEnum.powerUpEnum.bombSpear;
-                                break;
-                            case "33":
-                                powerType = PowerupEnum.powerUpEnum.backupSpear;
-                                break;
-                            case "34":
-                                powerType = PowerupEnum.powerUpEnum.unblinker;
-                                break;
-                                
-                        }
-                        Powerup item = new Powerup(powerType, new Rectangle(x * 32, y * 32, 32, 32));
+                    if (blocks[p] == "30")
+                    {   
+                        Powerup item = new Powerup(new Rectangle(x * 32, y * 32, 32, 32));
                         powerupList.Add(item);
                     }
                     else
