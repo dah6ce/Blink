@@ -93,7 +93,7 @@ namespace Blink.Classes
 
         public string pickMap()
         {
-            int mapNum = (int)Math.Floor((double)picker.Next(mapNames.Count));
+            int mapNum = picker.Next(mapNames.Count);
             return mapNames.ElementAt(mapNum);
         }
     }

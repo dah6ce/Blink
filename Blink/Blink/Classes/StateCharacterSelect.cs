@@ -114,7 +114,7 @@ namespace Blink.GUI
             this.nextState = null;
             AudioManager.TriggerCharacterSelect();
             KeyboardState keyState = Keyboard.GetState();
-            GamePadState padState = GamePad.GetState(PlayerIndex.One);
+            //GamePadState padState = GamePad.GetState(PlayerIndex.One);
             if (keyState.IsKeyDown(Keys.Enter))
             {
                 prematureEnter = true;
