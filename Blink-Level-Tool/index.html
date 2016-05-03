@@ -1,0 +1,388 @@
+<HTML>
+<head>
+<script language="javascript" src="http://code.jquery.com/jquery-1.4.2.js" ></script>
+
+<style>
+	body {
+		background: #fff;
+		font-family: 'Courier New';
+	}
+	#game-canvas {
+		border: 1px solid black;
+	}
+	#message {
+		color: black;
+	}
+</style>
+<title></title>
+</head>
+
+<body>
+<div style="height:1000px;width:1650px">
+	<div  id="imgstore" style="position:absolute; top: 5px; left: 5px"></div>
+	<canvas id="canv" style="position:absolute; top:5px; left:5px"></canvas>
+</div>
+<div style="position:absolute;left:1650px; top: 50px;border-style:single">
+	<form>
+	<input type="radio" id="p1" name="block" value="1">
+	Player 1 Start<br>
+	<input type="radio" id="p2" name="block" value="2">
+	Player 2 Start<br>
+	<input type="radio" id="p3" name="block" value="3">
+	Player 3 Start<br>
+	<input type="radio" id="p4" name="block" value="4">
+	Player 4 Start<br>
+	<input type="radio" id="air" name="block" value="0">
+	Air block<br>
+	<input type="radio" id="solid" name="block" value="10">
+	Solid block<br>
+	<input type="radio" id="ice" name="block" value="11">
+	Ice block<br>
+	<input type="radio" id="kill" name="block" value="5">
+	Kill zone<br>
+	<input type="radio" id="powerup" name="block" value="30">
+	Powerup<br>
+	<br>
+	<input type="checkbox" id="blink" name="blink" value="10">
+	Blink block<br>
+	
+	</form>
+	<br>
+	<br>
+	<input type="file" id="file-input"/>
+</div>
+<div style="position:relative;top:0px">
+	<h3>Map Data</h3>
+	<input style="border-style:solid;word-wrap:break-word"  id="data"/>
+</div>
+
+
+<script>
+var canvas = document.getElementById("canv");
+var context = canvas.getContext("2d");
+var output = document.getElementById("data");
+
+
+function imageHandler(e2) 
+{ 
+  var store = document.getElementById('imgstore');
+  store.innerHTML='<img src="' + e2.target.result +'">';
+  canvas.getContext("2d").drawImage(mask,0,0);
+}
+
+function loadimage(e1)
+{
+  var filename = e1.target.files[0]; 
+  var fr = new FileReader();
+  fr.onload = imageHandler;  
+  fr.readAsDataURL(filename); 
+}
+
+window.onload=function()
+{
+  var y = document.getElementById("file-input");
+  y.addEventListener('change', loadimage, false);
+  y
+}
+</script>
+
+
+<script>
+
+var mouse = false;
+var data = document.getElementById("data");
+
+var blocks = [];
+blocks[0] = document.getElementById("air");
+blocks[1] = document.getElementById("solid");
+blocks[2] = document.getElementById("kill");
+blocks[3] = document.getElementById("ice");
+blocks[4] = document.getElementById("p1");
+blocks[5] = document.getElementById("p2");
+blocks[6] = document.getElementById("p3");
+blocks[7] = document.getElementById("p4");
+blocks[8] = document.getElementById("powerup")
+
+var blink = document.getElementById("blink");
+
+
+var collisionMap = [];
+
+for(var x = 0; x < 50; x++){
+	for(var y = 0; y < 30; y++){
+		collisionMap.push("0");
+	}
+}
+
+var undoMap = [];
+undoMap.push(collisionMap.slice(0));
+
+var UNDO = false;
+
+
+var RIGHT = false;
+var LEFT = false;
+
+var mask = new Image();
+mask.src = "mask.png";
+var p1 = new Image();
+p1.src = "p1.png";
+var p2 = new Image();
+p2.src = "p2.png";
+var p3 = new Image();
+p3.src = "p3.png";
+var p4 = new Image();
+p4.src = "p4.png";
+powerup = new Image();
+powerup.src = "powerup.png";
+
+
+var MAX_CHANNELs = 20;
+//audiochannels = new Array();
+//for(a = 0; a <MAX_CHANNELs; a++){
+//	audiochannels[a] = new Array();
+//	audiochannels[a]["channel"] = new Audio();
+//	audiochannels[a]["finished"] = -1;
+//}
+
+canvas.width = 1600;
+canvas.height = 960;
+
+prevMX = undefined;
+prevMY = undefined;
+
+mX = undefined;
+mY = undefined;
+
+
+//canvas.addEventListener("mousemove",mouseOn,false);
+//canvas.addEventListener("click",clicked,false);
+//document.addEventListener("keydown",move,false);
+//document.addEventListener("keyup",stopMove,false);
+//canvas.addEventListener("mousemove",mouseOn,false);
+$(canvas).mousedown(mouseDown);
+$(canvas).mouseup(mouseUp);
+$(canvas).mousemove(mouseOn);
+$(output).change(manualChange);
+$(document).keydown(keyDown);
+
+
+$(document).ready(function(){
+	var c = document.getElementById("canv");
+	var ctx = c.getContext("2d");
+	
+	ctx.fillSTyle = "#fff";
+	//var map = new m("map.png");
+	//var player = new p(map.obArray);
+	
+	
+	//var interval = setInterval(function(){main(ctx, player, map)},32);
+	/*var int = setInterval(function(){
+	main(canvas,ctx);//, player, map);
+	},20);*/
+});
+
+function drawOver(pos){
+	var b,i,value;
+	for(i in blocks){
+		b = blocks[i];
+		if(b.checked){
+			mapVal = collisionMap[pos[0]*30+pos[1]];
+			if(parseInt(mapVal) < 5 && parseInt(mapVal) != 0)
+				drawOverPlayer(parseInt(mapVal));
+			value = parseInt(b.value);
+			if (blink.checked && value >= 10) {
+				value += 10;
+			}
+			collisionMap[pos[0]*30+pos[1]] = value.toString();
+			data.value = collisionMap.toString();
+			mapPaint(pos,collisionMap[pos[0]*30+pos[1]]);
+			break;
+		}
+	}
+	value = parseInt(collisionMap[pos[0]*30+pos[1]]);
+	if( value >= 5 || value == 0){
+		redrawPlayers();
+	}
+}
+
+function manualChange(e){
+	newMap = e.currentTarget.value;
+	newMap = newMap.split(",");
+	console.log(newMap);
+	for(i in newMap){
+		x = Math.floor(i/30);
+		y = i % 30;
+		collisionMap[x*30+y] = parseInt(newMap[i]).toString();
+		mapPaint([x,y],newMap[i]);
+	}
+	redrawPlayers();
+}
+
+function redrawPlayers(){
+	p1index = collisionMap.indexOf(1);
+	p1loc = [Math.floor(p1index/30),p1index % 30];
+	
+	mapPaint(p1loc,collisionMap[p1index]);
+	
+	p2index = collisionMap.indexOf(2);
+	p2loc = [Math.floor(p2index/30),p2index % 30];
+	
+	mapPaint(p2loc,collisionMap[p2index]);
+	
+	p3index = collisionMap.indexOf(3);
+	p3loc = [Math.floor(p3index/30),p3index % 30];
+	
+	mapPaint(p3loc,collisionMap[p3index]);
+	
+	p4index = collisionMap.indexOf(4);
+	p4loc = [Math.floor(p4index/30),p4index % 30];
+	
+	mapPaint(p4loc,collisionMap[p4index]);
+}
+
+function drawOverPlayer(player){
+	pindex = collisionMap.indexOf(player);
+	ploc = [Math.floor(pindex/30),pindex % 30];
+	
+	//mapPaint([ploc[0]+1,ploc[1]],collisionMap[pindex+30].toString());
+	mapPaint([ploc[0],ploc[1]+1],collisionMap[pindex+1].toString());
+	//mapPaint([ploc[0]+1,ploc[1]+1],collisionMap[pindex+31].toString());
+}
+
+function mapPaint(pos,block){
+	context.globalAlpha = 1;
+	context.clearRect(pos[0]*32,pos[1]*32,32,32);
+	context.drawImage(mask,0,0,32,32,pos[0]*32,pos[1]*32,32,32);
+	var color;
+	block = parseInt(block);
+	switch(block){
+	case 0:
+		context.globalAlpha = 0;
+		break;
+	case 5:
+		context.globalAlpha = .5;
+		context.fillStyle = "#ff0000";
+		break;
+	case 10:
+		context.globalAlpha = .5;
+		context.fillStyle = "#000000";
+		break;
+	case 11:
+		context.globalAlpha = .5;
+		context.fillStyle = "#00ffff";
+		break;
+	case 20:
+		context.globalAlpha =.5;
+		context.fillStyle = "#000088";
+		break;
+	case 21:
+		context.globalAlpha = .5;
+		context.fillStyle = "#004499";
+		break;
+	}
+	if (block == 1){
+		context.drawImage(p1,pos[0]*32,pos[1]*32);
+	}
+	else if (block == 2){
+		context.drawImage(p2,pos[0]*32,pos[1]*32);
+	}
+	else if (block == 3){
+		context.drawImage(p3,pos[0]*32,pos[1]*32);
+	}
+	else if (block == 4){
+		context.drawImage(p4,pos[0]*32,pos[1]*32);
+	}
+	else if (block >= 30){
+		context.drawImage(powerup,pos[0]*32,pos[1]*32);
+	}
+	else{
+		context.fillRect(pos[0]*32,pos[1]*32,32,32);
+	}
+}
+
+function mouseDown(e){
+	mouse = true;
+}
+
+function mouseUp(e){
+	mouse = false;
+	if(undoMap[undoMap.length-1].toString() != collisionMap.toString()){
+		undoMap.push(collisionMap.slice(0));
+		if(undoMap.length > 10)
+			undoMap = undoMap.slice(1);
+
+		console.log(undoMap.length);
+	}
+}
+
+function keyDown(e){
+	if(e.which == 90 && e.ctrlKey){
+		if(undoMap.length > 1)
+			undoMap.pop();
+		if(undoMap.length > 0){
+			collisionMap = undoMap[undoMap.length-1].slice(0);
+			console.log(collisionMap);
+			for(i in collisionMap){
+				x = Math.floor(i/30);
+				y = i % 30;
+				mapPaint([x,y],collisionMap[i]);
+			}
+			redrawPlayers();
+		}
+		console.log(undoMap.length);
+	}
+}
+
+function mouseOn(e){
+	pos = getCursorPosition(e,canvas);
+	if(pos[0] >= 1600)
+		pos[0] = 1599;
+	if(pos[1] >= 960)
+		pos[1] = 959;
+	
+	mX = pos[0]//Math.floor(pos[0]/2);
+	mY = pos[1]//Math.floor(pos[1]/2);
+	
+	var Tile = [];
+	Tile[0] = Math.floor(pos[0] / 32);
+	Tile[1] = Math.floor(pos[1] / 32);
+	var oldXTile = Math.floor(prevMX / 32);
+	var oldYTile = Math.floor(prevMY / 32);
+	
+	
+	if((Tile[0] != oldXTile || Tile[1] != oldYTile) && mouse){
+		prevMX = mX;
+		prevMY = mY;
+		drawOver(Tile);
+	}
+	else{
+		prevMX = -20;
+		prevMY = -20;
+	}
+}
+
+function getCursorPosition(e,canvas) {
+ var x;
+ var y;
+ if (e.pageX || e.pageY) {
+  x = e.pageX;
+  y = e.pageY;
+ }
+ else {
+  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+ }
+ // Convert to coordinates relative to the canvas
+ x -= canvas.offsetLeft;
+ y -= canvas.offsetTop;
+
+ return [x,y]
+}
+
+
+</script>
+
+</body>
+
+</HTML>
