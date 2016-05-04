@@ -374,8 +374,8 @@ function getCursorPosition(e,canvas) {
   y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
  }
  // Convert to coordinates relative to the canvas
- x -= canvas.offsetLeft;
- y -= canvas.offsetTop;
+ x -= canvas.offsetLeft + canvas.offsetParent.offsetLeft;
+ y -= canvas.offsetTop + canvas.offsetParent.offsetTop;
 
  return [x,y]
 }
