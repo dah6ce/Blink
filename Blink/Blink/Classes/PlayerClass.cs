@@ -334,10 +334,11 @@ namespace Blink.Classes
             // Look for power up
             if (inventory == PowerupEnum.powerUpEnum.none)
             {
-               inventory = arena.checkPowerup(playerRect, gameTime);
+               inventory = arena.checkPowerup(playerRect);
             }
+            arena.updatePowerup(gameTime);
             //give spear if not holding one and player has backupspear effect
-            if(backupSpear && !hasSpear)
+            if (backupSpear && !hasSpear)
             {
                 SpearClass s = new SpearClass(this, StateGame.spearSprite, SCREENSIZE, arena, players);
                 setSpear(s);
