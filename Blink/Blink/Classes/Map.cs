@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +24,7 @@ namespace Blink.Classes
         Rectangle backupspear = new Rectangle(64, 0, 32, 32);
         Rectangle shield = new Rectangle(96, 0, 32, 32);
         Rectangle unblinker = new Rectangle(128, 0, 32, 32);
+        Boolean justSpawned = false;
 
         int MARGIN = 0;
 
@@ -114,27 +115,29 @@ namespace Blink.Classes
         {
             sB.Draw(mapTexture, new Vector2(0, MARGIN), Color.White);
             foreach(Powerup p in powerupList) {
-               if(p.type == PowerupEnum.powerUpEnum.bombSpear)
+                if (p.visible)
                 {
-                    sB.Draw(powerup, p.hitbox, bomb, Color.White);
+                    if (p.type == PowerupEnum.powerUpEnum.bombSpear)
+                    {
+                        sB.Draw(powerup, p.hitbox, bomb, Color.White);
+                    }
+                    if (p.type == PowerupEnum.powerUpEnum.spearCatch)
+                    {
+                        sB.Draw(powerup, p.hitbox, spearcarch, Color.White);
+                    }
+                    if (p.type == PowerupEnum.powerUpEnum.backupSpear)
+                    {
+                        sB.Draw(powerup, p.hitbox, spearcarch, Color.White);
+                    }
+                    if (p.type == PowerupEnum.powerUpEnum.shield)
+                    {
+                        sB.Draw(powerup, p.hitbox, shield, Color.White);
+                    }
+                    if (p.type == PowerupEnum.powerUpEnum.unblinker)
+                    {
+                        sB.Draw(powerup, p.hitbox, unblinker, Color.White);
+                    }
                 }
-               if(p.type == PowerupEnum.powerUpEnum.spearCatch)
-                {
-                    sB.Draw(powerup, p.hitbox, spearcarch, Color.White);
-                }
-               if(p.type == PowerupEnum.powerUpEnum.backupSpear)
-                {
-                    sB.Draw(powerup, p.hitbox, spearcarch, Color.White);
-                }
-               if(p.type == PowerupEnum.powerUpEnum.shield)
-                {
-                    sB.Draw(powerup, p.hitbox, shield, Color.White);
-                }
-               if(p.type == PowerupEnum.powerUpEnum.unblinker)
-                {
-                    sB.Draw(powerup, p.hitbox, unblinker, Color.White);
-                }
-
             }
         }
 
@@ -143,7 +146,7 @@ namespace Blink.Classes
             //check if player rectangle p collides with powerup
             for(int i = 0; i < powerupList.Count; i++)
             {
-                if(powerupList[i].hitbox.Intersects(p))
+                if(powerupList[i].visible && powerupList[i].hitbox.Intersects(p))
                 {
                     return i;
                 }
@@ -151,8 +154,24 @@ namespace Blink.Classes
             // Didn't collide with any power ups
             return -1;
         }
-        public PowerupEnum.powerUpEnum checkPowerup(Rectangle r)
+        public PowerupEnum.powerUpEnum checkPowerup(Rectangle r, GameTime gt)
         {
+            if (justSpawned)
+            {
+                for(int i = 0; i < powerupList.Count; i++)
+                {
+                    powerupList[i].spawnTime = (float)gt.TotalGameTime.TotalSeconds;
+                }
+                justSpawned = false;
+            }
+            for (int i = 0; i < powerupList.Count; i++)
+            {
+                if( (float)gt.TotalGameTime.TotalSeconds - powerupList[i].spawnTime > powerupList[i].timer)
+                {
+                    powerupList[i].visible = true;
+                }
+            }
+
             int c = collidePowerup(r);
             if (c != -1)
             {
