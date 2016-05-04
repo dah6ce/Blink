@@ -11,7 +11,7 @@ using Blink.Classes;
 
 namespace Blink.Classes
 {
-     class SpearClass
+    class SpearClass
     {
         private int EXPLODE_RADIUS = 512;
         private Boolean bomb = false;

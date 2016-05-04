@@ -34,7 +34,7 @@ namespace Blink
 		PlayerClass player4;
         int ultimateWin = -1;
         internal PlayerClass[] players = new PlayerClass[4];
-        SpearClass[] spears = new SpearClass[4];
+        internal static List<SpearClass> spears = new List<SpearClass>(4);
 
         bool[] playersInGame = { false, false, false, false };
         string[] playerTexts = { "", "", "", "" };
@@ -69,6 +69,10 @@ namespace Blink
         List<Animation> animations;
         public static GameTime gameTime = new GameTime();
         public static Texture2D spearSprite;
+        public static SoundEffect Throw_Sound;
+        public static SoundEffect Hit_Player_Sound;
+        public static SoundEffect Hit_Wall_Sound;
+        public static SoundEffect Stab_Sound;
 
         public void setMaps(mapSet map)
         {
@@ -192,23 +196,23 @@ namespace Blink
             spear3 = new SpearClass(player3, spearSprite, screenSize, null, players);
             spear4 = new SpearClass(player4, spearSprite, screenSize, null, players);
 
-            spears[0] = spear1;
-            spears[1] = spear2;
-            spears[2] = spear3;
-            spears[3] = spear4;
+            spears.Add(spear1);
+            spears.Add(spear2);
+            spears.Add(spear3);
+            spears.Add(spear4);
 
 
             //Setup for common spear resources
+            Throw_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Throw");
+            Hit_Player_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Player_Hit");
+            Hit_Wall_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Wall_Hit");
+            Stab_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Attack");
             foreach (SpearClass s in spears)
             {
-                s.Throw_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Throw").CreateInstance();
-
-                s.Hit_Player_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Player_Hit").CreateInstance();
-
-                s.Hit_Wall_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Wall_Hit").CreateInstance();
-
-                s.Stab_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Attack").CreateInstance();
-
+                s.Throw_Sound = Throw_Sound.CreateInstance();
+                s.Hit_Player_Sound = Hit_Player_Sound.CreateInstance();
+                s.Hit_Wall_Sound = Hit_Wall_Sound.CreateInstance();
+                s.Stab_Sound = Stab_Sound.CreateInstance();
             }
 
             StreamReader[] mapData = new StreamReader[5];
@@ -425,10 +429,9 @@ namespace Blink
 			player2.Draw(sb);
 			player3.Draw(sb);
 			player4.Draw(sb);
-            spear1.Draw(sb);
-            spear2.Draw(sb);
-            spear3.Draw(sb);
-            spear4.Draw(sb);
+            foreach (SpearClass spear in spears) {
+                spear.Draw(sb);
+            }
 
             for (int i = 0; i < animations.Count; i++)
             {
@@ -538,6 +541,7 @@ namespace Blink
                 p.reset(mapObs[currentMap]);
             }
             ultimateWin = -1;
+            spears.RemoveRange(4, spears.Count - 4);
             spear1.reset(players[0],mapObs[currentMap]);
             spear2.reset(players[1], mapObs[currentMap]);
             spear3.reset(players[2], mapObs[currentMap]);

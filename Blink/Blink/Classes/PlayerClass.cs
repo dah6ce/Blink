@@ -246,7 +246,6 @@ namespace Blink.Classes
                         bombSpear = true;
                         break;
                     case PowerupEnum.powerUpEnum.backupSpear:
-                        //not fully implemented
                         backupSpear = true;
                         break;
                     case PowerupEnum.powerUpEnum.unblinker:
@@ -339,9 +338,13 @@ namespace Blink.Classes
             //give spear if not holding one and player has backupspear effect
             if(backupSpear && !hasSpear)
             {
-                SpearClass s = new SpearClass(this, StateGame.spearSprite, SCREENSIZE, arena, players);
-                setSpear(s);
                 backupSpear = false;
+                SpearClass s = new SpearClass(this, StateGame.spearSprite, SCREENSIZE, arena, players);
+                s.Throw_Sound = StateGame.Throw_Sound.CreateInstance();
+                s.Hit_Player_Sound = StateGame.Hit_Player_Sound.CreateInstance();
+                s.Hit_Wall_Sound = StateGame.Hit_Wall_Sound.CreateInstance();
+                s.Stab_Sound = StateGame.Stab_Sound.CreateInstance();
+                StateGame.spears.Add(s);
             }
             //Gravity
             if (!atRest && velocity.Y < TERMINAL_V)
