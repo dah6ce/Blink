@@ -59,6 +59,7 @@ namespace Blink.GUI
         //Storage list for all our char names
         List<string> charNames = new List<string>();
         List<ImageButton> charThumbs = new List<ImageButton>();
+        int[] offsets = { };
         
         Texture2D background;
         Texture2D loadScreen;

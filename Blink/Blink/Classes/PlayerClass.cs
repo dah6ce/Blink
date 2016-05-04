@@ -30,6 +30,8 @@ namespace Blink.Classes
         public Boolean atRest = false, dead = false, victory = false;
         private PlayerClass[] players;
         Rectangle playerRect = new Rectangle(0, 0, 32, 64);
+        int spriteWidth = 32, spriteHeight = 68;
+        public bool idles = false, moving = false;
         public String title;
         public int winAssign = 0;
         public SpearClass spear;
@@ -37,6 +39,7 @@ namespace Blink.Classes
         public Vector2 spearVector = new Vector2(-1,0);
         public Boolean hasSpear = true;
         public int attackAnimationFrames = 4, throwAnimationFrames = 5, attackFrameWait = 0, attackType = 0; //0 for melee, 1 for ranged.
+        public int moveFrames = 8, frameLength = 6, nextFrame = 6, curFrame = 0;
         public Boolean blinked = false, blinkKeyDown = false, attackKeyDown = false, throwKeyDown = false;
         private float blinkJuice, blinkCoolDown, stunTimer, deathTimer, curMultiplier, dustTimer;
 
@@ -46,6 +49,8 @@ namespace Blink.Classes
         public SoundEffectInstance Unblink_Sound;
 
         private Vector2 offset;
+        public Vector2 armOffset = new Vector2(17,10), shoulder = new Vector2(20,22);
+        public int throwWidth = 46, throwHeight = 16, flipOff = 10, flipOrigin = 10;
 
         public Texture2D dustEffect, dustPoof;
         public List<Animation> aniList;
@@ -55,9 +60,11 @@ namespace Blink.Classes
 
 		public int score = 0;
 
-        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p, Vector2 off, Texture2D bar)
+        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p, Vector2 off, Texture2D bar, int width)
         {
             offset = off;
+            spriteWidth = width;
+            frame.Width = width;
             oldPos = playerPos;
             playerRect.X = (int)playerPos.X;
             playerRect.Y = (int)playerPos.Y;
@@ -93,6 +100,11 @@ namespace Blink.Classes
 
         public void Update(KeyboardState input, GamePadState padState, GameTime gameTime)
         {
+            //Update move animation, this will have to be separated into Roth and Bat as Bat doesn't stop moving her wings when still.
+            if (idles) {
+                next();
+            }
+
             if (!active)
                 return;
             //debug stuff goes here
@@ -203,22 +215,39 @@ namespace Blink.Classes
             //Implicit Aim
             if (padState.ThumbSticks.Left.Length() > 0.85f)
                 spearVector = padState.ThumbSticks.Left;
-            
+
+            bool moveEnd = moving;
+            moving = false;
             //Are we aiming?
             if ((!(padState.IsButtonDown(Buttons.B)) && !(padState.IsButtonDown(Buttons.X))) || !hasSpear) {
             //Horizontal movement
-                if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && velocity.X < ACC_CAP * curMultiplier && !dead && !victory && stunTimer <= 0)
-            {
-                    velocity.X += SPEED * curMultiplier;
-                if (velocity.X < -SPEED)
-                    velocity.X += SPEED * curMultiplier / 2;
-            }
-                else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && velocity.X > -ACC_CAP * curMultiplier && !dead && !victory && stunTimer <= 0)
-            {
-                velocity.X -= SPEED * curMultiplier;
-                if (velocity.X > SPEED)
-                    velocity.X -= SPEED * curMultiplier / 2;
-            }
+                
+                if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && !dead && !victory && stunTimer <= 0)
+                {
+                    next();
+                    moving = true;
+                    if(velocity.X < ACC_CAP * curMultiplier) { 
+                        velocity.X += SPEED * curMultiplier;
+                        if (velocity.X < -SPEED)
+                            velocity.X += SPEED * curMultiplier / 2;
+                    }
+                }
+                else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && !dead && !victory && stunTimer <= 0)
+                {
+                    next();
+                    moving = true;
+                    if(velocity.X > -ACC_CAP * curMultiplier) { 
+                        velocity.X -= SPEED * curMultiplier;
+                        if (velocity.X > SPEED)
+                            velocity.X -= SPEED * curMultiplier / 2;
+                    }
+                }
+
+                if(moveEnd && !moving)
+                {
+                    curFrame = 0;
+                    nextFrame = frameLength;
+                }
 
                 //Initiating a melee attack!
                 if (attackKeyDown && spear != null)
@@ -342,6 +371,17 @@ namespace Blink.Classes
             else if (velocity.X < 0)
                 directionFacing = 0;
 
+        }
+
+        private void next()
+        {
+            nextFrame--;
+            if (nextFrame < 0)
+            {
+                nextFrame = frameLength;
+                curFrame++;
+                curFrame %= moveFrames;
+            }
         }
 
         private Boolean inPlayer()
@@ -756,8 +796,31 @@ namespace Blink.Classes
             
             
             Rectangle frame = this.frame;
+            if (!dead) {
+                if (hasSpear && (attackKeyDown || throwKeyDown))
+                {
+                    frame.Y = spriteHeight * 2;
+                    frame.X = 0;
+                }
+                else if (moving || idles) { 
+                    frame.X = (int)(Math.Abs(spriteWidth) * curFrame);
+                    
+                    if (!hasSpear)
+                    {
+                        frame.Y = (int)(Math.Abs(spriteHeight));
+                    }
+                }
+                else
+                {
+                    frame.Y = spriteHeight * 2;
+                    if (hasSpear)
+                        frame.X = spriteWidth * 2;
+                    else
+                        frame.X = spriteWidth * 3;
+                }
+            }
 
-            int offX = (directionFacing == 0 ? (int)offset.X : (int)-offset.X);
+            int offX = (int)offset.X;//(directionFacing == 0 ? (int)offset.X : (int)-offset.X);
             int offY = (int)offset.Y;
 
             Rectangle barFrame = new Rectangle(0, 0, 30, 6);
@@ -773,22 +836,17 @@ namespace Blink.Classes
             if (dead)
                 drawnText = deadText;
 
-            /*if (attackKeyDown)
-            {
-                SpriteEffects flip = SpriteEffects.None;
-                if(VectorMath.rotationFromVector(spearVector) > Math.PI)
-                    flip = SpriteEffects.FlipHorizontally;
-                sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(0, 0), 0f, flip, 0f);
-                
 
-            }
-            else*/
             SpriteEffects flip = SpriteEffects.None;
             if (directionFacing == 1)
                 flip = SpriteEffects.FlipHorizontally;
+
+            
             sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(), 1f, flip, 0f);
 
-            //Drawing when the player is looping over
+            
+
+                //Drawing when the player is looping over
             if (playerRect.X < playerRect.Width)
                 sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(), 1f, flip, 0f);
             else if (playerRect.X + playerRect.Width > SCREENSIZE.X)
@@ -798,8 +856,30 @@ namespace Blink.Classes
                 sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y + SCREENSIZE.Y + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(), 1f, flip, 0f);
             else if (playerRect.Y + playerRect.Height > SCREENSIZE.Y)
                 sB.Draw(drawnText, new Vector2(playerRect.X + offX, playerRect.Y - (SCREENSIZE.Y) + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(), 1f, flip, 0f);
+
+            if (attackKeyDown || throwKeyDown)
+            {
+                drawSpearArm(sB, offX, offY, frame, colorDrawn, flip, drawnText);
+            }
+            //sB.Draw(drawnText, new Vector2()/*new Vector2(playerRect.X + shoulder.X, playerRect.Y + MARGIN + shoulder.Y)*/, frame, colorDrawn, 0f/*VectorMath.rotationFromVector(spearVector)*/, new Vector2()/*armOffset.X, armOffset.Y)*/, 0f, flip, 0f);
+            //sB.Draw(drawnText, new Vector2(100,100), colorDrawn);
+            //drawSpearArm(sB, offX, offY, frame, colorDrawn, flip, drawnText);
         }
 
+        public void drawSpearArm(SpriteBatch sB, float offX, float offY, Rectangle frame, Color colorDrawn, SpriteEffects flip, Texture2D tex)
+        {
+            frame = new Rectangle(new Point(spriteWidth, spriteHeight*2), new Point(throwWidth, throwHeight));
+            Vector2 offset = new Vector2(armOffset.X, armOffset.Y);
+            Vector2 shoulderOff = new Vector2(shoulder.X, shoulder.Y);
+            float rot = (float)Math.PI / 2f;
+            if(flip == SpriteEffects.FlipHorizontally)
+            {
+                offset.X = flipOrigin;//Math.Abs(throwWidth-offset.X);
+                shoulderOff.X = flipOff;
+                rot *= -1;
+            }
+            sB.Draw(tex, new Vector2(playerRect.X + shoulderOff.X, playerRect.Y + MARGIN + shoulder.Y), frame, colorDrawn, VectorMath.rotationFromVector(spearVector) + rot, offset,1f, flip, 0f);
+        }
 
 
         public void throwKilled(PlayerClass killed, PlayerClass killer, string method)

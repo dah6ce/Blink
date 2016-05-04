@@ -99,28 +99,28 @@
     <Content Include="Content\bar.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\CharData\roth_black.png">
+    <Content Include="Content\CharData\bat_blue.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\CharData\roth_og.png">
+    <Content Include="Content\CharData\night_bat.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\CharData\roth_red.png">
+    <Content Include="Content\CharData\og_roth.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\CharData\roth_white.png">
+    <Content Include="Content\CharData\alt_roth.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\CharData\Sprites\roth_black.png">
+    <Content Include="Content\CharData\Sprites\bat_blue.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\CharData\Sprites\roth_og.png">
+    <Content Include="Content\CharData\Sprites\night_bat.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\CharData\Sprites\roth_red.png">
+    <Content Include="Content\CharData\Sprites\og_roth.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\CharData\Sprites\roth_white.png">
+    <Content Include="Content\CharData\Sprites\alt_roth.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\controller.png">
@@ -270,6 +270,9 @@
     <Content Include="Content\select.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\spearIndicator.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\spearsprite.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -295,16 +298,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\BMarmy.TTF" />
-    <None Include="Content\CharData\roth_black.char">
+    <None Include="Content\CharData\bat_blue.char">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\CharData\roth_og.char">
+    <None Include="Content\CharData\night_bat.char">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\CharData\roth_red.char">
+    <None Include="Content\CharData\og_roth.char">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\CharData\roth_white.char">
+    <None Include="Content\CharData\alt_roth.char">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Content\miramo30.spritefont">

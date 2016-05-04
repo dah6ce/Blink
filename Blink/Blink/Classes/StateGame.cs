@@ -37,11 +37,18 @@ namespace Blink
         SpearClass[] spears = new SpearClass[4];
         Texture2D control_diagram;
 
+
+        //Player information, specifics regarding character animations go here
         bool[] playersInGame = { false, false, false, false };
         string[] playerTexts = { "", "", "", "" };
+        Vector2[] playerOffsets = { new Vector2(-4, -4), new Vector2(-18, -4), new Vector2(-18, -4), new Vector2(-4, -4) };
+        int[] charWidths = { 48, 64, 64, 48 };
+        int[] playerCharNums = { 0, 0, 0, 0 };
+        bool[] idleAnim = { false, true, true, false };
+        int[,] charFrameData = {  { 4,4, 27, 19, 25, 21, 41, 41, 15, 14 }, { 8, 6, 17, 10, 20, 22, 46, 16, 10, 29 }, { 8, 6, 17, 10, 20, 22, 46, 16, 10, 29 }, { 4, 4, 27, 19, 25, 21, 41, 41, 15, 14 } };
 
         //Character frames
-        Rectangle[] frames = { new Rectangle(0, 0, 36, 68), new Rectangle(0, 0, 48, 68), new Rectangle(0, 0, 36, 68), new Rectangle(0, 0, 48, 68) };
+        Rectangle[] frames = {  new Rectangle(0, 0, 48, 68), new Rectangle(0, 0, 36, 68), new Rectangle(0, 0, 36, 68), new Rectangle(0, 0, 48, 68) };
 
         public GameState levelSelect;
         public GameState Win;
@@ -116,6 +123,8 @@ namespace Blink
         {
             playersInGame = playersConnected;
             playerTexts = playerChars;
+            playerCharNums = charNums;
+
         }
 
 		public void LoadContent(ContentManager Content)
@@ -159,7 +168,16 @@ namespace Blink
             {
                 if (players[i] != null && players[i].active)
                 {
-                    players[i].Initialize(Content.Load<Texture2D>(playerTexts[i]), negPos, screenSize, null, players, offset, bar);
+                    players[i].Initialize(Content.Load<Texture2D>(playerTexts[i]), negPos, screenSize, null, players, playerOffsets[playerCharNums[i]], bar, charWidths[playerCharNums[i]]);
+                    players[i].moveFrames = charFrameData[playerCharNums[i],0];
+                    players[i].idles = idleAnim[playerCharNums[i]];
+                    players[i].frameLength = charFrameData[playerCharNums[i], 1];
+                    players[i].armOffset = new Vector2(charFrameData[playerCharNums[i], 2], charFrameData[playerCharNums[i], 3]);
+                    players[i].shoulder = new Vector2(charFrameData[playerCharNums[i], 4], charFrameData[playerCharNums[i], 5]);
+                    players[i].throwWidth = charFrameData[playerCharNums[i], 6];
+                    players[i].throwHeight = charFrameData[playerCharNums[i], 7];
+                    players[i].flipOff = charFrameData[playerCharNums[i], 8];
+                    players[i].flipOrigin = charFrameData[playerCharNums[i], 9];
                 }
             }
             
@@ -190,11 +208,13 @@ namespace Blink
                 }
             }
 
+            Texture2D spearTex = Content.Load<Texture2D>("spearsprite");
+            Texture2D indicator = Content.Load<Texture2D>("spearIndicator");
             
-            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
-            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
-            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
-            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
+            spear1 = new SpearClass(player1, spearTex, indicator, screenSize, null, players);
+            spear2 = new SpearClass(player2, spearTex, indicator, screenSize, null, players);
+            spear3 = new SpearClass(player3, spearTex, indicator, screenSize, null, players);
+            spear4 = new SpearClass(player4, spearTex, indicator, screenSize, null, players);
 
             spears[0] = spear1;
             spears[1] = spear2;
