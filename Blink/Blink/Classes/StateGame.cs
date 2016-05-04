@@ -33,7 +33,6 @@ namespace Blink
 		PlayerClass player3;
 		PlayerClass player4;
         int ultimateWin = -1;
-        internal PlayerClass[] players = new PlayerClass[4];
         SpearClass[] spears = new SpearClass[4];
         Texture2D control_diagram;
 
@@ -70,7 +69,6 @@ namespace Blink
         mapSet maps;
         float roundReset = -1;
         float timeElapsed;
-        public static GameTime gameTime = new GameTime();
 		Map[] mapObs = new Map[5];
         int currentMap = 0;
 		bool[] oldStartState = new bool[4];
@@ -79,14 +77,19 @@ namespace Blink
         int activePlayers = 0;
 		SpriteFont font;
         List<Animation> animations;
-        Texture2D scores_bg;
+        public static GameTime gameTime = new GameTime();
+        public static Texture2D spearSprite;
+        public static SoundEffect Throw_Sound;
+        public static SoundEffect Hit_Player_Sound;
+        public static SoundEffect Hit_Wall_Sound;
+        public static SoundEffect Stab_Sound;
 
         public void setMaps(mapSet map)
         {
             maps = map;
         }
 
-        public StateGame(Vector2 screenSize)
+		public StateGame(Vector2 screenSize)
 		{
 			this.screenSize = screenSize;
 		}
@@ -111,11 +114,13 @@ namespace Blink
             player2.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
             player3.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
             player4.onPlayerKilled += new PlayerClass.PlayerKilledHandler(playerKilled);
-
+            
 			currPlayer = PlayerKeys.Player1;
 			paused = false;
 			playerPaused = 0;
             AudioManager.TriggerBattle();
+            
+
             
 		}
 
@@ -163,6 +168,7 @@ namespace Blink
             Texture2D dustPoof = Content.Load<Texture2D>("Dust_Poof");
             control_diagram = Content.Load<Texture2D>("controller");
             scores_bg = Content.Load<Texture2D>("scores");
+            Texture2D powerup = Content.Load<Texture2D>("powerups");
 
             for(int i = 0; i < 4; i++)
             {
@@ -188,7 +194,6 @@ namespace Blink
             {
                 if (p != null)
                 {
-
                     p.deadText = Content.Load<Texture2D>("spriteDead");
 
                     p.Death_Sound = Content.Load<SoundEffect>("audio/sfx/Player_Death").CreateInstance();
@@ -216,30 +221,25 @@ namespace Blink
             spear3 = new SpearClass(player3, spearTex, indicator, screenSize, null, players);
             spear4 = new SpearClass(player4, spearTex, indicator, screenSize, null, players);
 
-            spears[0] = spear1;
-            spears[1] = spear2;
-            spears[2] = spear3;
-            spears[3] = spear4;
-
 
             //Setup for common spear resources
+            Throw_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Throw");
+            Hit_Player_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Player_Hit");
+            Hit_Wall_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Wall_Hit");
+            Stab_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Attack");
             foreach (SpearClass s in spears)
             {
-                s.Throw_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Throw").CreateInstance();
-
-                s.Hit_Player_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Player_Hit").CreateInstance();
-
-                s.Hit_Wall_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Wall_Hit").CreateInstance();
-
-                s.Stab_Sound = Content.Load<SoundEffect>("audio/sfx/Spear_Attack").CreateInstance();
-
+                s.Throw_Sound = Throw_Sound.CreateInstance();
+                s.Hit_Player_Sound = Hit_Player_Sound.CreateInstance();
+                s.Hit_Wall_Sound = Hit_Wall_Sound.CreateInstance();
+                s.Stab_Sound = Stab_Sound.CreateInstance();
             }
 
             StreamReader[] mapData = new StreamReader[5];
             for(int i = 0; i < 5; i++) { 
                 mapData[i] = File.OpenText("Content/MapData/"+maps.Maps()[i]+".map");
                 mapObs[i] = new Map();
-                mapObs[i].Initialize(Content.Load<Texture2D>("MapData/"+maps.Maps()[i]+"Color"), mapData[i].ReadToEnd(), 32, 50, 30, players);
+                mapObs[i].Initialize(Content.Load<Texture2D>("MapData/"+maps.Maps()[i]+"Color"), mapData[i].ReadToEnd(), 32, 50, 30, players, powerup);
             }
             font = Content.Load<SpriteFont>("miramo30");
 
@@ -449,10 +449,9 @@ namespace Blink
 			player2.Draw(sb);
 			player3.Draw(sb);
 			player4.Draw(sb);
-            spear1.Draw(sb);
-            spear2.Draw(sb);
-            spear3.Draw(sb);
-            spear4.Draw(sb);
+            foreach (SpearClass spear in spears) {
+                spear.Draw(sb);
+            }
 
             for (int i = 0; i < animations.Count; i++)
             {
@@ -464,7 +463,7 @@ namespace Blink
                 string pauseMessage = "P" + (playerPaused + 1) + " paused";
                 sb.Draw(control_diagram, new Rectangle((int)(screenSize.X / 2) - (int)(control_diagram.Width / 4), (int)(screenSize.Y / 2) - (int)(control_diagram.Height / 4), (int)(control_diagram.Width / 2), (int)(control_diagram.Height / 2)), Color.White);
                 sb.DrawString(font, pauseMessage, new Vector2(screenSize.X / 2 - font.MeasureString(pauseMessage).X / 2, (screenSize.Y / 2) + (int)(control_diagram.Height / 4)), Color.Black);
-            }
+			}
 			if (roundReset > 0)
 			{
                 Vector2 temp = new Vector2(screenSize.X / 2 - font.MeasureString("SCORES").X / 2, 300 - (((int)font.MeasureString("SCORES").Y) * activePlayers));
@@ -565,6 +564,7 @@ namespace Blink
                 p.reset(mapObs[currentMap]);
             }
             ultimateWin = -1;
+            spears.RemoveRange(4, spears.Count - 4);
             spear1.reset(players[0],mapObs[currentMap]);
             spear2.reset(players[1], mapObs[currentMap]);
             spear3.reset(players[2], mapObs[currentMap]);

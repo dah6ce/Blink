@@ -59,6 +59,7 @@
     <Compile Include="Classes\Button.cs" />
     <Compile Include="Classes\Label.cs" />
     <Compile Include="Classes\StateQuit.cs" />
+    <Compile Include="Classes\Powerup.cs" />
     <Compile Include="Utilities\VectorMath.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -262,6 +263,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\MenuData\S4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\powerups.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\scores.png">

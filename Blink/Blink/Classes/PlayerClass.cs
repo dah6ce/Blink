@@ -18,6 +18,7 @@ namespace Blink.Classes
         private float STUNTIME = 3f, BLINKCOOL = .5f, MAXBLINKJUICE = 6f, DEATHTIMER = 5f, BLINKMULTI = 1.5f, TRAILTIMER = 0.075f;
         private float curFriction = 2.4f, airFriction = .2f, groundFriction = 2.4f, iceFriction = .2f;
 
+
         //debug variables
         private Boolean bounce = false;
 
@@ -41,6 +42,8 @@ namespace Blink.Classes
         public int attackAnimationFrames = 4, throwAnimationFrames = 5, attackFrameWait = 0, attackType = 0; //0 for melee, 1 for ranged.
         public int moveFrames = 8, frameLength = 6, nextFrame = 6, curFrame = 0;
         public Boolean blinked = false, blinkKeyDown = false, attackKeyDown = false, throwKeyDown = false;
+        public Boolean blinkBlocked = false;
+        public float blockTime = 0;
         private float blinkJuice, blinkCoolDown, stunTimer, deathTimer, curMultiplier, dustTimer;
 
         public SoundEffectInstance Death_Sound;
@@ -60,7 +63,15 @@ namespace Blink.Classes
 
 		public int score = 0;
 
-        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p, Vector2 off, Texture2D bar, int width)
+        private PowerupEnum inventory = PowerupEnum.none;
+        //Track Active effects of powerups
+        public Boolean spearCatch { get; set; } = false;
+        public Boolean shield { get; set; } = false;
+        public Boolean bombSpear { get; set; } = false;
+        public Boolean backupSpear { get; set; } = false;
+        //don't need one for unblinker
+
+        public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p, Vector2 off, Texture2D bar)
         {
             offset = off;
             spriteWidth = width;
@@ -98,6 +109,47 @@ namespace Blink.Classes
             }
         }
 
+        public void unblinkEveryone(float time)
+        {
+            foreach(PlayerClass p in players)
+            {
+                if(p.blinked)
+                {
+                    //If they're blinked, un blink them
+                    p.blink();
+                }
+                p.blinkBlocked = true;
+                blockTime = time;
+            }
+        }
+        //toggles blink/unblink
+        private void blink()
+        {
+            blinkKeyDown = true;
+
+            Boolean blocked = inPlayer();
+            if (!blocked)
+                blocked = inWall();
+
+            if (!blocked && blinkCoolDown <= 0)
+            {
+                if (!blinked && blinkJuice > 1 && !dead)
+                {
+                    blinked = true;
+                    Blink_Sound.Play();
+                    curMultiplier = BLINKMULTI;
+                    blinkJuice -= 1;
+                    //blinkCoolDown = BLINKCOOL / 2f;
+                }
+                else if (blinked)
+                {
+                    blinked = false;
+                    Unblink_Sound.Play();
+                    curMultiplier = 1f;
+                    blinkCoolDown = BLINKCOOL;
+                }
+            }
+        }
         public void Update(KeyboardState input, GamePadState padState, GameTime gameTime)
         {
             //Update move animation, this will have to be separated into Roth and Bat as Bat doesn't stop moving her wings when still.
@@ -110,7 +162,13 @@ namespace Blink.Classes
             //debug stuff goes here
             if ((input.IsKeyDown(Keys.Q)))
                 this.bounce = !this.bounce;
-
+            if(blinkBlocked)
+            {
+                if((float)gameTime.TotalGameTime.TotalSeconds - blockTime > DEATHTIMER)
+                {
+                    blinkBlocked = false;
+                }
+            }
             if (blinked)
             {
                 if (velocity.X != 0 && atRest)
@@ -179,36 +237,38 @@ namespace Blink.Classes
             }
 
             //Blink
-            if ((input.IsKeyDown(Keys.LeftAlt) || padState.IsButtonDown(Buttons.LeftShoulder)) && !blinkKeyDown)
+            if ((input.IsKeyDown(Keys.LeftAlt) || padState.IsButtonDown(Buttons.LeftShoulder)) && !blinkKeyDown && !blinkBlocked)
             {
-                blinkKeyDown = true;
+                blink();
 
-                Boolean blocked = inPlayer();
-                if (!blocked)
-                    blocked = inWall();
-
-                if (!blocked && blinkCoolDown <= 0) {
-                    if (!blinked && blinkJuice > 1 && !dead)
-                    {
-                        blinked = true;
-                        Blink_Sound.Play();
-                        curMultiplier = BLINKMULTI;
-                        blinkJuice -= 1;
-                        //blinkCoolDown = BLINKCOOL / 2f;
-                    }
-                    else if(blinked)
-                    {
-                        blinked = false;
-                        Unblink_Sound.Play();
-                        curMultiplier = 1f;
-                        blinkCoolDown = BLINKCOOL;
-                    }
-                }
-                
             }
             else if (blinkKeyDown && (input.IsKeyUp(Keys.LeftAlt) && padState.IsButtonUp(Buttons.LeftShoulder)))
-            {
+                    {
                 blinkKeyDown = false;
+                    }
+            // Use Powerup
+            if (inventory != PowerupEnum.none && (padState.IsButtonDown(Buttons.Y) || input.IsKeyDown(Keys.C)) && !dead) {
+                //Use powerup here !
+                switch(inventory)
+                    {
+                    case PowerupEnum.spearCatch:
+                        spearCatch = true;
+                        break;
+                    case PowerupEnum.shield:
+                        shield = true;
+                        break;
+                    case PowerupEnum.bombSpear:
+                        //not fully
+                        bombSpear = true;
+                        break;
+                    case PowerupEnum.backupSpear:
+                        backupSpear = true;
+                        break;
+                    case PowerupEnum.unblinker:
+                        unblinkEveryone((float)gameTime.TotalGameTime.TotalSeconds);
+                        break;
+            }
+                inventory = PowerupEnum.none;
             }
 
 
@@ -223,24 +283,24 @@ namespace Blink.Classes
             //Horizontal movement
                 
                 if ((input.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.LeftThumbstickRight)) && !dead && !victory && stunTimer <= 0)
-                {
+            {
                     next();
                     moving = true;
                     if(velocity.X < ACC_CAP * curMultiplier) { 
                         velocity.X += SPEED * curMultiplier;
-                        if (velocity.X < -SPEED)
-                            velocity.X += SPEED * curMultiplier / 2;
-                    }
+                if (velocity.X < -SPEED)
+                    velocity.X += SPEED * curMultiplier / 2;
+            }
                 }
                 else if ((input.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.LeftThumbstickLeft)) && !dead && !victory && stunTimer <= 0)
-                {
+            {
                     next();
                     moving = true;
                     if(velocity.X > -ACC_CAP * curMultiplier) { 
-                        velocity.X -= SPEED * curMultiplier;
-                        if (velocity.X > SPEED)
-                            velocity.X -= SPEED * curMultiplier / 2;
-                    }
+                velocity.X -= SPEED * curMultiplier;
+                if (velocity.X > SPEED)
+                    velocity.X -= SPEED * curMultiplier / 2;
+            }
                 }
 
                 if(moveEnd && !moving)
@@ -359,8 +419,23 @@ namespace Blink.Classes
 
 
             blockDataUpdate();
-            
-            
+            // Look for power up
+            if (inventory == PowerupEnum.none)
+            {
+               inventory = arena.checkPowerup(playerRect);
+            }
+            arena.updatePowerup(gameTime);
+            //give spear if not holding one and player has backupspear effect
+            if (backupSpear && !hasSpear)
+            {
+                backupSpear = false;
+                SpearClass s = new SpearClass(this, StateGame.spearSprite, SCREENSIZE, arena, players);
+                s.Throw_Sound = StateGame.Throw_Sound.CreateInstance();
+                s.Hit_Player_Sound = StateGame.Hit_Player_Sound.CreateInstance();
+                s.Hit_Wall_Sound = StateGame.Hit_Wall_Sound.CreateInstance();
+                s.Stab_Sound = StateGame.Stab_Sound.CreateInstance();
+                StateGame.spears.Add(s);
+            }
             //Gravity
             if (!atRest && velocity.Y < TERMINAL_V)
                 velocity.Y += GRAVITY;
@@ -804,7 +879,7 @@ namespace Blink.Classes
                 }
                 else if (moving || idles) { 
                     frame.X = (int)(Math.Abs(spriteWidth) * curFrame);
-                    
+
                     if (!hasSpear)
                     {
                         frame.Y = (int)(Math.Abs(spriteHeight));
@@ -846,7 +921,7 @@ namespace Blink.Classes
 
             
 
-                //Drawing when the player is looping over
+            //Drawing when the player is looping over
             if (playerRect.X < playerRect.Width)
                 sB.Draw(drawnText, new Vector2(playerRect.X + SCREENSIZE.X + offX, playerRect.Y + MARGIN + offY), frame, colorDrawn, 0f, new Vector2(), 1f, flip, 0f);
             else if (playerRect.X + playerRect.Width > SCREENSIZE.X)

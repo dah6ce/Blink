@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,16 +17,25 @@ namespace Blink.Classes
         Vector2 mapSize;
         PlayerClass[] players = new PlayerClass[4];
         Vector2[] playerStarts = new Vector2[4];
+        List<Powerup> powerupList = new List<Powerup>();
+        Texture2D powerup;
+        Rectangle bomb = new Rectangle(0, 0, 32, 32);
+        Rectangle spearcatch = new Rectangle(32, 0, 32, 32);
+        Rectangle backupspear = new Rectangle(64, 0, 32, 32);
+        Rectangle shield = new Rectangle(96, 0, 32, 32);
+        Rectangle unblinker = new Rectangle(128, 0, 32, 32);
+        Boolean justSpawned = true;
 
         int MARGIN = 0;
 
-        public void Initialize(Texture2D mText, String cMap, int tS, int mX, int mY, PlayerClass[] p)
+        public void Initialize(Texture2D mText, String cMap, int tS, int mX, int mY, PlayerClass[] p, Texture2D power)
         {
             mapTexture = mText;
             mapSize = new Vector2(mX, mY);
             tileSize = tS;
             mapCollisions(cMap);
             players = p;
+            powerup = power;
             
             for(int player = 0; player < 4; player++)
             {
@@ -42,6 +51,7 @@ namespace Blink.Classes
                 if (playerStarts[player] != null && players[player] != null && players[player].active)
                     players[player].setPos(playerStarts[player]);
             }
+            justSpawned = true;
         }
 
         //Read in collision map data
@@ -81,6 +91,11 @@ namespace Blink.Classes
                     {
                         playerStarts[int.Parse(blocks[p]) - 1] = new Vector2(x * 32, y * 32);
                     }
+                    if (blocks[p] == "30")
+                    {   
+                        Powerup item = new Powerup(new Rectangle(x * 32, y * 32, 32, 32));
+                        powerupList.Add(item);
+                    }
                     else
                         collisionMap[x, y] = int.Parse(blocks[p]);
                     y += 1;
@@ -93,8 +108,75 @@ namespace Blink.Classes
         public void Draw(SpriteBatch sB)
         {
             sB.Draw(mapTexture, new Vector2(0, MARGIN), Color.White);
+            foreach(Powerup p in powerupList) {
+                if (p.visible)
+                {
+                    if (p.type == PowerupEnum.bombSpear)
+                    {
+                        sB.Draw(powerup, p.hitbox, bomb, Color.White);
+        }
+                    if (p.type == PowerupEnum.spearCatch)
+                    {
+                        sB.Draw(powerup, p.hitbox, spearcatch, Color.White);
+                    }
+                    if (p.type == PowerupEnum.backupSpear)
+                    {
+                        sB.Draw(powerup, p.hitbox, backupspear, Color.White);
+                    }
+                    if (p.type == PowerupEnum.shield)
+                    {
+                        sB.Draw(powerup, p.hitbox, shield, Color.White);
+                    }
+                    if (p.type == PowerupEnum.unblinker)
+                    {
+                        sB.Draw(powerup, p.hitbox, unblinker, Color.White);
+                    }
+                }
+            }
         }
 
+        private int collidePowerup(Rectangle p)
+        {
+            //check if player rectangle p collides with powerup
+            for(int i = 0; i < powerupList.Count; i++)
+            {
+                if(powerupList[i].visible && powerupList[i].hitbox.Intersects(p))
+                {
+                    return i;
+                }
+            }
+            // Didn't collide with any power ups
+            return -1;
+        }
+        public void updatePowerup(GameTime gt)
+        {
+            if (justSpawned)
+            {
+                for (int i = 0; i < powerupList.Count; i++)
+                {
+                    powerupList[i].spawnTime = (float)gt.TotalGameTime.TotalSeconds;
+                }
+                justSpawned = false;
+            }
+            for (int i = 0; i < powerupList.Count; i++)
+            {
+                if ((float)gt.TotalGameTime.TotalSeconds - powerupList[i].spawnTime > powerupList[i].timer)
+                {
+                    powerupList[i].visible = true;
+                }
+            }
+        }
+        public PowerupEnum checkPowerup(Rectangle r)
+        {
+            int c = collidePowerup(r);
+            if (c != -1)
+            {
+                Powerup p = powerupList[c];
+                powerupList.RemoveAt(c);
+                return p.type;
+            }
+            return PowerupEnum.none;
+        }
 
         //There are still a couple of issues with collisions, but they're hard to reproduce. They should eventually get ironed out.
         public Boolean[] collides(Vector2 pos, Vector2 oPos, int down, int right, Vector2 charSize, Boolean blinked, float hitReduce)

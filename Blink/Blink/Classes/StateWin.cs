@@ -122,8 +122,8 @@ namespace Blink
             rank = rankp.ToArray();
             StreamReader mapData;
             mapData = File.OpenText("Content/MapData/" + mapName + ".map");
+            map1.Initialize(Content.Load<Texture2D>("MapData/" + mapName + "Color"), mapData.ReadToEnd(), 32, 50, 30, rank, null);
             scores_bg = Content.Load<Texture2D>("scores");
-            map1.Initialize(Content.Load<Texture2D>("MapData/" + mapName + "Color"), mapData.ReadToEnd(), 32, 50, 30, rank);
             font = Content.Load<SpriteFont>("miramo30");
         }
 

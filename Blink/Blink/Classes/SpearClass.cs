@@ -17,6 +17,8 @@ namespace Blink.Classes
     {
 	    
         public Texture2D spearText, indicatorText;
+        private int EXPLODE_RADIUS = 128;
+        private Boolean bomb = false;
         public Rectangle spear;
         public Vector2 /*pos,*/ velocity, SCREENSIZE;
         public float gravityEffect;
@@ -217,6 +219,12 @@ namespace Blink.Classes
                         
                         if (hit)//player.getPlayerRect().Intersects(this.spear))
                         {
+                            if (player.shield)
+                            {
+                                player.shield = false;
+                            }
+                            else
+                            {
                             player.setDead(true, this.spearOwner, "SPEAR");
                             Hit_Player_Sound.Play();
                         }
@@ -303,6 +311,30 @@ namespace Blink.Classes
 
                             if (hit && spearOwner != p && !p.dead && !dropped)
                             {
+                                if (p.shield)
+                                {
+                                    p.shield = false;
+                                }
+                                //ask david about how this should work
+                                else if (p.spearCatch && !p.hasSpear)
+                                {
+                                    p.spearCatch = false;
+                                    //pickup spear
+                                    gravityEffect = 0;
+                                    attachedToPlayer = true;
+                                    setOwner(p);
+                                    spearOwner.setSpear(this);
+                                    isInUse = false;
+                                    throwing = false;
+                                    p.hasSpear = true;
+                                }
+                                else
+                                {
+                                    if(bomb)
+                                    {
+                                        bombExplosion();
+                                        bomb = false;
+                                    }
                                 p.setDead(true, thrownBy, "SPEAR");
                                 Hit_Player_Sound.Play();
                             }
@@ -319,6 +351,7 @@ namespace Blink.Classes
                                 }
                                     
                                 setOwner(null);
+                        }
                         }
                     }
                 }
@@ -339,7 +372,7 @@ namespace Blink.Classes
             HashSet<int> yVals = new HashSet<int>();
             //gather values the spear might be passing through
             foreach(Vector2 vertex in verts)
-            {
+        {
                 xVals.Add((int)Math.Floor(vertex.X));
                 yVals.Add((int)Math.Floor(vertex.Y));
 
@@ -357,14 +390,19 @@ namespace Blink.Classes
                         Rectangle r = new Rectangle(x, y, 32, 32);
                         if (VectorMath.rectCollision(correctedBox, orientation, r, 0))
                         {
-                            velocity.X = 0;
-                            velocity.Y = 0;
-                            atRest = true;
-                            throwing = false;
-                            Hit_Wall_Sound.Play();
+                velocity.X = 0;
+                velocity.Y = 0;
+                atRest = true;
+                throwing = false;
+                Hit_Wall_Sound.Play();
                             colliding = true;
                             break;
-                        }
+                if(bomb)
+                {
+                    bombExplosion();
+                    bomb = false;
+                }
+        }
                     }//This is messy, I know.
                     else if((squareData >= 10 && !thrownBy.blinked) || (squareData >= 10 && squareData < 20 && thrownBy.blinked))
                     {
@@ -378,15 +416,22 @@ namespace Blink.Classes
                             Hit_Wall_Sound.Play();
                             colliding = true;
                             break;
-                        }
-                    }
-                }
-                if (colliding)
-                    break;
-            }
-            
         }
+        private void bombExplosion()
+        {
+            foreach (PlayerClass p in players)
+            {
+                int x_dist = p.getPlayerRect().X - spear.X;
+                int y_dist = p.getPlayerRect().Y - spear.Y;
+                int dist = x_dist * x_dist + y_dist * y_dist;
+                // if within radius
+                if (dist < EXPLODE_RADIUS*EXPLODE_RADIUS)
+                {
+                    p.setDead(true, spearOwner, "BOMBSPEAR");
+                }
 
+            }
+        }
         //Handle throw physics
         public void throwSpear()
         {
@@ -408,7 +453,14 @@ namespace Blink.Classes
             spear.X += (int)(velocity.X * thrownBy.getMulti());
             spear.Y += (int)(velocity.Y * thrownBy.getMulti());
 
+            if(spearOwner.bombSpear)
+            {
+                spearOwner.bombSpear = false;
+                bomb = true;
+            }
+
             /*switch (spearOrientation)
+            switch (spearOrientation)
             {
                 case 0:
                     velocity.X = -20;
