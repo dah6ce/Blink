@@ -14,6 +14,7 @@ namespace Blink.Classes
             shield,
             bombSpear,
             backupSpear,
+            secondSpear,
             unblinker,
             none
         }

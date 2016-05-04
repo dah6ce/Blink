@@ -32,8 +32,10 @@ namespace Blink.Classes
         public String title;
         public int winAssign = 0;
         private SpearClass spear;
+        private SpearClass spear2;
         private int directionFacing = 0; //0 for left, 1 for right
         public Boolean hasSpear = true;
+        public Boolean hasSpear2 = true;
         public Boolean blinked = false, blinkKeyDown = false;
         public Boolean blinkBlocked = false;
         public float blockTime = 0;
@@ -60,6 +62,7 @@ namespace Blink.Classes
         public Boolean shield { get; set; } = false;
         public Boolean bombSpear { get; set; } = false;
         public Boolean backupSpear { get; set; } = false;
+        public Boolean secondSpear { get; set; } = false;
         //don't need one for unblinker
 
         public void Initialize(Texture2D text, Vector2 playerPos, Vector2 ScreenSize, Map m, PlayerClass[] p, Vector2 off, Texture2D bar)
@@ -96,6 +99,11 @@ namespace Blink.Classes
             {
                 spear.setOwner(this); 
             }
+        }
+
+        public void setSpear2(SpearClass spr)
+        {
+            spear2 = spr;
         }
 
         public void unblinkEveryone(float time)
@@ -248,6 +256,9 @@ namespace Blink.Classes
                     case PowerupEnum.powerUpEnum.backupSpear:
                         //not fully implemented
                         backupSpear = true;
+                        break;
+                    case PowerupEnum.powerUpEnum.secondSpear:
+                        secondSpear = true;
                         break;
                     case PowerupEnum.powerUpEnum.unblinker:
                         unblinkEveryone((float)gameTime.TotalGameTime.TotalSeconds);

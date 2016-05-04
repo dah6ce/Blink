@@ -30,7 +30,7 @@ namespace Blink.Classes
         //      1       2        3
         //      0     Player     4
         //      7       6        5
-        public PlayerClass spearOwner; 
+        public PlayerClass spearOwner;
         public Map m;
         public readonly Keys THROW_KEY = Keys.Z, ATTACK_KEY = Keys.X;
         public readonly Buttons THROW_BUTTON = Buttons.RightShoulder, ATTACK_BUTTON = Buttons.X;
@@ -275,15 +275,28 @@ namespace Blink.Classes
                         if (!attachedToPlayer && !throwing)
                         {
                             Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), spear);//new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
-                            if (inter.Width > 0 && inter.Height > 0 && !p.hasSpear && !throwing && !p.dead)
+                            if (inter.Width > 0 && inter.Height > 0 && !throwing && !p.dead)
                             {
-                                gravityEffect = 0;
-                                attachedToPlayer = true;
-                                setOwner(p);
-                                spearOwner.setSpear(this);
-                                isInUse = false;
-                                throwing = false;
-                                p.hasSpear = true;
+                                if (!p.hasSpear)
+                                {
+                                    gravityEffect = 0;
+                                    attachedToPlayer = true;
+                                    setOwner(p);
+                                    spearOwner.setSpear(this);
+                                    isInUse = false;
+                                    throwing = false;
+                                    p.hasSpear = true;
+                                }
+                                else if (p.secondSpear)
+                                {
+                                    gravityEffect = 0;
+                                    attachedToPlayer = true;
+                                    setOwner(p);
+                                    spearOwner.setSpear2(this);
+                                    isInUse = false;
+                                    throwing = false;
+                                    p.hasSpear = true;
+                                }
                             }
                         }
                         if (!atRest && thrownBy != null && p.blinked == thrownBy.blinked)
@@ -354,7 +367,7 @@ namespace Blink.Classes
                 collisions = m.collides(new Vector2(testX, testY), new Vector2(spear.X, spear.Y), d, r, new Vector2(spear.Width, spear.Height), false, 0f);
 
             if (collisions[0] || collisions[1] || collisions[2])
-        {
+            {
                 spear.X = (int)testX;
                 spear.Y = (int)testY;
                 velocity.X = 0;
@@ -368,7 +381,7 @@ namespace Blink.Classes
                     bombExplosion();
                     bomb = false;
                 }
-        }
+            }
         }
         private void bombExplosion()
         {
