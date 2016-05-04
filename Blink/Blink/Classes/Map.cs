@@ -24,7 +24,7 @@ namespace Blink.Classes
         Rectangle backupspear = new Rectangle(64, 0, 32, 32);
         Rectangle shield = new Rectangle(96, 0, 32, 32);
         Rectangle unblinker = new Rectangle(128, 0, 32, 32);
-        Boolean justSpawned = false;
+        Boolean justSpawned = true;
 
         int MARGIN = 0;
 
@@ -51,6 +51,7 @@ namespace Blink.Classes
                 if (playerStarts[player] != null && players[player] != null && players[player].active)
                     players[player].setPos(playerStarts[player]);
             }
+            justSpawned = true;
         }
 
         //Read in collision map data
@@ -147,11 +148,11 @@ namespace Blink.Classes
             // Didn't collide with any power ups
             return -1;
         }
-        public PowerupEnum.powerUpEnum checkPowerup(Rectangle r, GameTime gt)
+        public void updatePowerup(GameTime gt)
         {
             if (justSpawned)
             {
-                for(int i = 0; i < powerupList.Count; i++)
+                for (int i = 0; i < powerupList.Count; i++)
                 {
                     powerupList[i].spawnTime = (float)gt.TotalGameTime.TotalSeconds;
                 }
@@ -159,12 +160,14 @@ namespace Blink.Classes
             }
             for (int i = 0; i < powerupList.Count; i++)
             {
-                if( (float)gt.TotalGameTime.TotalSeconds - powerupList[i].spawnTime > powerupList[i].timer)
+                if ((float)gt.TotalGameTime.TotalSeconds - powerupList[i].spawnTime > powerupList[i].timer)
                 {
                     powerupList[i].visible = true;
                 }
             }
-
+        }
+        public PowerupEnum.powerUpEnum checkPowerup(Rectangle r)
+        {
             int c = collidePowerup(r);
             if (c != -1)
             {

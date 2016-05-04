@@ -13,7 +13,7 @@ namespace Blink.Classes
 {
     class SpearClass
     {
-        private int EXPLODE_RADIUS = 512;
+        private int EXPLODE_RADIUS = 128;
         private Boolean bomb = false;
         public Texture2D spearText;
         public Rectangle spear;

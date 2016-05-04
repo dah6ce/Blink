@@ -17,6 +17,17 @@ namespace Blink.Classes
             shield,
             none
         }
+        Array types = Enum.GetValues(typeof(PowerupEnum.powerUpEnum));
+        Random random = new Random();
+        public powerUpEnum getRandomType()
+        {
+            //types.length-1 because we don't want to randomly generate the powerup to have type of 'none'
+            return (powerUpEnum)types.GetValue(random.Next(types.Length - 1));
+        }
+        public int getTimer()
+        {
+            return random.Next(2, 7);
+        }
     }
     public class Powerup
     {
@@ -29,11 +40,10 @@ namespace Blink.Classes
 
         public Powerup(Rectangle r)
         {
-            Array types = Enum.GetValues(typeof(PowerupEnum.powerUpEnum));
-            type = (PowerupEnum.powerUpEnum)types.GetValue(random.Next(3));// types.Length-1));
+            type = new PowerupEnum().getRandomType();
             hitbox = r;
             visible = false;
-            timer = random.Next(2, 7);
+            timer = new PowerupEnum().getTimer();
         }
     }
 }
