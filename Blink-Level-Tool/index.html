@@ -20,35 +20,32 @@
 <body>
 <div style="float: left; padding: 5px;">
 	<h3>Level Editor 2.0</h3>
-	<form>
-	<input type="radio" id="p1" name="block" value="1">
-	Player 1 Start<br>
-	<input type="radio" id="p2" name="block" value="2">
-	Player 2 Start<br>
-	<input type="radio" id="p3" name="block" value="3">
-	Player 3 Start<br>
-	<input type="radio" id="p4" name="block" value="4">
-	Player 4 Start<br>
-	<input type="radio" id="air" name="block" value="0">
-	Air block<br>
-	<input type="radio" id="solid" name="block" value="10">
-	Solid block<br>
-	<input type="radio" id="ice" name="block" value="11">
-	Ice block<br>
-	<input type="radio" id="kill" name="block" value="5">
-	Kill zone<br>
-	<input type="radio" id="powerup" name="block" value="30">
-	Powerup<br>
-	<br>
-	<input type="checkbox" id="blink" name="blink" value="10">
-	Blink block<br>
-	
-	</form>
-	<br>
-	<br>
 	<input type="file" id="file-input"/>
 	<br>
 	<br>
+	<form>
+	<input type="radio" id="p1" name="block" value="1">
+	<label for="p1">Player 1 Start</label><br>
+	<input type="radio" id="p2" name="block" value="2">
+	<label for="p2">Player 2 Start</label><br>
+	<input type="radio" id="p3" name="block" value="3">
+	<label for="p3">Player 3 Start</label><br>
+	<input type="radio" id="p4" name="block" value="4">
+	<label for="p4">Player 4 Start</label><br>
+	<input type="radio" id="air" name="block" value="0">
+	<label for="air">Air block</label><br>
+	<input type="radio" id="solid" name="block" value="10">
+	<label for="solid">Solid block</label><br>
+	<input type="radio" id="ice" name="block" value="11">
+	<label for="ice">Ice block</label><br>
+	<input type="radio" id="kill" name="block" value="5">
+	<label for="kill">Kill zone</label><br>
+	<input type="radio" id="powerup" name="block" value="30">
+	<label for="powerup">Powerup</label><br>
+	<br>
+	<input type="checkbox" id="blink" name="blink" value="10">
+	<label for="blink">Blink block</label>
+	</form>
 	<h3>Map Data</h3>
 	<input style="border-style:solid;word-wrap:break-word"  id="data"/>
 </div>
