@@ -18,11 +18,8 @@
 </head>
 
 <body>
-<div style="height:1000px;width:1650px">
-	<div  id="imgstore" style="position:absolute; top: 5px; left: 5px"></div>
-	<canvas id="canv" style="position:absolute; top:5px; left:5px"></canvas>
-</div>
-<div style="position:absolute;left:1650px; top: 50px;border-style:single">
+<div style="float: left; padding: 5px;">
+	<h3>Level Editor 2.0</h3>
 	<form>
 	<input type="radio" id="p1" name="block" value="1">
 	Player 1 Start<br>
@@ -50,10 +47,16 @@
 	<br>
 	<br>
 	<input type="file" id="file-input"/>
-</div>
-<div style="position:relative;top:0px">
+	<br>
+	<br>
 	<h3>Map Data</h3>
 	<input style="border-style:solid;word-wrap:break-word"  id="data"/>
+</div>
+<div style="float: left;">
+<div style="position: relative;">
+	<div  id="imgstore" style="position:absolute; top: 0px; left: 0px; padding: 5px;"></div>
+	<canvas id="canv" style="position:absolute; top: 0px; left: 0px; padding: 5px;"></canvas>
+</div>
 </div>
 
 
