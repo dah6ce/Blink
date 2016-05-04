@@ -59,7 +59,6 @@ namespace Blink
         mapSet maps;
         float roundReset = -1;
         float timeElapsed;
-        public static GameTime gameTime = new GameTime();
 		Map[] mapObs = new Map[5];
         int currentMap = 0;
 		bool[] oldStartState = new bool[4];
@@ -68,6 +67,8 @@ namespace Blink
         int activePlayers = 0;
 		SpriteFont font;
         List<Animation> animations;
+        public static GameTime gameTime = new GameTime();
+        public static Texture2D spearSprite;
 
         public void setMaps(mapSet map)
         {
@@ -185,11 +186,11 @@ namespace Blink
                 }
             }
 
-            
-            spear1 = new SpearClass(player1, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
-            spear2 = new SpearClass(player2, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
-            spear3 = new SpearClass(player3, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
-            spear4 = new SpearClass(player4, Content.Load<Texture2D>("spearsprite"), screenSize, null, players);
+            spearSprite = Content.Load<Texture2D>("spearsprite");
+            spear1 = new SpearClass(player1, spearSprite, screenSize, null, players);
+            spear2 = new SpearClass(player2, spearSprite, screenSize, null, players);
+            spear3 = new SpearClass(player3, spearSprite, screenSize, null, players);
+            spear4 = new SpearClass(player4, spearSprite, screenSize, null, players);
 
             spears[0] = spear1;
             spears[1] = spear2;

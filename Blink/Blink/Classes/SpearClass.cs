@@ -275,28 +275,15 @@ namespace Blink.Classes
                         if (!attachedToPlayer && !throwing)
                         {
                             Rectangle inter = Rectangle.Intersect(p.getPlayerRect(), spear);//new Rectangle((int)spear.X,(int)spear.Y, spear.Width, spear.Height));
-                            if (inter.Width > 0 && inter.Height > 0 && !throwing && !p.dead)
+                            if (inter.Width > 0 && inter.Height > 0 && !throwing && !p.dead && !p.hasSpear)
                             {
-                                if (!p.hasSpear)
-                                {
-                                    gravityEffect = 0;
-                                    attachedToPlayer = true;
-                                    setOwner(p);
-                                    spearOwner.setSpear(this);
-                                    isInUse = false;
-                                    throwing = false;
-                                    p.hasSpear = true;
-                                }
-                                else if (p.secondSpear)
-                                {
-                                    gravityEffect = 0;
-                                    attachedToPlayer = true;
-                                    setOwner(p);
-                                    spearOwner.setSpear2(this);
-                                    isInUse = false;
-                                    throwing = false;
-                                    p.hasSpear = true;
-                                }
+                                gravityEffect = 0;
+                                attachedToPlayer = true;
+                                setOwner(p);
+                                spearOwner.setSpear(this);
+                                isInUse = false;
+                                throwing = false;
+                                p.hasSpear = true;
                             }
                         }
                         if (!atRest && thrownBy != null && p.blinked == thrownBy.blinked)

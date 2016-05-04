@@ -20,7 +20,7 @@ namespace Blink.Classes
         List<Powerup> powerupList = new List<Powerup>();
         Texture2D powerup;
         Rectangle bomb = new Rectangle(0, 0, 32, 32);
-        Rectangle spearcarch = new Rectangle(32, 0, 32, 32);
+        Rectangle spearcatch = new Rectangle(32, 0, 32, 32);
         Rectangle backupspear = new Rectangle(64, 0, 32, 32);
         Rectangle shield = new Rectangle(96, 0, 32, 32);
         Rectangle unblinker = new Rectangle(128, 0, 32, 32);
@@ -90,13 +90,6 @@ namespace Blink.Classes
                     {
                         playerStarts[int.Parse(blocks[p]) - 1] = new Vector2(x * 32, y * 32);
                     }
-                    /*
-                    p1 spearCatch,
-                    p2 shield,
-                    p3 bombSpear,
-                    p4 backupSpear,
-                    p5 unblinker
-                    */
                     if (blocks[p] == "30")
                     {   
                         Powerup item = new Powerup(new Rectangle(x * 32, y * 32, 32, 32));
@@ -123,11 +116,11 @@ namespace Blink.Classes
                     }
                     if (p.type == PowerupEnum.powerUpEnum.spearCatch)
                     {
-                        sB.Draw(powerup, p.hitbox, spearcarch, Color.White);
+                        sB.Draw(powerup, p.hitbox, spearcatch, Color.White);
                     }
                     if (p.type == PowerupEnum.powerUpEnum.backupSpear)
                     {
-                        sB.Draw(powerup, p.hitbox, spearcarch, Color.White);
+                        sB.Draw(powerup, p.hitbox, backupspear, Color.White);
                     }
                     if (p.type == PowerupEnum.powerUpEnum.shield)
                     {
