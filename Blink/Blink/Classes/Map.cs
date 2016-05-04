@@ -111,23 +111,23 @@ namespace Blink.Classes
             foreach(Powerup p in powerupList) {
                 if (p.visible)
                 {
-                    if (p.type == PowerupEnum.powerUpEnum.bombSpear)
+                    if (p.type == PowerupEnum.bombSpear)
                     {
                         sB.Draw(powerup, p.hitbox, bomb, Color.White);
                     }
-                    if (p.type == PowerupEnum.powerUpEnum.spearCatch)
+                    if (p.type == PowerupEnum.spearCatch)
                     {
                         sB.Draw(powerup, p.hitbox, spearcatch, Color.White);
                     }
-                    if (p.type == PowerupEnum.powerUpEnum.backupSpear)
+                    if (p.type == PowerupEnum.backupSpear)
                     {
                         sB.Draw(powerup, p.hitbox, backupspear, Color.White);
                     }
-                    if (p.type == PowerupEnum.powerUpEnum.shield)
+                    if (p.type == PowerupEnum.shield)
                     {
                         sB.Draw(powerup, p.hitbox, shield, Color.White);
                     }
-                    if (p.type == PowerupEnum.powerUpEnum.unblinker)
+                    if (p.type == PowerupEnum.unblinker)
                     {
                         sB.Draw(powerup, p.hitbox, unblinker, Color.White);
                     }
@@ -166,7 +166,7 @@ namespace Blink.Classes
                 }
             }
         }
-        public PowerupEnum.powerUpEnum checkPowerup(Rectangle r)
+        public PowerupEnum checkPowerup(Rectangle r)
         {
             int c = collidePowerup(r);
             if (c != -1)
@@ -175,7 +175,7 @@ namespace Blink.Classes
                 powerupList.RemoveAt(c);
                 return p.type;
             }
-            return PowerupEnum.powerUpEnum.none;
+            return PowerupEnum.none;
         }
 
         //There are still a couple of issues with collisions, but they're hard to reproduce. They should eventually get ironed out.

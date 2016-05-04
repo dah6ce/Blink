@@ -6,44 +6,32 @@ using Microsoft.Xna.Framework;
 
 namespace Blink.Classes
 {
-    public class PowerupEnum
+    public enum PowerupEnum
     {
-        public enum powerUpEnum
-        {
-            bombSpear,
-            backupSpear,
-            unblinker,
-            spearCatch,
-            shield,
-            none
-        }
-        Array types = Enum.GetValues(typeof(PowerupEnum.powerUpEnum));
-        Random random = new Random();
-        public powerUpEnum getRandomType()
-        {
-            //types.length-1 because we don't want to randomly generate the powerup to have type of 'none'
-            return (powerUpEnum)types.GetValue(random.Next(types.Length - 1));
-        }
-        public int getTimer()
-        {
-            return random.Next(2, 7);
-        }
+        bombSpear,
+        backupSpear,
+        unblinker,
+        shield,
+        spearCatch,
+        none
     }
     public class Powerup
     {
-        public PowerupEnum.powerUpEnum type { get; }
+        public PowerupEnum type { get; }
         public Rectangle hitbox { get; }
         public Boolean visible { get; set; }
         public float spawnTime { get; set; }
         public int timer { get; set; }
+
+        private static Array types = Enum.GetValues(typeof(PowerupEnum));
         private static Random random = new Random();
 
         public Powerup(Rectangle r)
         {
-            type = new PowerupEnum().getRandomType();
+            type = (PowerupEnum)types.GetValue(random.Next(types.Length - 1));
             hitbox = r;
             visible = false;
-            timer = new PowerupEnum().getTimer();
+            timer = random.Next(2, 7);
         }
     }
 }

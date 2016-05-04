@@ -54,7 +54,7 @@ namespace Blink.Classes
 
         public int score = 0;
 
-        private PowerupEnum.powerUpEnum inventory = PowerupEnum.powerUpEnum.none;
+        private PowerupEnum inventory = PowerupEnum.none;
         //Track Active effects of powerups
         public Boolean spearCatch { get; set; } = false;
         public Boolean shield { get; set; } = false;
@@ -231,28 +231,28 @@ namespace Blink.Classes
                 blinkKeyDown = false;
             }
             // Use Powerup
-            if (inventory != PowerupEnum.powerUpEnum.none && (padState.IsButtonDown(Buttons.Y) || input.IsKeyDown(Keys.C)) && !dead) {
+            if (inventory != PowerupEnum.none && (padState.IsButtonDown(Buttons.Y) || input.IsKeyDown(Keys.C)) && !dead) {
                 //Use powerup here !
                 switch(inventory)
                 {
-                    case PowerupEnum.powerUpEnum.spearCatch:
+                    case PowerupEnum.spearCatch:
                         spearCatch = true;
                         break;
-                    case PowerupEnum.powerUpEnum.shield:
+                    case PowerupEnum.shield:
                         shield = true;
                         break;
-                    case PowerupEnum.powerUpEnum.bombSpear:
+                    case PowerupEnum.bombSpear:
                         //not fully
                         bombSpear = true;
                         break;
-                    case PowerupEnum.powerUpEnum.backupSpear:
+                    case PowerupEnum.backupSpear:
                         backupSpear = true;
                         break;
-                    case PowerupEnum.powerUpEnum.unblinker:
+                    case PowerupEnum.unblinker:
                         unblinkEveryone((float)gameTime.TotalGameTime.TotalSeconds);
                         break;
                 }
-                inventory = PowerupEnum.powerUpEnum.none;
+                inventory = PowerupEnum.none;
             }
 
             //Horizontal movement
@@ -331,7 +331,7 @@ namespace Blink.Classes
             
             blockDataUpdate();
             // Look for power up
-            if (inventory == PowerupEnum.powerUpEnum.none)
+            if (inventory == PowerupEnum.none)
             {
                inventory = arena.checkPowerup(playerRect);
             }
